@@ -1,6 +1,5 @@
-// Original code to handle search and filtering functionality
 document.addEventListener("DOMContentLoaded", () => {
-    fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
+    fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
             renderCategories(data);
@@ -13,21 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to filter content based on user input
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-
     const categoriesContainer = document.getElementById("categories");
     const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
     categories.forEach(category => {
         const categoryName = category.querySelector("h2").textContent.toLowerCase();
         const isCategoryMatch = categoryName.includes(searchTerm);
-
         const subjects = Array.from(category.getElementsByClassName("subject"));
         let subjectMatchFound = false;
 
         subjects.forEach(subject => {
             const subjectName = subject.textContent.toLowerCase();
             const isSubjectMatch = subjectName.includes(searchTerm);
-
             subject.classList.toggle("highlighted", isSubjectMatch);
             if (isSubjectMatch) subjectMatchFound = true;
         });
@@ -44,7 +40,7 @@ function requestUserLocation() {
                 const userLatitude = position.coords.latitude;
                 const userLongitude = position.coords.longitude;
 
-                fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
+                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
                     .then(response => response.json())
                     .then(data => {
                         renderCategories(data);
@@ -63,7 +59,7 @@ function requestUserLocation() {
 // Function to render categories and their respective subjects on the page
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear any existing content
+    categoriesContainer.innerHTML = "";
 
     categories.forEach(category => {
         const categoryDiv = document.createElement("div");
@@ -95,13 +91,13 @@ function renderCategories(categories) {
 
 // Function to handle upvoting of a subject
 function upvote(subjectId) {
-    fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/vote`, {
+    fetch(`/api/subjects/${subjectId}/vote`, {
         method: 'POST'
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
+            fetch('/api/categories')
                 .then(response => response.json())
                 .then(data => renderCategories(data));
         }
@@ -116,7 +112,7 @@ function addComment(subjectId) {
     const username = `User${Math.floor(Math.random() * 1000)}`;
 
     if (commentText) {
-        fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comment`, {
+        fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, comment_text: commentText })
@@ -134,7 +130,7 @@ function addComment(subjectId) {
 
 // Function to fetch comments for a specific subject
 function fetchComments(subjectId) {
-    fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comments`)
+    fetch(`/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
         .then(comments => {
             const commentContainer = document.getElementById(`comments-container-${subjectId}`);
@@ -143,7 +139,7 @@ function fetchComments(subjectId) {
         });
 }
 
-// Function to render comments with replies
+// Recursive function to render comments and their replies
 function renderComments(comments, parentElement) {
     comments.forEach(comment => {
         const commentDiv = document.createElement("div");
@@ -158,122 +154,27 @@ function renderComments(comments, parentElement) {
             commentDiv.appendChild(repliesDiv);
         }
     });
-    document.addEventListener("DOMContentLoaded", () => {
-        const categoriesContainer = document.querySelector(".categories-container");
-        const subjectsContainer = document.querySelector(".subjects-container");
-    
-        fetchCategories();
-        fetchSubjects();
-    
-        // Fetch categories
-        async function fetchCategories() {
-            try {
-                const response = await fetch("https://voteapp-512e8c2ec67c.herokuapp.com/api/categories");
-                const categories = await response.json();
-                renderCategories(categories);
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            }
-        }
-    
-        function renderCategories(categories) {
-            categoriesContainer.innerHTML = `<button class="category-btn" data-id="all">All</button>`;
-            categories.forEach(category => {
-                const btn = document.createElement("button");
-                btn.className = "category-btn";
-                btn.dataset.id = category.category_id;
-                btn.textContent = category.name;
-                btn.addEventListener("click", () => filterSubjects(category.category_id));
-                categoriesContainer.appendChild(btn);
-            });
-        }
-    
-        // Fetch and render subjects
-        async function fetchSubjects() {
-            try {
-                const response = await fetch("https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects");
-                const subjects = await response.json();
-                renderSubjects(subjects);
-            } catch (error) {
-                console.error("Error fetching subjects:", error);
-            }
-        }
-    
-        function renderSubjects(subjects) {
-            subjectsContainer.innerHTML = "";
-            subjects.sort((a, b) => b.votes - a.votes);
-            subjects.forEach(subject => {
-                const subjectCard = document.createElement("div");
-                subjectCard.className = "subject-card";
-                subjectCard.innerHTML = `
-                    <h3>${subject.name}</h3>
-                    <p>Votes: <span class="vote-count">${subject.votes}</span> <button class="upvote-btn" data-id="${subject.subject_id}">▲</button></p>
-                    <button class="comment-toggle" data-id="${subject.subject_id}">▼</button>
-                    <div class="comment-section hidden">
-                        <textarea placeholder="Write a comment..."></textarea>
-                        <button class="submit-comment" data-id="${subject.subject_id}">Submit</button>
-                    </div>
-                `;
-                subjectCard.querySelector(".upvote-btn").addEventListener("click", () => upvoteSubject(subject.subject_id, subjectCard));
-                subjectCard.querySelector(".comment-toggle").addEventListener("click", () => toggleCommentSection(subjectCard));
-                subjectsContainer.appendChild(subjectCard);
-            });
-        }
-    
-        async function upvoteSubject(subjectId, subjectCard) {
-            try {
-                await fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/vote`, { method: "POST" });
-                const voteCountElement = subjectCard.querySelector(".vote-count");
-                let currentVotes = parseInt(voteCountElement.textContent);
-                voteCountElement.textContent = currentVotes + 1;
-                fetchSubjects(); // Re-fetch subjects to update the order based on votes
-            } catch (error) {
-                console.error("Error upvoting subject:", error);
-            }
-        }
-    
-        function toggleCommentSection(subjectCard) {
-            const commentSection = subjectCard.querySelector(".comment-section");
-            commentSection.classList.toggle("hidden");
-        }
-    
-        async function filterSubjects(categoryId) {
-            let subjects;
-            try {
-                const response = await fetch("https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects");
-                subjects = await response.json();
-            } catch (error) {
-                console.error("Error fetching subjects for filtering:", error);
-                return;
-            }
-    
-            if (categoryId !== "all") {
-                subjects = subjects.filter(subject => subject.category_id == categoryId);
-            }
-            renderSubjects(subjects);
-        }
-    
-        // Geolocation functionality
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async position => {
-                    const { latitude, longitude } = position.coords;
-                    try {
-                        const response = await fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/categories?lat=${latitude}&lon=${longitude}`);
-                        const categories = await response.json();
-                        renderCategories(categories);
-                    } catch (error) {
-                        console.error("Error fetching categories by location:", error);
-                    }
-                },
-                error => console.error("Geolocation error:", error)
-            );
-        }
-    });
-    
 }
 
+// Function to filter subjects by navigation topic
+window.filterByNavTopic = function (topic) {
+    const categoriesContainer = document.getElementById("categories");
+    const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
+    allCategories.forEach(category => {
+        const categoryName = category.querySelector("h2").textContent;
+        category.style.display = categoryName.includes(topic) ? "block" : "none";
+    });
+};
+
+// Function to display all categories
+window.showAllCategories = function () {
+    const categoriesContainer = document.getElementById("categories");
+    const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
+    allCategories.forEach(category => {
+        category.style.display = "block";
+    });
+};
 
 
 const navTopicMapping = {
