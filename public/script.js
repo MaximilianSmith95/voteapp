@@ -65,22 +65,16 @@ function renderCategories(categories) {
         categoryDiv.classList.add("category");
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
-        // Sort subjects by votes in descending order
-        const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
-
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects");
 
-        sortedSubjects.forEach(subject => {
+        category.subjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.innerHTML = `
                 <p>${subject.name}</p>
-                <p>Votes: ${subject.votes}</p>
-                <button onclick="upvote(${subject.subject_id})">Upvote</button>
-                <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+                <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
                 <div id="comments-container-${subject.subject_id}" class="comments-container"></div>
-                <input type="text" id="comment-input-${subject.subject_id}" placeholder="Write a comment..." />
             `;
 
             subjectsDiv.appendChild(subjectDiv);
@@ -89,6 +83,8 @@ function renderCategories(categories) {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
+}
+
 }
 
 
