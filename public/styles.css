@@ -433,15 +433,18 @@ nav {
 }
 
 .vote-button {
-    background-color: #00a8cc;
-    color: white;
-    padding: 5px 10px;
+    background-color: transparent;
+    color: green;
+    padding: 5px;
     border: none;
-    border-radius: 8px;
+    font-size: 1.2rem;
     cursor: pointer;
-    font-size: 0.9rem;
-    margin-right: 10px;
 }
+
+.vote-button:hover {
+    color: darkgreen;
+}
+
 
 .comment-toggle {
     background: transparent;
