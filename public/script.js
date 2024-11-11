@@ -56,7 +56,6 @@ function requestUserLocation() {
     }
 }
 
-// Function to render categories and their respective subjects on the page
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
     categoriesContainer.innerHTML = "";
@@ -66,10 +65,13 @@ function renderCategories(categories) {
         categoryDiv.classList.add("category");
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
+        // Sort subjects by votes in descending order
+        const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
+
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects");
 
-        category.subjects.forEach(subject => {
+        sortedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.innerHTML = `
@@ -89,6 +91,7 @@ function renderCategories(categories) {
     });
 }
 
+
 // Function to handle upvoting of a subject
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
@@ -97,6 +100,7 @@ function upvote(subjectId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Re-fetch and render categories to apply sorting based on updated votes
             fetch('/api/categories')
                 .then(response => response.json())
                 .then(data => renderCategories(data));
@@ -104,6 +108,7 @@ function upvote(subjectId) {
     })
     .catch(error => console.error('Error upvoting:', error));
 }
+
 
 // Function to add a comment to a subject
 function addComment(subjectId) {
