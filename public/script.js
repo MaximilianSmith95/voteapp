@@ -1,3 +1,4 @@
+// Original code to handle search and filtering functionality
 document.addEventListener("DOMContentLoaded", () => {
     fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
         .then(response => response.json())
@@ -9,6 +10,57 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 });
 
+// Function to filter content based on user input
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+
+    const categoriesContainer = document.getElementById("categories");
+    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
+
+    categories.forEach(category => {
+        const categoryName = category.querySelector("h2").textContent.toLowerCase();
+        const isCategoryMatch = categoryName.includes(searchTerm);
+
+        const subjects = Array.from(category.getElementsByClassName("subject"));
+        let subjectMatchFound = false;
+
+        subjects.forEach(subject => {
+            const subjectName = subject.textContent.toLowerCase();
+            const isSubjectMatch = subjectName.includes(searchTerm);
+
+            subject.classList.toggle("highlighted", isSubjectMatch);
+            if (isSubjectMatch) subjectMatchFound = true;
+        });
+
+        category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
+    });
+};
+
+// Function to request user's location and filter categories by proximity
+function requestUserLocation() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+
+                fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderCategories(data);
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+            }
+        );
+    } else {
+        console.log("Geolocation is not available in this browser.");
+    }
+}
+
+// Function to render categories and their respective subjects on the page
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
     categoriesContainer.innerHTML = ""; // Clear any existing content
@@ -41,6 +93,7 @@ function renderCategories(categories) {
     });
 }
 
+// Function to handle upvoting of a subject
 function upvote(subjectId) {
     fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/vote`, {
         method: 'POST'
@@ -48,7 +101,6 @@ function upvote(subjectId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Re-fetch and render categories after upvote
             fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
                 .then(response => response.json())
                 .then(data => renderCategories(data));
@@ -57,6 +109,7 @@ function upvote(subjectId) {
     .catch(error => console.error('Error upvoting:', error));
 }
 
+// Function to add a comment to a subject
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
@@ -79,6 +132,7 @@ function addComment(subjectId) {
     }
 }
 
+// Function to fetch comments for a specific subject
 function fetchComments(subjectId) {
     fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
@@ -89,6 +143,7 @@ function fetchComments(subjectId) {
         });
 }
 
+// Function to render comments with replies
 function renderComments(comments, parentElement) {
     comments.forEach(comment => {
         const commentDiv = document.createElement("div");
@@ -104,6 +159,7 @@ function renderComments(comments, parentElement) {
         }
     });
 }
+
 
 
 
