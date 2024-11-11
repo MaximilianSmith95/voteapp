@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetch('http://localhost:3500/api/categories')
+    fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
         .then(response => response.json())
         .then(data => {
             renderCategories(data);
@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error fetching categories:', error);
         });
 });
+
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
 
@@ -16,11 +17,9 @@ window.filterContent = function () {
     const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
     categories.forEach(category => {
-        // Check if the search term matches the category name or location
         const categoryName = category.querySelector("h2").textContent.toLowerCase();
         const isCategoryMatch = categoryName.includes(searchTerm);
 
-        // Check each subject within the category
         const subjects = Array.from(category.getElementsByClassName("subject"));
         let subjectMatchFound = false;
 
@@ -28,26 +27,15 @@ window.filterContent = function () {
             const subjectName = subject.textContent.toLowerCase();
             const isSubjectMatch = subjectName.includes(searchTerm);
 
-            // Highlight matching subjects if needed
             subject.classList.toggle("highlighted", isSubjectMatch);
-
-            // If any subject matches, mark the category as having a match
             if (isSubjectMatch) subjectMatchFound = true;
         });
 
-        // Display the category if it matches the category/location name or if any subject matches
         category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
     });
 };
 
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    requestUserLocation();
-});
-
-// Function to request user location and send to server
+// Request user location and fetch categories with location data
 function requestUserLocation() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -55,17 +43,15 @@ function requestUserLocation() {
                 const userLatitude = position.coords.latitude;
                 const userLongitude = position.coords.longitude;
 
-                // Fetch categories with user's location sent as query parameters
-                fetch(`http://localhost:3500/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
+                fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
                     .then(response => response.json())
                     .then(data => {
-                        renderCategories(data); // Renders sorted categories based on proximity
+                        renderCategories(data);
                     })
                     .catch(error => console.error('Error fetching categories:', error));
             },
             (error) => {
                 console.error("Geolocation error:", error);
-                // Optional: Implement fallback to IP-based geolocation here
             }
         );
     } else {
@@ -73,159 +59,23 @@ function requestUserLocation() {
     }
 }
 
-// Function to render categories and subjects dynamically
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear previous content
-
-    // Helper function to determine the style class for each category
-    function getCategoryStyle(categoryName) {
-        if (categoryName.toLowerCase().includes("best")) {
-            return "category-green";  // Green styling for positive categories
-        } else if (categoryName.toLowerCase().includes("worst")) {
-            return "category-red";    // Red styling for negative categories
-        } else {
-            return "category-blue";   // Default style for other categories
-        }
-    }
-
-    categories.forEach((category) => {
-        const categoryDiv = document.createElement("div");
-        const categoryStyle = getCategoryStyle(category.name);
-        categoryDiv.classList.add("category", "scrollable", categoryStyle);
-        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
-
-        // Sort subjects in descending order by votes
-        category.subjects.sort((a, b) => b.votes - a.votes);
-
-        category.subjects.forEach((subject) => {
-            const subjectDiv = document.createElement("div");
-            subjectDiv.classList.add("subject");
-            subjectDiv.innerHTML = `
-                <div class="subject-info">
-                    <a href="${subject.link}" target="_blank">${subject.name}</a>
-                </div>
-                <div class="vote-controls">
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">
-                        &#x25B2; <span class="vote-count">${subject.votes}</span>
-                    </button>
-                    <button class="comment-toggle" onclick="toggleCommentSection(${subject.subject_id})">
-                        &#x25BC;
-                    </button>
-                </div>
-                <div id="comments-${subject.subject_id}" class="comments-section hidden">
-                    <div id="comments-container-${subject.subject_id}" class="comments-container"></div>
-                    <textarea id="comment-input-${subject.subject_id}" maxlength="200" placeholder="Add a comment..."></textarea>
-                    <button onclick="addComment(${subject.subject_id})">Post Comment</button>
-                </div>
-            `;
-
-            // Fetch comments immediately after rendering each subject
-            fetchComments(subject.subject_id);
-            categoryDiv.appendChild(subjectDiv);
-        });
-
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-// Rest of the functions (upvote, toggleCommentSection, addComment, fetchComments) remain as they are.
-
-// Function to render categories and subjects dynamically
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear previous content
-
-    // Helper function to determine the style class for each category
-    function getCategoryStyle(categoryName) {
-        if (categoryName.toLowerCase().includes("best")) {
-            return "category-green";  // Green styling for positive categories
-        } else if (categoryName.toLowerCase().includes("worst")) {
-            return "category-red";    // Red styling for negative categories
-        } else {
-            return "category-blue";   // Default style for other categories
-        }
-    }
-
-    categories.forEach((category) => {
-        const categoryDiv = document.createElement("div");
-        const categoryStyle = getCategoryStyle(category.name);
-        categoryDiv.classList.add("category", "scrollable", categoryStyle);
-        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
-
-        // Sort subjects in descending order by votes
-        category.subjects.sort((a, b) => b.votes - a.votes);
-
-        category.subjects.forEach((subject) => {
-            const subjectDiv = document.createElement("div");
-            subjectDiv.classList.add("subject");
-            subjectDiv.innerHTML = `
-                <div class="subject-info">
-                    <a href="${subject.link}" target="_blank">${subject.name}</a>
-                </div>
-                <div class="vote-controls">
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">
-                        &#x25B2; <span class="vote-count">${subject.votes}</span>
-                    </button>
-                    <button class="comment-toggle" onclick="toggleCommentSection(${subject.subject_id})">
-                        &#x25BC;
-                    </button>
-                </div>
-                <div id="comments-${subject.subject_id}" class="comments-section hidden">
-                    <div id="comments-container-${subject.subject_id}" class="comments-container"></div>
-                    <textarea id="comment-input-${subject.subject_id}" maxlength="200" placeholder="Add a comment..."></textarea>
-                    <button onclick="addComment(${subject.subject_id})">Post Comment</button>
-                </div>
-            `;
-
-            // Fetch comments immediately after rendering each subject
-            fetchComments(subject.subject_id);
-            categoryDiv.appendChild(subjectDiv);
-        });
-
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
 // Function to handle upvoting
 function upvote(subjectId) {
     event.preventDefault();
 
-    fetch(`http://localhost:3500/api/subjects/${subjectId}/vote`, {
+    fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/vote`, {
         method: 'POST'
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fetch('http://localhost:3500/api/categories')
+            fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
                 .then(response => response.json())
                 .then(data => renderCategories(data));
         }
     })
     .catch(error => console.error('Error upvoting:', error));
 }
-
-// Function to toggle the comment section visibility
-function toggleCommentSection(subjectId) {
-    // Hide all open comment sections
-    document.querySelectorAll('.comments-section').forEach(section => {
-        if (section.id !== `comments-${subjectId}`) {
-            section.classList.add("hidden");
-        }
-    });
-    
-    // Toggle the selected comment section
-    const commentSection = document.getElementById(`comments-${subjectId}`);
-    commentSection.classList.toggle("hidden");
-}
-
-// Close comments section if clicked outside
-document.addEventListener('click', (event) => {
-    const isClickInside = event.target.closest('.comments-section') || event.target.classList.contains('comment-toggle');
-    if (!isClickInside) {
-        document.querySelectorAll('.comments-section').forEach(section => section.classList.add("hidden"));
-    }
-});
 
 // Function to post a comment
 function addComment(subjectId) {
@@ -234,7 +84,7 @@ function addComment(subjectId) {
     const username = `User${Math.floor(Math.random() * 1000)}`; // Sample username
 
     if (commentText) {
-        fetch(`http://localhost:3500/api/subjects/${subjectId}/comment`, {
+        fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comment`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, comment_text: commentText })
@@ -243,7 +93,7 @@ function addComment(subjectId) {
         .then(data => {
             if (data.success) {
                 fetchComments(subjectId);
-                commentInput.value = ""; // Clear the input field
+                commentInput.value = "";
             }
         })
         .catch(error => console.error('Error posting comment:', error));
@@ -252,55 +102,14 @@ function addComment(subjectId) {
 
 // Function to fetch comments for a specific subject
 function fetchComments(subjectId) {
-    fetch(`http://localhost:3500/api/subjects/${subjectId}/comments`)
+    fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
         .then(comments => {
             const commentContainer = document.getElementById(`comments-container-${subjectId}`);
-            commentContainer.innerHTML = ""; // Clear previous comments
+            commentContainer.innerHTML = "";
             renderComments(comments, commentContainer);
         });
 }
-
-// Recursive function to render comments and their replies
-function renderComments(comments, parentElement) {
-    comments.forEach(comment => {
-        const commentDiv = document.createElement("div");
-        commentDiv.classList.add("comment");
-        commentDiv.innerHTML = `<strong>${comment.username}</strong>: ${comment.comment_text}`;
-        parentElement.appendChild(commentDiv);
-
-        if (comment.replies) {
-            const repliesDiv = document.createElement("div");
-            repliesDiv.classList.add("replies");
-            renderComments(comment.replies, repliesDiv);
-            commentDiv.appendChild(repliesDiv);
-        }
-    });
-}
-
-window.filterByNavTopic = function (navTopic) {
-    const categoriesContainer = document.getElementById("categories");
-    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    // Get the list of category names that correspond to the selected nav topic
-    const relevantCategories = navTopicMapping[navTopic] || [];
-
-    categories.forEach(category => {
-        const categoryTitle = category.querySelector("h2").textContent;
-
-        // Display the category if it's in the relevantCategories array; otherwise, hide it
-        category.style.display = relevantCategories.includes(categoryTitle) ? "block" : "none";
-    });
-};
-window.showAllCategories = function () {
-    const categoriesContainer = document.getElementById("categories");
-    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    // Show all categories
-    categories.forEach(category => {
-        category.style.display = "block";
-    });
-};
 
 
 const navTopicMapping = {
