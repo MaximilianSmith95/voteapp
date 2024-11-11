@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Votes</h1>
+        <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
+    </header>
+
+    <nav>
+        <button onclick="showAllCategories('All')">All</button>
+        <button onclick="filterByNavTopic('Sport')">Sport</button>
+        <button onclick="filterByNavTopic('Travel')">Travel</button>
+        <button onclick="filterByNavTopic('Entertainment')">Entertainment</button>
+        <button onclick="filterByNavTopic('Music')">Music</button>
+        <button onclick="filterByNavTopic('History')">History</button>
+        <button onclick="filterByNavTopic('Miscellaneous')">Miscellaneous</button>
+    </nav>
+    
+
+    <main id="categories"></main>
+
+    
+
+    <script src="script.js"></script>
+</body>
+
+</html>
