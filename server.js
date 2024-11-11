@@ -9,17 +9,33 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Configuration for connecting to the MySQL database on Heroku
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
 });
 
 db.connect(err => {
     if (err) throw err;
     console.log('Connected to MySQL Database');
 });
+
+/* 
+   Previous local database configuration (for reference):
+   
+   const db = mysql.createConnection({
+       host: 'localhost',
+       user: 'root',
+       password: 'Crikey@95',
+       database: 'votingapp',
+       port: 3306
+   });
+
+   // End of previous local configuration
+*/
 
 // Haversine formula to calculate distance between two coordinates
 const haversine = (lat1, lon1, lat2, lon2) => {
@@ -76,7 +92,6 @@ app.get('/api/categories', (req, res) => {
         res.json(sortedCategories);
     });
 });
-
 
 // Fetch all categories and subjects
 app.get('/api/categories', (req, res) => {
