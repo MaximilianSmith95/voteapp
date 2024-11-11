@@ -9,52 +9,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 });
 
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-
+function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
-    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
+    categoriesContainer.innerHTML = ""; // Clear any existing content
 
     categories.forEach(category => {
-        const categoryName = category.querySelector("h2").textContent.toLowerCase();
-        const isCategoryMatch = categoryName.includes(searchTerm);
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
-        const subjects = Array.from(category.getElementsByClassName("subject"));
-        let subjectMatchFound = false;
+        const subjectsDiv = document.createElement("div");
+        subjectsDiv.classList.add("subjects");
 
-        subjects.forEach(subject => {
-            const subjectName = subject.textContent.toLowerCase();
-            const isSubjectMatch = subjectName.includes(searchTerm);
+        category.subjects.forEach(subject => {
+            const subjectDiv = document.createElement("div");
+            subjectDiv.classList.add("subject");
+            subjectDiv.innerHTML = `
+                <p>${subject.name}</p>
+                <p>Votes: ${subject.votes}</p>
+                <button onclick="upvote(${subject.subject_id})">Upvote</button>
+                <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+                <div id="comments-container-${subject.subject_id}" class="comments-container"></div>
+                <input type="text" id="comment-input-${subject.subject_id}" placeholder="Write a comment..." />
+            `;
 
-            subject.classList.toggle("highlighted", isSubjectMatch);
-            if (isSubjectMatch) subjectMatchFound = true;
+            subjectsDiv.appendChild(subjectDiv);
         });
 
-        category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
+        categoryDiv.appendChild(subjectsDiv);
+        categoriesContainer.appendChild(categoryDiv);
     });
-};
-
-function requestUserLocation() {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userLatitude = position.coords.latitude;
-                const userLongitude = position.coords.longitude;
-
-                fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderCategories(data);
-                    })
-                    .catch(error => console.error('Error fetching categories:', error));
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-            }
-        );
-    } else {
-        console.log("Geolocation is not available in this browser.");
-    }
 }
 
 function upvote(subjectId) {
@@ -64,6 +48,7 @@ function upvote(subjectId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Re-fetch and render categories after upvote
             fetch('https://voteapp-512e8c2ec67c.herokuapp.com/api/categories')
                 .then(response => response.json())
                 .then(data => renderCategories(data));
@@ -119,6 +104,7 @@ function renderComments(comments, parentElement) {
         }
     });
 }
+
 
 
 const navTopicMapping = {
