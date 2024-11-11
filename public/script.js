@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
 
-    // Grab all category elements
     const categoriesContainer = document.getElementById("categories");
     const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
@@ -35,7 +34,6 @@ window.filterContent = function () {
     });
 };
 
-// Request user location and fetch categories with location data
 function requestUserLocation() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -59,10 +57,7 @@ function requestUserLocation() {
     }
 }
 
-// Function to handle upvoting
 function upvote(subjectId) {
-    event.preventDefault();
-
     fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/vote`, {
         method: 'POST'
     })
@@ -77,11 +72,10 @@ function upvote(subjectId) {
     .catch(error => console.error('Error upvoting:', error));
 }
 
-// Function to post a comment
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = `User${Math.floor(Math.random() * 1000)}`; // Sample username
+    const username = `User${Math.floor(Math.random() * 1000)}`;
 
     if (commentText) {
         fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comment`, {
@@ -100,7 +94,6 @@ function addComment(subjectId) {
     }
 }
 
-// Function to fetch comments for a specific subject
 function fetchComments(subjectId) {
     fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
@@ -109,6 +102,22 @@ function fetchComments(subjectId) {
             commentContainer.innerHTML = "";
             renderComments(comments, commentContainer);
         });
+}
+
+function renderComments(comments, parentElement) {
+    comments.forEach(comment => {
+        const commentDiv = document.createElement("div");
+        commentDiv.classList.add("comment");
+        commentDiv.innerHTML = `<strong>${comment.username}</strong>: ${comment.comment_text}`;
+        parentElement.appendChild(commentDiv);
+
+        if (comment.replies) {
+            const repliesDiv = document.createElement("div");
+            repliesDiv.classList.add("replies");
+            renderComments(comment.replies, repliesDiv);
+            commentDiv.appendChild(repliesDiv);
+        }
+    });
 }
 
 

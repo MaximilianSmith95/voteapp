@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuration for connecting to the MySQL database on Heroku
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -23,23 +22,8 @@ db.connect(err => {
     console.log('Connected to MySQL Database');
 });
 
-/* 
-   Previous local database configuration (for reference):
-   
-   const db = mysql.createConnection({
-       host: 'localhost',
-       user: 'root',
-       password: 'Crikey@95',
-       database: 'votingapp',
-       port: 3306
-   });
-
-   // End of previous local configuration
-*/
-
-// Haversine formula to calculate distance between two coordinates
 const haversine = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Earth radius in km
+    const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a = 
@@ -47,15 +31,13 @@ const haversine = (lat1, lon1, lat2, lon2) => {
         Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in km
+    return R * c;
 };
 
-// Fetch all categories and subjects, sorted by proximity to user's location
 app.get('/api/categories', (req, res) => {
     const userLat = parseFloat(req.query.latitude);
     const userLon = parseFloat(req.query.longitude);
 
-    // Fetch categories with location data (assuming each category has latitude and longitude)
     const query = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
@@ -83,7 +65,6 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        // Calculate distance and sort by proximity to user location
         const sortedCategories = categories.map(category => ({
             ...category,
             distance: haversine(userLat, userLon, category.latitude, category.longitude)
@@ -93,40 +74,6 @@ app.get('/api/categories', (req, res) => {
     });
 });
 
-// Fetch all categories and subjects
-app.get('/api/categories', (req, res) => {
-    const query = `
-        SELECT c.category_id, c.name AS category_name,
-               s.subject_id, s.name AS subject_name, s.votes, s.link
-        FROM Categories c
-        LEFT JOIN Subjects s ON c.category_id = s.category_id;
-    `;
-
-    db.query(query, (err, results) => {
-        if (err) throw err;
-
-        const categories = results.reduce((acc, row) => {
-            let category = acc.find(cat => cat.category_id === row.category_id);
-            if (!category) {
-                category = { category_id: row.category_id, name: row.category_name, subjects: [] };
-                acc.push(category);
-            }
-            if (row.subject_id) {
-                category.subjects.push({
-                    subject_id: row.subject_id,
-                    name: row.subject_name,
-                    votes: row.votes,
-                    link: row.link
-                });
-            }
-            return acc;
-        }, []);
-        
-        res.json(categories);
-    });
-});
-
-// Upvote a subject
 app.post('/api/subjects/:id/vote', (req, res) => {
     const subjectId = req.params.id;
     const query = 'UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?';
@@ -137,7 +84,6 @@ app.post('/api/subjects/:id/vote', (req, res) => {
     });
 });
 
-// Post a comment on a subject
 app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
@@ -149,7 +95,6 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     });
 });
 
-// Get comments for a subject
 app.get('/api/subjects/:id/comments', (req, res) => {
     const subjectId = req.params.id;
     const query = `
@@ -180,9 +125,7 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     });
 });
 
-// Start the server
 const PORT = process.env.PORT || 3500;  
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-// port 3500 for local database use
