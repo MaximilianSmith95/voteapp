@@ -158,6 +158,119 @@ function renderComments(comments, parentElement) {
             commentDiv.appendChild(repliesDiv);
         }
     });
+    document.addEventListener("DOMContentLoaded", () => {
+        const categoriesContainer = document.querySelector(".categories-container");
+        const subjectsContainer = document.querySelector(".subjects-container");
+    
+        fetchCategories();
+        fetchSubjects();
+    
+        // Fetch categories
+        async function fetchCategories() {
+            try {
+                const response = await fetch("https://voteapp-512e8c2ec67c.herokuapp.com/api/categories");
+                const categories = await response.json();
+                renderCategories(categories);
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        }
+    
+        function renderCategories(categories) {
+            categoriesContainer.innerHTML = `<button class="category-btn" data-id="all">All</button>`;
+            categories.forEach(category => {
+                const btn = document.createElement("button");
+                btn.className = "category-btn";
+                btn.dataset.id = category.category_id;
+                btn.textContent = category.name;
+                btn.addEventListener("click", () => filterSubjects(category.category_id));
+                categoriesContainer.appendChild(btn);
+            });
+        }
+    
+        // Fetch and render subjects
+        async function fetchSubjects() {
+            try {
+                const response = await fetch("https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects");
+                const subjects = await response.json();
+                renderSubjects(subjects);
+            } catch (error) {
+                console.error("Error fetching subjects:", error);
+            }
+        }
+    
+        function renderSubjects(subjects) {
+            subjectsContainer.innerHTML = "";
+            subjects.sort((a, b) => b.votes - a.votes);
+            subjects.forEach(subject => {
+                const subjectCard = document.createElement("div");
+                subjectCard.className = "subject-card";
+                subjectCard.innerHTML = `
+                    <h3>${subject.name}</h3>
+                    <p>Votes: <span class="vote-count">${subject.votes}</span> <button class="upvote-btn" data-id="${subject.subject_id}">▲</button></p>
+                    <button class="comment-toggle" data-id="${subject.subject_id}">▼</button>
+                    <div class="comment-section hidden">
+                        <textarea placeholder="Write a comment..."></textarea>
+                        <button class="submit-comment" data-id="${subject.subject_id}">Submit</button>
+                    </div>
+                `;
+                subjectCard.querySelector(".upvote-btn").addEventListener("click", () => upvoteSubject(subject.subject_id, subjectCard));
+                subjectCard.querySelector(".comment-toggle").addEventListener("click", () => toggleCommentSection(subjectCard));
+                subjectsContainer.appendChild(subjectCard);
+            });
+        }
+    
+        async function upvoteSubject(subjectId, subjectCard) {
+            try {
+                await fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects/${subjectId}/vote`, { method: "POST" });
+                const voteCountElement = subjectCard.querySelector(".vote-count");
+                let currentVotes = parseInt(voteCountElement.textContent);
+                voteCountElement.textContent = currentVotes + 1;
+                fetchSubjects(); // Re-fetch subjects to update the order based on votes
+            } catch (error) {
+                console.error("Error upvoting subject:", error);
+            }
+        }
+    
+        function toggleCommentSection(subjectCard) {
+            const commentSection = subjectCard.querySelector(".comment-section");
+            commentSection.classList.toggle("hidden");
+        }
+    
+        async function filterSubjects(categoryId) {
+            let subjects;
+            try {
+                const response = await fetch("https://voteapp-512e8c2ec67c.herokuapp.com/api/subjects");
+                subjects = await response.json();
+            } catch (error) {
+                console.error("Error fetching subjects for filtering:", error);
+                return;
+            }
+    
+            if (categoryId !== "all") {
+                subjects = subjects.filter(subject => subject.category_id == categoryId);
+            }
+            renderSubjects(subjects);
+        }
+    
+        // Geolocation functionality
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async position => {
+                    const { latitude, longitude } = position.coords;
+                    try {
+                        const response = await fetch(`https://voteapp-512e8c2ec67c.herokuapp.com/api/categories?lat=${latitude}&lon=${longitude}`);
+                        const categories = await response.json();
+                        renderCategories(categories);
+                    } catch (error) {
+                        console.error("Error fetching categories by location:", error);
+                    }
+                },
+                error => console.error("Geolocation error:", error)
+            );
+        }
+    });
+    
 }
 
 
