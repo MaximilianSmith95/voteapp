@@ -76,8 +76,8 @@ function renderCategories(categories) {
             subjectDiv.classList.add("subject");
             subjectDiv.innerHTML = `
                 <p>${subject.name}</p>
-                <p>Votes: ${subject.votes}</p>
-                <button onclick="upvote(${subject.subject_id})">Upvote</button>
+                <p> ${subject.votes}</p>
+                <button onclick="upvote(${subject.subject_id})">vote</button>
                 <button onclick="addComment(${subject.subject_id})">Add Comment</button>
                 <div id="comments-container-${subject.subject_id}" class="comments-container"></div>
                 <input type="text" id="comment-input-${subject.subject_id}" placeholder="Write a comment..." />
