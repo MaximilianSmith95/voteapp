@@ -65,10 +65,13 @@ function renderCategories(categories) {
         categoryDiv.classList.add("category");
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
+        // Sort subjects by votes in descending order
+        const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
+
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects");
 
-        category.subjects.forEach(subject => {
+        sortedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.innerHTML = `
