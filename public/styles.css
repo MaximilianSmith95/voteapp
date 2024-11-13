@@ -716,4 +716,31 @@ nav {
         padding: 10px;
     }
 }
+/* Adjusted Header Styling */
+header h1 {
+    font-size: 3rem; /* Increased font size */
+    color: #28a745; /* Green color */
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Smaller Triangle Sizes */
+.triangle-green {
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent; /* Smaller width */
+    border-right: 30px solid transparent;
+    border-bottom: 60px solid #28a745; /* Smaller height */
+    margin-right: -15px; /* Adjust overlap */
+}
+
+.triangle-gray {
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent; /* Smaller width */
+    border-right: 25px solid transparent;
+    border-top: 50px solid #6c757d; /* Smaller height */
+    margin-left: -15px; /* Adjust overlap */
+}
+
 
