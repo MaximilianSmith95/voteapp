@@ -551,17 +551,18 @@ const navTopicMapping = {
 //     return "category";
 // }
 
-// window.toggleCommentSection = function (categoryIndex, subjectIndex) {
-//     const commentSection = document.getElementById(`comments-${categoryIndex}-${subjectIndex}`);
-//     commentSection.classList.toggle("hidden");
-
-//     // Close all other comment sections when one is opened
-//     document.querySelectorAll('.comments-section').forEach((section) => {
-//         if (section !== commentSection) {
-//             section.classList.add('hidden');
-//         }
-//     });
-// };
+window.toggleComments = function(subjectId) {
+    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+    commentsContainer.classList.toggle("hidden");
+    
+    // Change arrow direction in the button text
+    const toggleButton = commentsContainer.previousElementSibling;
+    if (commentsContainer.classList.contains("hidden")) {
+        toggleButton.textContent = "Comments ▼";
+    } else {
+        toggleButton.textContent = "Comments ▲";
+    }
+};
 
 // // Function to close the comment section if clicked outside
 // document.addEventListener('click', (event) => {
