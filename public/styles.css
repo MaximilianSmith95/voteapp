@@ -686,29 +686,26 @@ header h1 {
 .logo-container {
     display: flex;
     align-items: center;
-    justify-content: center;
     margin-right: 10px; /* Space between logo and title */
 }
 
-/* Triangle styling */
-.triangle {
+/* Green triangle */
+.triangle.green {
     width: 0;
     height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 34.6px solid #28a745; /* Height for the green triangle */
 }
 
-/* Green triangle (upright) */
-.triangle.green {
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 26px solid #28a745;
-}
-
-/* Gray triangle (inverted) */
+/* Gray triangle (scaled down to 75% of green) */
 .triangle.gray {
+    width: 0;
+    height: 0;
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
-    border-top: 26px solid #808080;
-    margin-left: 5px; /* Small spacing between triangles */
+    border-top: 25.95px solid #808080; /* 75% of the green triangle height */
+    margin-left: 5mm; /* 5mm space between triangles */
 }
 
 /* Search bar styling */
