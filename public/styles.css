@@ -742,5 +742,18 @@ header h1 {
     border-top: 50px solid #6c757d; /* Smaller height */
     margin-left: -15px; /* Adjust overlap */
 }
+#categories, #topicsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjusts columns based on screen width */
+    gap: 20px;
+    padding: 20px;
+}
+.category, .topic {
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
 
 
