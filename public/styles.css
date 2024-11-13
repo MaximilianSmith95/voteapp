@@ -8,100 +8,20 @@ body {
     align-items: center;
 }
 
-/* Loading Animation Container */
-#loading-animation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: #f9f9f9;
-    z-index: 9999;
-}
-
-/* Triangle Styling for Loading Animation */
-#loading-animation .triangle {
-    width: 0;
-    height: 0;
-    position: relative;
-    animation: bounce 1s ease-in-out infinite;
-}
-
-/* Green Triangle (Loading Animation) */
-#loading-animation .triangle.green {
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-bottom: 86.6px solid #28a745;
-    animation-delay: 0.2s;
-}
-
-/* Gray Triangle (Loading Animation) */
-#loading-animation .triangle.gray {
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-top: 86.6px solid #808080;
-    margin-left: 20px;
-    animation-delay: 0.5s;
-}
-
-/* Bounce Animation */
-@keyframes bounce {
-    0% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(20px);
-    }
-    100% {
-        transform: translateY(0);
-    }
-}
-
-/* Header styling */
+/* Header and Search bar */
 header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
     padding: 1rem;
+    text-align: center;
     background-color: #00a8cc;
     color: white;
 }
 
 header h1 {
-    margin: 0 0 0 10px;
+    margin: 0;
     font-size: 2.5rem;
 }
 
-/* Logo container in header */
-.logo-container {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-/* Green triangle (static logo) */
-.logo-container .triangle.green {
-    width: 0;
-    height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-bottom: 34.6px solid #28a745;
-}
-
-/* Gray triangle (static logo, scaled down to 75% of green) */
-.logo-container .triangle.gray {
-    width: 0;
-    height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-top: 25.95px solid #808080;
-    margin-left: 5mm;
-}
-
-/* Search bar styling */
 #searchBar {
     margin-top: 15px;
     padding: 10px;
@@ -145,4 +65,656 @@ main {
     gap: 20px;
 }
 
-/* Additional styles as needed, keeping only the relevant cleaned-up styles */
+.category {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Default blue scheme */
+.category h2 {
+    font-size: 1.3rem;
+    color: #00a8cc;
+    margin: 0 0 10px;
+    border-bottom: 2px solid #00a8cc;
+    padding-bottom: 5px;
+}
+
+/* Green scheme for positive categories */
+.category-green h2 {
+    color: green;
+    border-bottom-color: green;
+}
+
+/* Red scheme for negative categories */
+.category-red h2 {
+    color: red;
+    border-bottom-color: red;
+}
+
+/* Subjects */
+.subject {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.subject:last-child {
+    border-bottom: none;
+}
+
+.subject a {
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.subject a:hover {
+    text-decoration: underline;
+}
+
+/* Vote button */
+/* Default blue vote button */
+.vote-button {
+    background-color: #00a8cc;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.vote-button:hover {
+    background-color: #0097b8;
+}
+
+/* Green vote button for positive categories */
+.category-green .vote-button {
+    background-color: green;
+}
+
+.category-green .vote-button:hover {
+    background-color: darkgreen;
+}
+
+/* Red vote button for negative categories */
+.category-red .vote-button {
+    background-color: red;
+}
+
+.category-red .vote-button:hover {
+    background-color: darkred;
+}
+
+.scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+}
+/* Comment Section Styling */
+/* Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Set a height limit */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    position: relative; /* Ensure it stays below the subject */
+    transition: max-height 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.comments-container {
+    max-height: 200px; /* Limit height for comment list */
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.comment {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.comments-section textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 0.9rem;
+}
+
+.comments-section button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #00a8cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.hidden {
+    display: none;
+}
+
+.comments-section {
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.comments-container .comment {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.comments-section textarea {
+    width: 100%;
+    margin-top: 5px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+}
+
+.comments-section button {
+    margin-top: 5px;
+    padding: 5px 10px;
+    background-color: #00a8cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comment-toggle {
+    background: transparent;
+    border: none;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.comment-toggle:hover {
+    color: #00a8cc;
+}
+/* Full-width, spacious comment section styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Optional: limits height */
+    overflow-y: auto;  /* Enables scrolling if content exceeds height */
+    transition: max-height 0.3s ease;
+}
+
+/* Hidden by default; revealed when expanded */
+.hidden {
+    display: none;
+}
+
+/* Comment text and spacing */
+.comments-container .comment {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.comments-container .comment:last-child {
+    border-bottom: none;
+}
+
+.comments-section textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 0.9rem;
+}
+
+.comments-section button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #00a8cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* Optional: Makes the transition smoother */
+.comments-section.expanded {
+    max-height: 300px; /* Adjust height if needed */
+}
+/* Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Set a height limit */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    transition: max-height 0.3s ease;
+    position: relative; /* Ensure it stays below the subject */
+}
+
+.hidden {
+    display: none;
+}
+
+.comments-container {
+    max-height: 200px; /* Height limit for comment list */
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.comment {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.comments-section textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 0.9rem;
+}
+
+.comments-section button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #00a8cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+/* General styling */
+body {
+    font-family: "Verdana", sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    background-color: #00a8cc;
+    color: white;
+}
+
+#searchBar {
+    margin-top: 15px;
+    padding: 10px;
+    width: 80%;
+    max-width: 500px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 1rem;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.category {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.category h2 {
+    font-size: 1.3rem;
+    color: #00a8cc;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #00a8cc;
+}
+
+.subject {
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.subject-info {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.vote-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.vote-button {
+    background-color: transparent;
+    color: green;
+    padding: 5px;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.vote-button:hover {
+    color: darkgreen;
+}
+
+
+.comment-toggle {
+    background: transparent;
+    border: none;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.comment-toggle:hover {
+    color: #00a8cc;
+}
+
+/* Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease;
+}
+
+.comments-container {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.comment {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.comments-section textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 0.9rem;
+}
+
+.comments-section button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #00a8cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.hidden {
+    display: none;
+}
+.subject.highlighted {
+    background-color: #e4cb4d; /* Light yellow background */
+}
+.subject {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.subject p {
+    margin: 0;
+    flex: 1;
+}
+
+.vote-container {
+    display: flex;
+    align-items: center;
+}
+
+.vote-count {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.vote-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: green; /* Green arrow */
+    padding: 0;
+}
+
+.vote-button:hover {
+    color: darkgreen;
+}
+
+.comments-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    margin-left: 10px;
+}
+
+.comments-toggle:hover {
+    color: #333;
+}
+.comments-container {
+    max-width: 400px; /* Set a consistent width */
+    max-height: 200px; /* Limit height to a certain size */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Disable horizontal scrolling */
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+#geolocationButton {
+    background-color: #0073e6; /* Primary color of the website */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 15px; /* Adjust spacing as needed */
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+}
+
+#geolocationButton:hover {
+    background-color: #005bb5; /* Darker shade for hover effect */
+    transform: scale(1.05); /* Slightly enlarges on hover */
+}
+
+#geolocationButton:active {
+    background-color: #004494; /* Even darker shade for active state */
+    transform: scale(0.98); /* Slightly shrinks on click for feedback */
+}
+/* Loading Animation Container */
+#loading-animation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #f9f9f9;
+    z-index: 9999;
+}
+
+/* Triangle Styling for Animation */
+.triangle {
+    width: 0;
+    height: 0;
+    position: relative;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+/* Green Triangle */
+.triangle.green {
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 86.6px solid #28a745;
+    animation-delay: 0.2s;
+}
+
+/* Gray Triangle */
+.triangle.gray {
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-top: 86.6px solid #808080;
+    margin-left: 20px;
+    animation-delay: 0.5s;
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(20px);
+    }
+    100% {
+        transform: translateY(0);
+}
+/* Logo styling */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: #00a8cc;
+    color: white;
+}
+
+header h1 {
+    margin: 0 0 0 10px;
+    font-size: 2.5rem;
+}
+
+.logo {
+    max-height: 40px; /* Adjust height for a smaller logo size */
+    margin-right: 10px; /* Space between logo and title */
+}
+/* Header styling */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: #00a8cc;
+    color: white;
+}
+
+/* Styling for NerdGoo title */
+header h1 {
+    margin: 0 0 0 10px;
+    font-size: 2.5rem;
+}
+
+/* Logo container */
+.logo-container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px; /* Space between logo and title */
+}
+
+/* Green triangle */
+.triangle.green {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 34.6px solid #28a745; /* Height for the green triangle */
+}
+
+/* Gray triangle (scaled down to 75% of green) */
+.triangle.gray {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 25.95px solid #808080; /* 75% of the green triangle height */
+    margin-left: 5mm; /* 5mm space between triangles */
+}
+
+/* Search bar styling */
+#searchBar {
+    margin-top: 15px;
+    padding: 10px;
+    width: 80%;
+    max-width: 500px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 1rem;
+}
