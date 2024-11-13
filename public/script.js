@@ -18,11 +18,6 @@ window.enableGeolocationSearch = function () {
     requestUserLocation();
 };
 
-// Function to call requestUserLocation on button click
-window.enableGeolocationSearch = function () {
-    requestUserLocation();
-};
-
 // Function to request user's location and filter categories by proximity
 function requestUserLocation() {
     if ("geolocation" in navigator) {
@@ -52,8 +47,6 @@ function requestUserLocation() {
     }
 }
 
-    }
-}
 // Function to filter content based on user input
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
