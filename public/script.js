@@ -81,10 +81,10 @@ function renderCategories(categories) {
                     <span class="vote-count">${subject.votes}</span>
                     <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
                 </span>
-                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">Comments ▼</button>
+                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
 
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
-                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Write a comment..." />
+                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
