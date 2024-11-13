@@ -14,6 +14,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+app.set('trust proxy', true);
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
