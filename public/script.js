@@ -186,12 +186,12 @@ function shuffleArray(array) {
     return array;
 }
 
-// Function to filter subjects by navigation topic and randomize the order
+// Function to filter categories by navigation topic and display in random order
 window.filterByNavTopic = function (topic) {
     const categoriesContainer = document.getElementById("categories");
     const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
-    // Filter categories based on the topic (example)
+    // Filter categories based on the topic
     const filteredCategories = allCategories.filter(category => {
         const categoryName = category.querySelector("h2").textContent;
         return categoryName.includes(topic);
@@ -218,6 +218,25 @@ window.showAllCategories = function () {
     // Clear the container and re-append categories in random order
     categoriesContainer.innerHTML = '';
     shuffledCategories.forEach(category => {
+        categoriesContainer.appendChild(category);
+    });
+};
+
+// Function to display categories in order of `category_id` (for the "Latest" button)
+window.showLatestCategories = function () {
+    const categoriesContainer = document.getElementById("categories");
+    const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
+
+    // Sort categories by `category_id` attribute, assuming higher IDs are newer
+    const sortedCategories = allCategories.sort((a, b) => {
+        const idA = parseInt(a.getAttribute("data-category-id"), 10);
+        const idB = parseInt(b.getAttribute("data-category-id"), 10);
+        return idB - idA; // Sort from highest `category_id` to lowest
+    });
+
+    // Clear the container and re-append categories in order of `category_id`
+    categoriesContainer.innerHTML = '';
+    sortedCategories.forEach(category => {
         categoriesContainer.appendChild(category);
     });
 };
