@@ -1,14 +1,22 @@
+let allCategoriesData = []; // Global variable to store initial categories data
+
 document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
     fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
+            allCategoriesData = data; // Store the data globally
             renderCategories(data);
         })
         .catch(error => {
             console.error('Error fetching categories:', error);
         });
 });
+
+// Function to call requestUserLocation on button click
+window.enableGeolocationSearch = function () {
+    requestUserLocation();
+};
 
 // Function to call requestUserLocation on button click
 window.enableGeolocationSearch = function () {
@@ -39,7 +47,6 @@ function requestUserLocation() {
         console.log("Geolocation is not available in this browser.");
     }
 }
-
 // Function to filter content based on user input
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
@@ -64,6 +71,7 @@ window.filterContent = function () {
 };
 
 
+// Function to render categories in the DOM
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
     categoriesContainer.innerHTML = "";
@@ -71,10 +79,12 @@ function renderCategories(categories) {
     categories.forEach(category => {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
+
+        // Set the data-category-id attribute to the category's unique ID
+        categoryDiv.setAttribute("data-category-id", category.category_id);
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
-
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects");
 
@@ -90,14 +100,12 @@ function renderCategories(categories) {
                     <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
                 </span>
                 <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
-
             subjectsDiv.appendChild(subjectDiv);
         });
 
@@ -105,7 +113,6 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
-
 
 
 // Function to handle upvoting of a subject
@@ -186,61 +193,31 @@ function shuffleArray(array) {
     return array;
 }
 
-// Function to filter categories by navigation topic and display in random order
-window.filterByNavTopic = function (topic) {
-    const categoriesContainer = document.getElementById("categories");
-    const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    // Filter categories based on the topic
-    const filteredCategories = allCategories.filter(category => {
-        const categoryName = category.querySelector("h2").textContent;
-        return categoryName.includes(topic);
-    });
-
-    // Shuffle the filtered categories
-    const shuffledCategories = shuffleArray(filteredCategories);
-
-    // Clear the container and re-append categories in random order
-    categoriesContainer.innerHTML = '';
-    shuffledCategories.forEach(category => {
-        categoriesContainer.appendChild(category);
-    });
-};
-
 // Function to display all categories in random order
 window.showAllCategories = function () {
-    const categoriesContainer = document.getElementById("categories");
-    const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    // Shuffle the array of categories
-    const shuffledCategories = shuffleArray(allCategories);
-
-    // Clear the container and re-append categories in random order
-    categoriesContainer.innerHTML = '';
-    shuffledCategories.forEach(category => {
-        categoriesContainer.appendChild(category);
-    });
+    const shuffledCategories = shuffleArray([...allCategoriesData]); // Shuffle a copy of the initial data
+    renderCategories(shuffledCategories);
 };
 
 // Function to display categories in order of `category_id` (for the "Latest" button)
 window.showLatestCategories = function () {
-    const categoriesContainer = document.getElementById("categories");
-    const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    // Sort categories by `category_id` attribute, assuming higher IDs are newer
-    const sortedCategories = allCategories.sort((a, b) => {
-        const idA = parseInt(a.getAttribute("data-category-id"), 10);
-        const idB = parseInt(b.getAttribute("data-category-id"), 10);
-        return idB - idA; // Sort from highest `category_id` to lowest
-    });
-
-    // Clear the container and re-append categories in order of `category_id`
-    categoriesContainer.innerHTML = '';
-    sortedCategories.forEach(category => {
-        categoriesContainer.appendChild(category);
-    });
+    const sortedCategories = [...allCategoriesData].sort((a, b) => b.category_id - a.category_id); // Sort by ID descending
+    renderCategories(sortedCategories);
 };
 
+// Function to filter categories by navigation topic and display in random order
+window.filterByNavTopic = function (topic) {
+    // Filter categories based on the topic
+    const filteredCategories = allCategoriesData.filter(category => {
+        return category.name.includes(topic);
+    });
+
+    // Shuffle the filtered categories
+    const shuffledFilteredCategories = shuffleArray(filteredCategories);
+
+    // Render the shuffled filtered categories
+    renderCategories(shuffledFilteredCategories);
+};
 
 
 const navTopicMapping = {
