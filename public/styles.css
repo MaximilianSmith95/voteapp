@@ -647,3 +647,22 @@ nav {
     100% {
         transform: translateY(0);
 }
+/* Logo styling */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: #00a8cc;
+    color: white;
+}
+
+header h1 {
+    margin: 0 0 0 10px;
+    font-size: 2.5rem;
+}
+
+.logo {
+    max-height: 40px; /* Adjust height for a smaller logo size */
+    margin-right: 10px; /* Space between logo and title */
+}
