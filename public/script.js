@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Fetch categories without geolocation on page load
     fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
@@ -8,6 +9,36 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error fetching categories:', error);
         });
 });
+
+// Function to call requestUserLocation on button click
+window.enableGeolocationSearch = function () {
+    requestUserLocation();
+};
+
+// Function to request user's location and filter categories by proximity
+function requestUserLocation() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+
+                // Fetch categories based on user's geolocation
+                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderCategories(data);
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+            }
+        );
+    } else {
+        console.log("Geolocation is not available in this browser.");
+    }
+}
 
 // Function to filter content based on user input
 window.filterContent = function () {
@@ -32,29 +63,6 @@ window.filterContent = function () {
     });
 };
 
-// Function to request user's location and filter categories by proximity
-function requestUserLocation() {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userLatitude = position.coords.latitude;
-                const userLongitude = position.coords.longitude;
-
-                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderCategories(data);
-                    })
-                    .catch(error => console.error('Error fetching categories:', error));
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-            }
-        );
-    } else {
-        console.log("Geolocation is not available in this browser.");
-    }
-}
 
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
