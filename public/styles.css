@@ -676,34 +676,4 @@ header {
     color: white;
 }
 
-/* Styling for NerdGoo title */
-header h1 {
-    margin: 0 0 0 10px;
-    font-size: 2.5rem;
-}
 
-/* Logo container */
-.logo-container {
-    display: flex;
-    align-items: center;
-    margin-right: 10px; /* Space between logo and title */
-}
-
-/* Green triangle */
-.triangle.bright green {
-    width: 0;
-    height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-bottom: 34.6px solid #28a745; /* Height for the green triangle */
-}
-
-/* Gray triangle (scaled down to 75% of green) */
-.triangle.dull gray {
-    width: 0;
-    height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-top: 25.95px solid #808080; /* 75% of the green triangle height */
-    margin-left: 5mm; /* 5mm space between triangles */
-}
