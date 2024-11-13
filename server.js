@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+app.set('trust proxy', true);
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -14,7 +15,7 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.set('trust proxy', true);
+
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
