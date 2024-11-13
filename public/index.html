@@ -14,7 +14,36 @@
     </div>
     <header>
         <h1>NerdGoo</h1>
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
+        <style>
+        /* Container to center the logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f9f9f9; /* Light background for contrast */
+        }
+
+        /* Green Triangle (Upward facing) */
+        .triangle-green {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid #28a745; /* Green color */
+            margin-right: -20px; /* Adjust overlap */
+        }
+
+        /* Gray Triangle (Downward facing) */
+        .triangle-gray {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 80px solid #6c757d; /* Gray color */
+            margin-left: -20px; /* Adjust overlap */
+        }
+    </style>
 
         <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
     </header>
