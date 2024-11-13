@@ -653,4 +653,67 @@ nav {
     margin: 20px auto;
     display: block;
 }
+@media (max-width: 768px) {
+    /* Adjust header font size and padding */
+    header h1 {
+        font-size: 1.8rem; /* Slightly smaller on mobile */
+        padding: 10px;
+    }
+
+    /* Search bar: reduce width and font size */
+    #searchBar {
+        width: 90%;
+        font-size: 0.9rem; /* Slightly smaller font */
+        padding: 8px;
+    }
+
+    /* Navigation buttons: stack vertically with reduced padding */
+    nav {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    nav button {
+        width: 100%; /* Full-width buttons on mobile */
+        font-size: 0.9rem;
+        padding: 8px 0;
+    }
+
+    /* Adjust main grid for categories */
+    main {
+        grid-template-columns: 1fr; /* Single-column layout */
+        gap: 10px;
+    }
+
+    /* Loading animation container */
+    #loading-animation {
+        padding: 20px;
+        font-size: 0.8rem; /* Slightly smaller */
+    }
+
+    /* Triangle size adjustments */
+    .triangle.green {
+        border-left: 30px solid transparent;
+        border-right: 30px solid transparent;
+        border-bottom: 50px solid #28a745; /* Smaller triangle */
+    }
+
+    .triangle.gray {
+        border-left: 25px solid transparent;
+        border-right: 25px solid transparent;
+        border-top: 40px solid #808080; /* Smaller triangle */
+    }
+
+    /* Geolocation button centered and reduced in size */
+    #geolocationButton {
+        width: 90%; /* Full-width button on mobile */
+        font-size: 1rem;
+    }
+
+    /* Adjust comments section width */
+    .comments-section {
+        max-width: 100%; /* Full-width on mobile */
+        padding: 10px;
+    }
+}
 
