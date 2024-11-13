@@ -75,7 +75,7 @@ function renderCategories(categories) {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.innerHTML = `
-                <p>${subject.name}</p>
+                <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
                 <p> ${subject.votes}</p>
                 <button onclick="upvote(${subject.subject_id})">vote</button>
                 <button onclick="addComment(${subject.subject_id})">Add Comment</button>
