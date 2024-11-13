@@ -205,47 +205,20 @@ window.showLatestCategories = function () {
     renderCategories(sortedCategories);
 };
 
-// Function to display topics from navTopicMapping
-function renderNavTopics(topics) {
-    const topicsContainer = document.getElementById("topicsContainer");
-    topicsContainer.innerHTML = ""; // Clear previous topics
-
-    topics.forEach(topic => {
-        const topicElement = document.createElement("p");
-        topicElement.textContent = topic;
-        topicsContainer.appendChild(topicElement);
-    });
-}
-
-// Modified filterByNavTopic function to use navTopicMapping
+// Function to filter categories by navigation topic and display in random order
 window.filterByNavTopic = function (topic) {
-    const topics = navTopicMapping[topic] || []; // Get topics from navTopicMapping based on the selected category
-    renderNavTopics(topics); // Render the filtered topics
+    // Filter categories based on the topic
+    const filteredCategories = allCategoriesData.filter(category => {
+        return category.name.includes(topic);
+    });
 
-    // Hide categories if topics from navTopicMapping are displayed
-    document.getElementById("categories").style.display = "none";
-    document.getElementById("topicsContainer").style.display = "block";
+    // Shuffle the filtered categories
+    const shuffledFilteredCategories = shuffleArray(filteredCategories);
+
+    // Render the shuffled filtered categories
+    renderCategories(shuffledFilteredCategories);
 };
 
-// Show all categories and hide topics from navTopicMapping
-window.showAllCategories = function () {
-    const shuffledCategories = shuffleArray([...allCategoriesData]); // Shuffle a copy of the initial data
-    renderCategories(shuffledCategories);
-
-    // Show categories and hide topics
-    document.getElementById("categories").style.display = "block";
-    document.getElementById("topicsContainer").style.display = "none";
-};
-
-// Show latest categories and hide topics from navTopicMapping
-window.showLatestCategories = function () {
-    const sortedCategories = [...allCategoriesData].sort((a, b) => b.category_id - a.category_id); // Sort by ID descending
-    renderCategories(sortedCategories);
-
-    // Show categories and hide topics
-    document.getElementById("categories").style.display = "block";
-    document.getElementById("topicsContainer").style.display = "none";
-};
 
 const navTopicMapping = {
     Sport: [
