@@ -65,7 +65,6 @@ function renderCategories(categories) {
         categoryDiv.classList.add("category");
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
-        // Sort subjects by votes in descending order
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
 
         const subjectsDiv = document.createElement("div");
@@ -75,11 +74,15 @@ function renderCategories(categories) {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.innerHTML = `
-                <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
-                <p>${subject.votes}</p>
-                <button onclick="upvote(${subject.subject_id})">vote</button>
-                <button onclick="toggleComments(${subject.subject_id})">▼</button>
-                
+                <p style="display: inline-block;">
+                    <a href="${subject.link}" target="_blank">${subject.name}</a>
+                </p>
+                <span class="vote-container">
+                    <span class="vote-count">${subject.votes}</span>
+                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
+                </span>
+                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">Comments ▼</button>
+
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Write a comment..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
@@ -94,6 +97,7 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
 
 
 // Function to handle upvoting of a subject
