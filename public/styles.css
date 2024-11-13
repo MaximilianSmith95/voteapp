@@ -666,3 +666,58 @@ header h1 {
     max-height: 40px; /* Adjust height for a smaller logo size */
     margin-right: 10px; /* Space between logo and title */
 }
+/* Header styling */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: #00a8cc;
+    color: white;
+}
+
+/* Styling for NerdGoo title */
+header h1 {
+    margin: 0 0 0 10px;
+    font-size: 2.5rem;
+}
+
+/* Logo container */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px; /* Space between logo and title */
+}
+
+/* Triangle styling */
+.triangle {
+    width: 0;
+    height: 0;
+}
+
+/* Green triangle (upright) */
+.triangle.green {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 26px solid #28a745;
+}
+
+/* Gray triangle (inverted) */
+.triangle.gray {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 26px solid #808080;
+    margin-left: 5px; /* Small spacing between triangles */
+}
+
+/* Search bar styling */
+#searchBar {
+    margin-top: 15px;
+    padding: 10px;
+    width: 80%;
+    max-width: 500px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 1rem;
+}
