@@ -14,14 +14,45 @@
     </div>
     <header>
         <h1>NerdGoo</h1>
-        <style>
-        /* Container to center the logo */
+       <style>
+        /* General Reset for Margin and Padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3; /* Light background for contrast */
+            margin: 0;
+        }
+
+        /* Header Styling */
+        header {
+            width: 100%;
+            background-color: #00a9db; /* Bold blue color for contrast */
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: white;
+            margin: 0;
+        }
+
+        /* Container for the Logo */
         .logo-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            background-color: #f9f9f9; /* Light background for contrast */
+            padding: 20px;
         }
 
         /* Green Triangle (Upward facing) */
@@ -43,6 +74,7 @@
             border-top: 80px solid #6c757d; /* Gray color */
             margin-left: -20px; /* Adjust overlap */
         }
+
     </style>
 <div class="logo-container">
     <!-- Green triangle (Upwards) -->
