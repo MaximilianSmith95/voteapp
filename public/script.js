@@ -78,7 +78,7 @@ function renderCategories(categories) {
                 <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
                 <p>${subject.votes}</p>
                 <button onclick="upvote(${subject.subject_id})">vote</button>
-                <button onclick="toggleComments(${subject.subject_id})">Comments ▼</button>
+                <button onclick="toggleComments(${subject.subject_id})">▼</button>
                 
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Write a comment..." />
@@ -558,9 +558,9 @@ window.toggleComments = function(subjectId) {
     // Change arrow direction in the button text
     const toggleButton = commentsContainer.previousElementSibling;
     if (commentsContainer.classList.contains("hidden")) {
-        toggleButton.textContent = "Comments ▼";
+        toggleButton.textContent = "▼";
     } else {
-        toggleButton.textContent = "Comments ▲";
+        toggleButton.textContent = "▲";
     }
 };
 
