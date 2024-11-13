@@ -690,7 +690,7 @@ header h1 {
 }
 
 /* Green triangle */
-.triangle.green {
+.triangle.bright green {
     width: 0;
     height: 0;
     border-left: 20px solid transparent;
@@ -699,22 +699,11 @@ header h1 {
 }
 
 /* Gray triangle (scaled down to 75% of green) */
-.triangle.gray {
+.triangle.dull gray {
     width: 0;
     height: 0;
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
     border-top: 25.95px solid #808080; /* 75% of the green triangle height */
     margin-left: 5mm; /* 5mm space between triangles */
-}
-
-/* Search bar styling */
-#searchBar {
-    margin-top: 15px;
-    padding: 10px;
-    width: 80%;
-    max-width: 500px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    font-size: 1rem;
 }
