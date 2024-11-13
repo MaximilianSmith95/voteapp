@@ -559,3 +559,14 @@ nav {
 .comments-toggle:hover {
     color: #333;
 }
+.comments-container {
+    max-width: 400px; /* Set a consistent width */
+    max-height: 200px; /* Limit height to a certain size */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Disable horizontal scrolling */
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 10px;
+}
