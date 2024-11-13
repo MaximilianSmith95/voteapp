@@ -647,4 +647,10 @@ nav {
     100% {
         transform: translateY(0);
 }
+#logo {
+    width: 150px; /* Adjust the size as needed */
+    height: auto;
+    margin: 20px auto;
+    display: block;
+}
 
