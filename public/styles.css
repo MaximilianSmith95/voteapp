@@ -512,3 +512,50 @@ nav {
 .subject.highlighted {
     background-color: #e4cb4d; /* Light yellow background */
 }
+.subject {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.subject p {
+    margin: 0;
+    flex: 1;
+}
+
+.vote-container {
+    display: flex;
+    align-items: center;
+}
+
+.vote-count {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.vote-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: green; /* Green arrow */
+    padding: 0;
+}
+
+.vote-button:hover {
+    color: darkgreen;
+}
+
+.comments-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    margin-left: 10px;
+}
+
+.comments-toggle:hover {
+    color: #333;
+}
