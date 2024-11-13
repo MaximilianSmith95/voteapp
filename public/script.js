@@ -35,6 +35,10 @@ function requestUserLocation() {
                 fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
                     .then(response => response.json())
                     .then(data => {
+                        // Update the global data with geolocation-sorted categories
+                        allCategoriesData = data;
+
+                        // Render categories sorted by proximity
                         renderCategories(data);
                     })
                     .catch(error => console.error('Error fetching categories:', error));
@@ -45,6 +49,9 @@ function requestUserLocation() {
         );
     } else {
         console.log("Geolocation is not available in this browser.");
+    }
+}
+
     }
 }
 // Function to filter content based on user input
