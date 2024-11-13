@@ -177,25 +177,51 @@ function renderComments(comments, parentElement) {
     });
 }
 
-// Function to filter subjects by navigation topic
+// Function to shuffle an array in random order
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Function to filter subjects by navigation topic and randomize the order
 window.filterByNavTopic = function (topic) {
     const categoriesContainer = document.getElementById("categories");
     const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
-    allCategories.forEach(category => {
+    // Filter categories based on the topic (example)
+    const filteredCategories = allCategories.filter(category => {
         const categoryName = category.querySelector("h2").textContent;
-        category.style.display = categoryName.includes(topic) ? "block" : "none";
+        return categoryName.includes(topic);
+    });
+
+    // Shuffle the filtered categories
+    const shuffledCategories = shuffleArray(filteredCategories);
+
+    // Clear the container and re-append categories in random order
+    categoriesContainer.innerHTML = '';
+    shuffledCategories.forEach(category => {
+        categoriesContainer.appendChild(category);
     });
 };
 
-// Function to display all categories
+// Function to display all categories in random order
 window.showAllCategories = function () {
     const categoriesContainer = document.getElementById("categories");
     const allCategories = Array.from(categoriesContainer.getElementsByClassName("category"));
-    allCategories.forEach(category => {
-        category.style.display = "block";
+
+    // Shuffle the array of categories
+    const shuffledCategories = shuffleArray(allCategories);
+
+    // Clear the container and re-append categories in random order
+    categoriesContainer.innerHTML = '';
+    shuffledCategories.forEach(category => {
+        categoriesContainer.appendChild(category);
     });
 };
+
 
 
 const navTopicMapping = {
