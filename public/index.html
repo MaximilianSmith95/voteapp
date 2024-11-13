@@ -6,6 +6,12 @@
     <title>NerdGoo</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+  <body>
+    <!-- Loading Animation Container -->
+    <div id="loading-animation">
+        <div class="triangle green"></div>
+        <div class="triangle gray"></div>
+    </div>
     <header>
         <h1>NerdGoo</h1>
         <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
@@ -27,7 +33,11 @@
     
 
     <main id="categories"></main>
-
+<script>
+        window.addEventListener("load", function() {
+            document.getElementById("loading-animation").style.display = "none";
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 
