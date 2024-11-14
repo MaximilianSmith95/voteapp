@@ -96,42 +96,54 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
 
-    const query = `INSERT INTO Comments (subject_id, username, comment_text, parent_comment_id) VALUES (?, ?, ?, ?)`;
+    const query = `INSERT INTO comments (subject_id, username, comment_text, parent_comment_id) VALUES (?, ?, ?, ?)`;
     db.query(query, [subjectId, username, comment_text, parent_comment_id], (err) => {
-        if (err) throw err;
-        res.json({ success: true });
+        if (err) {
+            console.error('Error inserting comment:', err);
+            res.json({ success: false });
+        } else {
+            res.json({ success: true });
+        }
     });
 });
+
 
 app.get('/api/subjects/:id/comments', (req, res) => {
     const subjectId = req.params.id;
     const query = `
         SELECT comment_id, parent_comment_id, username, comment_text, created_at
-        FROM Comments
+        FROM comments
         WHERE subject_id = ?
         ORDER BY created_at ASC;
     `;
 
     db.query(query, [subjectId], (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error('Error fetching comments:', err);
+            res.status(500).json({ error: 'Failed to fetch comments' });
+        } else {
+            // Organize comments and replies
+            const commentsMap = {};
+            results.forEach(comment => {
+                commentsMap[comment.comment_id] = { ...comment, replies: [] };
+            });
 
-        const commentsMap = {};
-        results.forEach(comment => {
-            commentsMap[comment.comment_id] = { ...comment, replies: [] };
-        });
+            const structuredComments = [];
+            results.forEach(comment => {
+                if (comment.parent_comment_id) {
+                    // It's a reply, so add it to the parent
+                    commentsMap[comment.parent_comment_id].replies.push(commentsMap[comment.comment_id]);
+                } else {
+                    // It's a top-level comment
+                    structuredComments.push(commentsMap[comment.comment_id]);
+                }
+            });
 
-        const comments = [];
-        results.forEach(comment => {
-            if (comment.parent_comment_id) {
-                commentsMap[comment.parent_comment_id].replies.push(commentsMap[comment.comment_id]);
-            } else {
-                comments.push(commentsMap[comment.comment_id]);
-            }
-        });
-
-        res.json(comments);
+            res.json(structuredComments);
+        }
     });
 });
+
 
 const PORT = process.env.PORT || 3500;  
 app.listen(PORT, () => {
