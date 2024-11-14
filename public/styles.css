@@ -800,36 +800,20 @@ main {
     margin-left: 20px;  /* Indent replies */
     border-left: 1px solid #ddd;
     padding-left: 10px;
-}
-
-/* Style for Show/Hide Replies Button */
-.toggle-replies-button {
+/* Style for Reply, Show Replies, and Hide Replies links */
+.reply-button, .toggle-replies-button, .submit-reply-link {
     background: none;
     border: none;
     color: #0073e6;
     text-decoration: underline;
     cursor: pointer;
     font-size: 0.9rem;
-    padding: 0;
+    padding: 3px;
     margin-left: 5px;
+    display: inline-block;
 }
 
-.toggle-replies-button:hover {
+.reply-button:hover, .toggle-replies-button:hover, .submit-reply-link:hover {
     color: #005bb5;  /* Darker shade on hover */
-}
-
-/* Style for Reply Button */
-.reply-button {
-    background: none;
-    border: none;
-    color: #0073e6;
     text-decoration: underline;
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0;
-    margin-left: 5px;
-}
-
-.reply-button:hover {
-    color: #005bb5;  /* Darker shade on hover */
 }
