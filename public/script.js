@@ -195,23 +195,25 @@ function renderComments(comments, parentElement) {
         commentDiv.id = `comment-${comment.comment_id}`;
         commentDiv.innerHTML = `
             <strong>${comment.username}</strong>: ${comment.comment_text}
-            <button class="reply-button" onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</button>
-            <button class="toggle-replies-button" onclick="toggleReplies(${comment.comment_id})">Show Replies</button>
+            <span class="reply-link" onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</span>
+            <span class="toggle-replies-link" onclick="toggleReplies(${comment.comment_id})">Show Replies</span>
             <div id="reply-input-${comment.comment_id}" class="hidden">
                 <input type="text" id="reply-text-${comment.comment_id}" placeholder="Write a reply..."/>
-                <button onclick="addReply(${comment.comment_id}, ${comment.subject_id})">Post Reply</button>
+                <span class="submit-reply-link" onclick="addReply(${comment.comment_id}, ${comment.subject_id})">Post Reply</span>
             </div>
             <div id="replies-${comment.comment_id}" class="replies hidden"></div>
         `;
 
         parentElement.appendChild(commentDiv);
 
-        if (comment.replies) {
+        // Render past replies if they exist
+        if (comment.replies && comment.replies.length > 0) {
             const repliesDiv = commentDiv.querySelector(`#replies-${comment.comment_id}`);
-            renderComments(comment.replies, repliesDiv);  // Recursively render replies inside replies div
+            renderComments(comment.replies, repliesDiv);  // Recursively render replies within replies div
         }
     });
 }
+
 
 // Function to show/hide replies
 function toggleReplies(commentId) {
