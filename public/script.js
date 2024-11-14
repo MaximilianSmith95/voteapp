@@ -85,9 +85,12 @@ function renderCategories(categories) {
         categoryDiv.setAttribute("data-category-id", category.category_id);
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
+      // Sort subjects by votes and limit to 15 items
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
+        const limitedSubjects = sortedSubjects.slice(0, 15);
+
         const subjectsDiv = document.createElement("div");
-        subjectsDiv.classList.add("subjects");
+        subjectsDiv.classList.add("subjects", "scrollable");
 
         sortedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
