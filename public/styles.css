@@ -754,6 +754,12 @@ header h1 {
     border: 1px solid #ddd;
     border-radius: 8px;
 }
+.scrollable {
+    max-height: 400px; /* Set maximum height to control scroll area */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    padding-right: 10px; /* Optional: add padding to prevent text clipping */
+}
+
 
 
 
