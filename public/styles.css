@@ -30,23 +30,8 @@ header h1 {
     margin: 0;
     padding: 10px 0;
     letter-spacing: 2px; /* Add space between letters for a more open feel */
-    animation: colorChange 4s linear infinite; /* Animation for color change */
 }
 
-/* Animation for color cycling */
-@keyframes colorChange {
-    0% {
-        color: #ff6b6b;
-    }
-    33% {
-        color: #ffd93b;
-    }
-    66% {
-        color: #00c9a7;
-    }
-    100% {
-        color: #ff6b6b;
-    }
 
 #searchBar {
     margin-top: 15px;
