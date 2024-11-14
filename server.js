@@ -47,15 +47,6 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 };
-app.get('/api/categories', async (req, res) => {
-    try {
-        const [results] = await pool.query(/* your query here */);
-        // Process and send response as usual
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        res.status(500).send("Internal Server Error");
-    }
-});
 
 app.get('/api/categories', (req, res) => {
     const userLat = parseFloat(req.query.latitude);
