@@ -190,13 +190,14 @@ function fetchComments(subjectId) {
 // Modify renderComments to add a reply option under each comment
 function renderComments(comments, parentElement) {
     comments.forEach(comment => {
+        console.log('Rendering comment:', comment);
         const commentDiv = document.createElement("div");
         commentDiv.classList.add("comment");
         commentDiv.id = `comment-${comment.comment_id}`;
         commentDiv.innerHTML = `
             <strong>${comment.username}</strong>: ${comment.comment_text}
-            <span class="reply-link" onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</span>
-            <span class="toggle-replies-link" onclick="toggleReplies(${comment.comment_id})">Show Replies</span>
+            <span class="reply-button" onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</span>
+            <span class="toggle-replies-button" onclick="toggleReplies(${comment.comment_id})">Show Replies</span>
             <div id="reply-input-${comment.comment_id}" class="hidden">
                 <input type="text" id="reply-text-${comment.comment_id}" placeholder="Write a reply..."/>
                 <span class="submit-reply-link" onclick="addReply(${comment.comment_id}, ${comment.subject_id})">Post Reply</span>
@@ -206,10 +207,9 @@ function renderComments(comments, parentElement) {
 
         parentElement.appendChild(commentDiv);
 
-        // Render past replies if they exist
         if (comment.replies && comment.replies.length > 0) {
             const repliesDiv = commentDiv.querySelector(`#replies-${comment.comment_id}`);
-            renderComments(comment.replies, repliesDiv);  // Recursively render replies within replies div
+            renderComments(comment.replies, repliesDiv);  // Recursively render replies
         }
     });
 }
@@ -218,11 +218,17 @@ function renderComments(comments, parentElement) {
 // Function to show/hide replies
 function toggleReplies(commentId) {
     const repliesDiv = document.getElementById(`replies-${commentId}`);
-    const toggleButton = document.querySelector(`#comment-${commentId} .toggle-replies-button`);
+    const toggleButton = document.querySelector(`#comment-${commentId} .toggle-replies-link`);
 
-    repliesDiv.classList.toggle("hidden");
-    toggleButton.textContent = repliesDiv.classList.contains("hidden") ? "Show Replies" : "Hide Replies";
+    if (repliesDiv) {
+        repliesDiv.classList.toggle("hidden");
+        toggleButton.textContent = repliesDiv.classList.contains("hidden") ? "Show Replies" : "Hide Replies";
+        console.log(`Toggled replies for comment ${commentId}`);
+    } else {
+        console.error(`Replies div not found for comment ${commentId}`);
+    }
 }
+
 
 
 // Function to show/hide reply input
