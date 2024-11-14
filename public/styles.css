@@ -6,9 +6,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0;
 }
 
-/* Header and Search bar */
 header {
     width: 100%;
     padding: 1rem;
@@ -17,19 +17,17 @@ header {
     color: white;
 }
 
-/* Updated Header Styling */
 header h1 {
-    font-size: 3rem; /* Keep a large font size */
+    font-size: 3rem;
     font-weight: bold;
-    color: #28a745; /* Solid green color */
+    color: #28a745;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
-    font-family: "Press Start 2P", "VT323", monospace; /* Retro computer font */
+    font-family: "Press Start 2P", "VT323", monospace;
     margin: 0;
     padding: 10px 0;
-    letter-spacing: 1.5px; /* Slight space between letters for a techy look */
-    line-height: 1.2; /* Adjust line height for readability */
+    letter-spacing: 1.5px;
+    line-height: 1.2;
 }
-
 
 #searchBar {
     margin-top: 15px;
@@ -41,7 +39,6 @@ header h1 {
     font-size: 1rem;
 }
 
-/* Navigation styling */
 nav {
     display: flex;
     flex-wrap: wrap;
@@ -65,24 +62,26 @@ nav button:hover {
     background-color: #ff4757;
 }
 
-/* Category section */
+/* Main grid layout */
 main {
     width: 90%;
     max-width: 1200px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 10px;
+    padding: 10px;
 }
 
+/* Category styling */
 .category {
     background-color: #fff;
     border: 2px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
 }
 
-/* Default blue scheme */
 .category h2 {
     font-size: 1.3rem;
     color: #00a8cc;
@@ -91,28 +90,33 @@ main {
     padding-bottom: 5px;
 }
 
-/* Green scheme for positive categories */
 .category-green h2 {
     color: green;
     border-bottom-color: green;
 }
 
-/* Red scheme for negative categories */
 .category-red h2 {
     color: red;
     border-bottom-color: red;
 }
 
-/* Subjects */
-.subject {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+.scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
 }
 
-.subject:last-child {
-    border-bottom: none;
+/* Subject styling */
+.subject {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.subject.highlighted {
+    background-color: #ADD8E6;
 }
 
 .subject a {
@@ -126,321 +130,6 @@ main {
 }
 
 /* Vote button */
-/* Default blue vote button */
-.vote-button {
-    background-color: #00a8cc;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.vote-button:hover {
-    background-color: #0097b8;
-}
-
-/* Green vote button for positive categories */
-.category-green .vote-button {
-    background-color: green;
-}
-
-.category-green .vote-button:hover {
-    background-color: darkgreen;
-}
-
-/* Red vote button for negative categories */
-.category-red .vote-button {
-    background-color: red;
-}
-
-.category-red .vote-button:hover {
-    background-color: darkred;
-}
-
-.scrollable {
-    max-height: 400px;
-    overflow-y: auto;
-}
-/* Comment Section Styling */
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    position: relative; /* Ensure it stays below the subject */
-    transition: max-height 0.3s ease;
-}
-
-.hidden {
-    display: none;
-}
-
-.comments-container {
-    max-height: 200px; /* Limit height for comment list */
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-.hidden {
-    display: none;
-}
-
-.comments-section {
-    border-top: 1px solid #ddd;
-    padding-top: 10px;
-    margin-top: 10px;
-}
-
-.comments-container .comment {
-    padding: 5px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.comments-section textarea {
-    width: 100%;
-    margin-top: 5px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: none;
-}
-
-.comments-section button {
-    margin-top: 5px;
-    padding: 5px 10px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.comment-toggle {
-    background: transparent;
-    border: none;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
-}
-
-.comment-toggle:hover {
-    color: #00a8cc;
-}
-/* Full-width, spacious comment section styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Optional: limits height */
-    overflow-y: auto;  /* Enables scrolling if content exceeds height */
-    transition: max-height 0.3s ease;
-}
-
-/* Hidden by default; revealed when expanded */
-.hidden {
-    display: none;
-}
-
-/* Comment text and spacing */
-.comments-container .comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-container .comment:last-child {
-    border-bottom: none;
-}
-
-.comments-section textarea {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-/* Optional: Makes the transition smoother */
-.comments-section.expanded {
-    max-height: 300px; /* Adjust height if needed */
-}
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    transition: max-height 0.3s ease;
-    position: relative; /* Ensure it stays below the subject */
-}
-
-.hidden {
-    display: none;
-}
-
-.comments-container {
-    max-height: 200px; /* Height limit for comment list */
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-/* General styling */
-body {
-    font-family: "Verdana", sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-header {
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-    background-color: #00a8cc;
-    color: white;
-}
-
-#searchBar {
-    margin-top: 15px;
-    padding: 10px;
-    width: 80%;
-    max-width: 500px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    font-size: 1rem;
-}
-
-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-.category {
-    background-color: #fff;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-}
-
-.category h2 {
-    font-size: 1.3rem;
-    color: #00a8cc;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 2px solid #00a8cc;
-}
-
-.subject {
-    display: block;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.subject-info {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.vote-controls {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
 .vote-button {
     background-color: transparent;
     color: green;
@@ -454,20 +143,23 @@ nav {
     color: darkgreen;
 }
 
-
-.comment-toggle {
-    background: transparent;
-    border: none;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
+.category-green .vote-button {
+    background-color: green;
 }
 
-.comment-toggle:hover {
-    color: #00a8cc;
+.category-green .vote-button:hover {
+    background-color: darkgreen;
 }
 
-/* Comment Section Styling */
+.category-red .vote-button {
+    background-color: red;
+}
+
+.category-red .vote-button:hover {
+    background-color: darkred;
+}
+
+/* Comment section */
 .comments-section {
     width: 100%;
     background-color: #f1f1f1;
@@ -478,6 +170,7 @@ nav {
     max-height: 300px;
     overflow-y: auto;
     transition: max-height 0.3s ease;
+    position: relative;
 }
 
 .comments-container {
@@ -515,72 +208,22 @@ nav {
     font-size: 0.9rem;
 }
 
-.hidden {
-    display: none;
-}
-.subject.highlighted {
-    background-color: #ADD8E6; /* Light blue background */
-}
-.subject {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #ccc;
-}
-
-.subject p {
-    margin: 0;
-    flex: 1;
-}
-
-.vote-container {
-    display: flex;
-    align-items: center;
-}
-
-.vote-count {
-    margin-right: 5px;
-    font-weight: bold;
-}
-
-.vote-button {
-    background-color: transparent;
+/* Toggle button */
+.comment-toggle {
+    background: transparent;
     border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    color: green; /* Green arrow */
-    padding: 0;
-}
-
-.vote-button:hover {
-    color: darkgreen;
-}
-
-.comments-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #555;
-    margin-left: 10px;
-}
-
-.comments-toggle:hover {
+    font-size: 0.9rem;
     color: #333;
+    cursor: pointer;
 }
-.comments-container {
-    max-width: 400px; /* Set a consistent width */
-    max-height: 200px; /* Limit height to a certain size */
-    overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: hidden; /* Disable horizontal scrolling */
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    margin-top: 10px;
+
+.comment-toggle:hover {
+    color: #00a8cc;
 }
+
+/* Geolocation Button */
 #geolocationButton {
-    background-color: #0073e6; /* Primary color of the website */
+    background-color: #0073e6;
     color: #ffffff;
     border: none;
     border-radius: 5px;
@@ -589,24 +232,23 @@ nav {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-top: 15px; /* Adjust spacing as needed */
+    margin: 15px auto 0;
     display: block;
     width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #geolocationButton:hover {
-    background-color: #005bb5; /* Darker shade for hover effect */
-    transform: scale(1.05); /* Slightly enlarges on hover */
+    background-color: #005bb5;
+    transform: scale(1.05);
 }
 
 #geolocationButton:active {
-    background-color: #004494; /* Even darker shade for active state */
-    transform: scale(0.98); /* Slightly shrinks on click for feedback */
+    background-color: #004494;
+    transform: scale(0.98);
 }
-/* Loading Animation Container */
+
+/* Loading Animation */
 #loading-animation {
     display: flex;
     justify-content: center;
@@ -620,7 +262,6 @@ nav {
     z-index: 9999;
 }
 
-/* Triangle Styling for Animation */
 .triangle {
     width: 0;
     height: 0;
@@ -628,7 +269,6 @@ nav {
     animation: bounce 1s ease-in-out infinite;
 }
 
-/* Green Triangle */
 .triangle.green {
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
@@ -636,7 +276,6 @@ nav {
     animation-delay: 0.2s;
 }
 
-/* Gray Triangle */
 .triangle.gray {
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
@@ -645,7 +284,6 @@ nav {
     animation-delay: 0.5s;
 }
 
-/* Bounce Animation */
 @keyframes bounce {
     0% {
         transform: translateY(0);
@@ -655,141 +293,63 @@ nav {
     }
     100% {
         transform: translateY(0);
+    }
 }
-#logo {
-    width: 150px; /* Adjust the size as needed */
-    height: auto;
-    margin: 20px auto;
-    display: block;
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    main {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
+
 @media (max-width: 768px) {
-    /* Adjust header font size and padding */
     header h1 {
-        font-size: 1.8rem; /* Slightly smaller on mobile */
+        font-size: 1.8rem;
         padding: 10px;
     }
 
-    /* Search bar: reduce width and font size */
     #searchBar {
         width: 90%;
-        font-size: 0.9rem; /* Slightly smaller font */
+        font-size: 0.9rem;
         padding: 8px;
     }
 
-    /* Navigation buttons: stack vertically with reduced padding */
     nav {
         flex-direction: column;
         gap: 5px;
     }
 
     nav button {
-        width: 100%; /* Full-width buttons on mobile */
+        width: 100%;
         font-size: 0.9rem;
         padding: 8px 0;
     }
 
-    /* Adjust main grid for categories */
     main {
-        grid-template-columns: 1fr; /* Single-column layout */
+        grid-template-columns: 1fr;
         gap: 10px;
     }
 
-    /* Loading animation container */
-    #loading-animation {
-        padding: 20px;
-        font-size: 0.8rem; /* Slightly smaller */
+    #geolocationButton {
+        width: 90%;
+        font-size: 1rem;
     }
 
-    /* Triangle size adjustments */
+    .comments-section {
+        max-width: 100%;
+        padding: 10px;
+    }
+
     .triangle.green {
         border-left: 30px solid transparent;
         border-right: 30px solid transparent;
-        border-bottom: 50px solid #28a745; /* Smaller triangle */
+        border-bottom: 50px solid #28a745;
     }
 
     .triangle.gray {
         border-left: 25px solid transparent;
         border-right: 25px solid transparent;
-        border-top: 40px solid #808080; /* Smaller triangle */
-    }
-
-    /* Geolocation button centered and reduced in size */
-    #geolocationButton {
-        width: 90%; /* Full-width button on mobile */
-        font-size: 1rem;
-    }
-
-    /* Adjust comments section width */
-    .comments-section {
-        max-width: 100%; /* Full-width on mobile */
-        padding: 10px;
+        border-top: 40px solid #808080;
     }
 }
-/* Adjusted Header Styling */
-header h1 {
-    font-size: 3rem; /* Increased font size */
-    color: #28a745; /* Green color */
-    margin: 0;
-    font-weight: bold;
-}
-
-/* Smaller Triangle Sizes */
-.triangle-green {
-    width: 0;
-    height: 0;
-    border-left: 30px solid transparent; /* Smaller width */
-    border-right: 30px solid transparent;
-    border-bottom: 60px solid #28a745; /* Smaller height */
-    margin-right: -15px; /* Adjust overlap */
-}
-
-.triangle-gray {
-    width: 0;
-    height: 0;
-    border-left: 25px solid transparent; /* Smaller width */
-    border-right: 25px solid transparent;
-    border-top: 50px solid #6c757d; /* Smaller height */
-    margin-left: -15px; /* Adjust overlap */
-}
-#categories, #topicsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjusts columns based on screen width */
-    gap: 20px;
-    padding: 20px;
-}
-.category, .topic {
-    background: #fff;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-.scrollable {
-    max-height: calc(15 * 2.5em); /* Approximate height to display 15 items */
-    overflow-y: auto; /* Enable vertical scrolling for overflow */
-    padding-right: 10px; /* Optional: add padding to prevent text clipping */
-}
-
-main {
-    width: 100%; /* Use full width on small screens */
-    max-width: 100%; /* Avoids max-width constraints on small screens */
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px; /* Adjust padding */
-}
-
-/* Medium screen: two columns */
-@media (max-width: 1024px) {
-    main {
-        grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
-    }
-}
-
-/* Small screens: one column */
-@media (max-width: 768px) {
-    main {
-        grid-template-columns: 1fr; /* Single column on mobile */
-    }
-}
-
-
