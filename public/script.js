@@ -119,7 +119,6 @@ function renderCategories(categories) {
 }
 
 
-// Function to handle upvoting of a subject
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
         method: 'POST'
@@ -127,15 +126,31 @@ function upvote(subjectId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Re-fetch and render categories to apply sorting based on updated votes
-            fetch('/api/categories')
-                .then(response => response.json())
-                .then(data => renderCategories(data));
+            // Update the vote count for the clicked subject
+            const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
+            if (voteCountElement) {
+                const newVoteCount = parseInt(voteCountElement.textContent) + 1;
+                voteCountElement.textContent = newVoteCount;
+
+                // Get the parent category's subjects container and re-sort based on vote count
+                const subjectDiv = voteCountElement.closest(".subject");
+                const subjectsContainer = subjectDiv.parentNode;
+
+                // Re-sort the subjects based on updated vote counts
+                const subjectsArray = Array.from(subjectsContainer.children);
+                subjectsArray.sort((a, b) => {
+                    const votesA = parseInt(a.querySelector(".vote-count").textContent);
+                    const votesB = parseInt(b.querySelector(".vote-count").textContent);
+                    return votesB - votesA; // Sort in descending order
+                });
+
+                // Clear and re-append sorted subjects
+                subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
+            }
         }
     })
     .catch(error => console.error('Error upvoting:', error));
 }
-
 
 // Function to add a comment to a subject
 function addComment(subjectId) {
