@@ -760,5 +760,27 @@ header h1 {
     padding-right: 10px; /* Optional: add padding to prevent text clipping */
 }
 
+main {
+    width: 100%; /* Use full width on small screens */
+    max-width: 100%; /* Avoids max-width constraints on small screens */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 10px; /* Adjust padding */
+}
+
+/* Medium screen: two columns */
+@media (max-width: 1024px) {
+    main {
+        grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
+    }
+}
+
+/* Small screens: one column */
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr; /* Single column on mobile */
+    }
+}
 
 
