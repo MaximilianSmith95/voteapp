@@ -84,7 +84,7 @@ function renderCategories(categories) {
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
-        const limitedSubjects = sortedSubjects.slice(0, 15);
+        
 
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
