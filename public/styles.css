@@ -817,3 +817,14 @@ main {
     color: #005bb5;  /* Darker shade on hover */
     text-decoration: underline;
 }
+/* Style for Comment Input Box */
+.comment-input {
+    height: 80px;  /* Adjust this value as desired */
+    width: 100%;   /* Keep the width the same */
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    resize: vertical;  /* Allow vertical resizing if desired */
+    margin-top: 10px;
+}
