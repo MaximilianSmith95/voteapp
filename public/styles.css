@@ -519,7 +519,7 @@ nav {
     display: none;
 }
 .subject.highlighted {
-    background-color: #e4cb4d; /* Light yellow background */
+    background-color: #ADD8E6; /* Light blue background */
 }
 .subject {
     display: flex;
