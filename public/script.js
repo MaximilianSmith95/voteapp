@@ -187,21 +187,59 @@ function fetchComments(subjectId) {
 }
 
 // Recursive function to render comments and their replies
+// Modify renderComments to add a reply option under each comment
 function renderComments(comments, parentElement) {
     comments.forEach(comment => {
         const commentDiv = document.createElement("div");
         commentDiv.classList.add("comment");
-        commentDiv.innerHTML = `<strong>${comment.username}</strong>: ${comment.comment_text}`;
+        commentDiv.innerHTML = `
+            <strong>${comment.username}</strong>: ${comment.comment_text}
+            <button onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</button>
+            <div id="reply-input-${comment.comment_id}" class="hidden">
+                <input type="text" id="reply-text-${comment.comment_id}" placeholder="Write a reply..."/>
+                <button onclick="addReply(${comment.comment_id}, ${comment.subject_id})">Post Reply</button>
+            </div>
+        `;
         parentElement.appendChild(commentDiv);
 
         if (comment.replies) {
             const repliesDiv = document.createElement("div");
             repliesDiv.classList.add("replies");
-            renderComments(comment.replies, repliesDiv);
+            renderComments(comment.replies, repliesDiv);  // Recursively render replies
             commentDiv.appendChild(repliesDiv);
         }
     });
 }
+
+// Function to show/hide reply input
+function toggleReplyInput(commentId) {
+    const replyInput = document.getElementById(`reply-input-${commentId}`);
+    replyInput.classList.toggle("hidden");
+}
+
+// Add reply function to post a reply to a comment
+function addReply(parentCommentId, subjectId) {
+    const replyText = document.getElementById(`reply-text-${parentCommentId}`).value.trim();
+    const username = `User${Math.floor(Math.random() * 1000)}`;  // Generate a random username or use a logged-in user's name
+
+    if (replyText) {
+        fetch(`/api/subjects/${subjectId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, comment_text: replyText, parent_comment_id: parentCommentId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchComments(subjectId);  // Refresh comments to show the new reply
+                document.getElementById(`reply-text-${parentCommentId}`).value = "";  // Clear reply input
+                toggleReplyInput(parentCommentId);  // Hide reply input
+            }
+        })
+        .catch(error => console.error('Error posting reply:', error));
+    }
+}
+
 
 // Function to shuffle an array in random order
 function shuffleArray(array) {
