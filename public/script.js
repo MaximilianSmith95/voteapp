@@ -196,21 +196,32 @@ function renderComments(comments, parentElement) {
         commentDiv.innerHTML = `
             <strong>${comment.username}</strong>: ${comment.comment_text}
             <button class="reply-button" onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</button>
+            <button class="toggle-replies-button" onclick="toggleReplies(${comment.comment_id})">Show Replies</button>
             <div id="reply-input-${comment.comment_id}" class="hidden">
                 <input type="text" id="reply-text-${comment.comment_id}" placeholder="Write a reply..."/>
                 <button onclick="addReply(${comment.comment_id}, ${comment.subject_id})">Post Reply</button>
             </div>
+            <div id="replies-${comment.comment_id}" class="replies hidden"></div>
         `;
+
         parentElement.appendChild(commentDiv);
 
         if (comment.replies) {
-            const repliesDiv = document.createElement("div");
-            repliesDiv.classList.add("replies");
-            renderComments(comment.replies, repliesDiv);  // Recursively render replies
-            commentDiv.appendChild(repliesDiv);
+            const repliesDiv = commentDiv.querySelector(`#replies-${comment.comment_id}`);
+            renderComments(comment.replies, repliesDiv);  // Recursively render replies inside replies div
         }
     });
 }
+
+// Function to show/hide replies
+function toggleReplies(commentId) {
+    const repliesDiv = document.getElementById(`replies-${commentId}`);
+    const toggleButton = document.querySelector(`#comment-${commentId} .toggle-replies-button`);
+
+    repliesDiv.classList.toggle("hidden");
+    toggleButton.textContent = repliesDiv.classList.contains("hidden") ? "Show Replies" : "Hide Replies";
+}
+
 
 // Function to show/hide reply input
 function toggleReplyInput(commentId) {
