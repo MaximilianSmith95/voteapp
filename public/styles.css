@@ -800,6 +800,21 @@ main {
 .hidden {
     display: none;
 
+    /* Simplified reply button styling */
+.comment .reply-button {
+    background: none;
+    border: none;
+    color: #0073e6;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.comment .reply-button:hover {
+    color: #005bb5;  /* Darker shade on hover */
+}
+
 /* Style for reply and toggle links as clickable text */
 .reply-link, .toggle-replies-link, .submit-reply-link {
     color: #0073e6;
