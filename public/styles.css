@@ -791,3 +791,12 @@ main {
         grid-template-columns: 1fr; /* Single column on mobile */
     }
 }
+.replies {
+    margin-left: 20px;  /* Indent replies */
+    border-left: 1px solid #ddd;
+    padding-left: 10px;
+}
+
+.hidden {
+    display: none;
+}
