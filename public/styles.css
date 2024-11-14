@@ -790,17 +790,19 @@ main {
     main {
         grid-template-columns: 1fr; /* Single column on mobile */
     }
+/* General Styling for Hidden Elements */
+.hidden {
+    display: none;
 }
+
+/* Styling for Replies Container */
 .replies {
     margin-left: 20px;  /* Indent replies */
     border-left: 1px solid #ddd;
     padding-left: 10px;
 }
 
-.hidden {
-    display: none;
-
-/* Style for Show/Hide Replies button */
+/* Style for Show/Hide Replies Button */
 .toggle-replies-button {
     background: none;
     border: none;
@@ -816,26 +818,18 @@ main {
     color: #005bb5;  /* Darker shade on hover */
 }
 
-/* Styling for replies container */
-.replies {
-    margin-left: 20px;
-    border-left: 1px solid #ddd;
-    padding-left: 10px;
+/* Style for Reply Button */
+.reply-button {
+    background: none;
+    border: none;
+    color: #0073e6;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    margin-left: 5px;
 }
 
-.hidden {
-    display: none;
-}
-
-
-
-/* Styling for replies container */
-.replies {
-    margin-left: 20px;
-    border-left: 1px solid #ddd;
-    padding-left: 10px;
-}
-
-.hidden {
-    display: none;
+.reply-button:hover {
+    color: #005bb5;  /* Darker shade on hover */
 }
