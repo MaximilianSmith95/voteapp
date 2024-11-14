@@ -192,9 +192,10 @@ function renderComments(comments, parentElement) {
     comments.forEach(comment => {
         const commentDiv = document.createElement("div");
         commentDiv.classList.add("comment");
+        commentDiv.id = `comment-${comment.comment_id}`;
         commentDiv.innerHTML = `
             <strong>${comment.username}</strong>: ${comment.comment_text}
-            <button onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</button>
+            <button class="reply-button" onclick="toggleReplyInput(${comment.comment_id}, ${comment.subject_id})">Reply</button>
             <div id="reply-input-${comment.comment_id}" class="hidden">
                 <input type="text" id="reply-text-${comment.comment_id}" placeholder="Write a reply..."/>
                 <button onclick="addReply(${comment.comment_id}, ${comment.subject_id})">Post Reply</button>
@@ -218,6 +219,7 @@ function toggleReplyInput(commentId) {
 }
 
 // Add reply function to post a reply to a comment
+// Add reply function to post a reply to a comment
 function addReply(parentCommentId, subjectId) {
     const replyText = document.getElementById(`reply-text-${parentCommentId}`).value.trim();
     const username = `User${Math.floor(Math.random() * 1000)}`;  // Generate a random username or use a logged-in user's name
@@ -231,7 +233,19 @@ function addReply(parentCommentId, subjectId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                fetchComments(subjectId);  // Refresh comments to show the new reply
+                // Create the reply element and append it to the current comment
+                const repliesDiv = document.createElement("div");
+                repliesDiv.classList.add("comment");
+                repliesDiv.innerHTML = `<strong>${username}</strong>: ${replyText}`;
+                
+                const parentCommentElement = document.getElementById(`comment-${parentCommentId}`);
+                const repliesContainer = parentCommentElement.querySelector(".replies") || document.createElement("div");
+                
+                repliesContainer.classList.add("replies");
+                repliesContainer.appendChild(repliesDiv);
+
+                parentCommentElement.appendChild(repliesContainer);
+
                 document.getElementById(`reply-text-${parentCommentId}`).value = "";  // Clear reply input
                 toggleReplyInput(parentCommentId);  // Hide reply input
             }
