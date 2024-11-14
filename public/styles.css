@@ -814,3 +814,29 @@ main {
 .comment .reply-button:hover {
     color: #005bb5;  /* Darker shade on hover */
 }
+/* Style for Show/Hide Replies button */
+.toggle-replies-button {
+    background: none;
+    border: none;
+    color: #0073e6;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.toggle-replies-button:hover {
+    color: #005bb5;  /* Darker shade on hover */
+}
+
+/* Styling for replies container */
+.replies {
+    margin-left: 20px;
+    border-left: 1px solid #ddd;
+    padding-left: 10px;
+}
+
+.hidden {
+    display: none;
+}
