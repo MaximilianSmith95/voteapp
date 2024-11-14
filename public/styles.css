@@ -21,10 +21,7 @@ header {
 header h1 {
     font-size: 3rem; /* Keep a large font size */
     font-weight: bold;
-    color: #28a745; /* Primary green color */
-    background: linear-gradient(135deg, #ff6b6b, #ffd93b, #00c9a7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #28a745; /* Solid green color */
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
     font-family: "Press Start 2P", "VT323", monospace; /* Retro computer font */
     margin: 0;
