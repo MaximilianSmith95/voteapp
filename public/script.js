@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             allCategoriesData = data; // Store the data globally
-            renderCategories(data);
+            const shuffledData = shuffleArray([...data]); // Shuffle the data for random order
+            renderCategories(shuffledData); // Render shuffled categories
         })
         .catch(error => {
             console.error('Error fetching categories:', error);
