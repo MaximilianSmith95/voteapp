@@ -26,10 +26,11 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
-    font-family: "Comic Sans MS", "Comic Sans", cursive; /* Playful font style */
+    font-family: "Press Start 2P", "VT323", monospace; /* Retro computer font */
     margin: 0;
     padding: 10px 0;
-    letter-spacing: 2px; /* Add space between letters for a more open feel */
+    letter-spacing: 1.5px; /* Slight space between letters for a techy look */
+    line-height: 1.2; /* Adjust line height for readability */
 }
 
 
