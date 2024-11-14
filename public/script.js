@@ -80,21 +80,20 @@ function renderCategories(categories) {
     categories.forEach(category => {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
-
-        // Set the data-category-id attribute to the category's unique ID
         categoryDiv.setAttribute("data-category-id", category.category_id);
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
-      // Sort subjects by votes and limit to 15 items
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const limitedSubjects = sortedSubjects.slice(0, 15);
 
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
-        sortedSubjects.forEach(subject => {
+        limitedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
+            subjectDiv.setAttribute("data-subject-id", subject.subject_id);
+
             subjectDiv.innerHTML = `
                 <p style="display: inline-block;">
                     <a href="${subject.link}" target="_blank">${subject.name}</a>
