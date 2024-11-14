@@ -174,9 +174,15 @@ main {
 }
 
 .comments-container {
+    max-width: 400px;
     max-height: 200px;
     overflow-y: auto;
-    margin-bottom: 10px;
+    overflow-x: hidden;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
 .comment {
@@ -208,12 +214,16 @@ main {
     font-size: 0.9rem;
 }
 
-/* Toggle button */
+.hidden {
+    display: none;
+}
+
+/* Comment toggle button (gray arrow) */
 .comment-toggle {
-    background: transparent;
+    background: none;
     border: none;
     font-size: 0.9rem;
-    color: #333;
+    color: #808080;
     cursor: pointer;
 }
 
@@ -353,3 +363,4 @@ main {
         border-top: 40px solid #808080;
     }
 }
+
