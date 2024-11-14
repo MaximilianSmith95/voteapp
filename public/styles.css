@@ -21,7 +21,7 @@ header {
 header h1 {
     font-size: 3rem; /* Keep a large font size */
     font-weight: bold;
-    color: #ff6b6b;
+    color: #28a745; /* Primary green color */
     background: linear-gradient(135deg, #ff6b6b, #ffd93b, #00c9a7);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
