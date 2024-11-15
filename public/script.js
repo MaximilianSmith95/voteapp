@@ -70,7 +70,18 @@ window.filterContent = function () {
         category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
     });
 };
+const fuse = new Fuse(allCategoriesData, {
+    keys: ['name', 'subjects.name'], // Searchable fields
+    includeScore: true, // Include score for ranking
+    threshold: 0.3, // Match confidence
+});
 
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value;
+    const results = fuse.search(searchTerm).map(result => result.item);
+
+    renderCategories(results); // Render only the matched categories
+};
 
 // Function to zoom and centralize a category when clicked
 function zoomCategory(event) {
