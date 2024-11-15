@@ -91,8 +91,8 @@ function addCategoryZoomListeners() {
         });
     });
 
-    // Reset zoom and fade when clicking the overlay
     document.getElementById('overlay').addEventListener('click', () => {
+        // Remove zoom and fade effects
         document.querySelectorAll('.category').forEach(category => {
             category.classList.remove('zoomed');
         });
@@ -100,6 +100,7 @@ function addCategoryZoomListeners() {
         document.getElementById('overlay').classList.remove('active');
     });
 }
+
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -114,7 +115,6 @@ function renderCategories(categories) {
 
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const limitedSubjects = sortedSubjects.slice(0, 100);
-
 
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
@@ -145,10 +145,11 @@ function renderCategories(categories) {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
-     // Add zoom listeners to each category after rendering
-    addCategoryZoomListeners();
 
+    // Call the function to add zoom event listeners
+    addCategoryZoomListeners();
 }
+
 
 
 function upvote(subjectId) {
