@@ -857,6 +857,7 @@ main {
     z-index: 20;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     background-color: white;
+    padding: 20px; /* Optional: Add padding for better spacing */
 }
 .category h2 {
     font-size: 1.3rem;
