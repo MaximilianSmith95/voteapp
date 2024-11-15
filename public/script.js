@@ -69,54 +69,12 @@ window.filterContent = function () {
 
         category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
     });
-const synonymMap = {
-    store: ['shop', 'market'],
-    car: ['vehicle', 'automobile', 'ride'], // Example additional synonyms
 };
 
-function expandSearchTerm(term) {
-    // Return the term and its synonyms if available
-    return synonymMap[term.toLowerCase()] || [term];
-}
-
-// Initialize Fuse.js instance
-const fuse = new Fuse(allCategoriesData, {
-    keys: ['name', 'subjects.name'], // Fields to search in
-    includeScore: true, // Include score to prioritize matches
-    threshold: 0.4, // Match confidence threshold (lower = stricter match)
-});
-
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    
-    // Expand search terms to include synonyms
-    const expandedTerms = expandSearchTerm(searchTerm);
-
-    // Perform search for each expanded term
-    const results = expandedTerms.flatMap(term =>
-        fuse.search(term).map(result => result.item)
-    );
-
-    // Render only the matched categories
-    renderCategories(results);
-};
-
-    
-};
-let suggestionsContainer = document.getElementById('suggestions'); // Add a container in HTML
-
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    const suggestions = allCategoriesData
-        .flatMap(category => category.subjects.map(subject => subject.name))
-        .filter(name => name.toLowerCase().includes(searchTerm));
-    
-    suggestionsContainer.innerHTML = suggestions.map(name => `<div>${name}</div>`).join('');
-};
 
 // Function to zoom and centralize a category when clicked
 function zoomCategory(event) {
-    const category = event.currentTarget.closest(".category"); // Get the parent .category div
+    const category = event.currentTarget; // Get the clicked category
     const overlay = document.getElementById("overlay");
     overlay.classList.add("active"); // Show the overlay
     category.classList.add("zoomed"); // Add zoom effect to the category
@@ -128,6 +86,12 @@ function zoomCategory(event) {
     };
 }
 
+// Attach zoomCategory function to each category's title
+function enableCategoryZoom() {
+    document.querySelectorAll(".category h2").forEach(title => {
+        title.addEventListener("click", zoomCategory);
+    });
+}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -171,20 +135,13 @@ function renderCategories(categories) {
 
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
-
-        // Attach the zoom functionality to the category title
-        categoryDiv.querySelector("h2").addEventListener("click", () => {
-            const overlay = document.getElementById("overlay");
-            overlay.classList.add("active");
-            categoryDiv.classList.add("zoomed");
-
-            overlay.onclick = () => {
-                overlay.classList.remove("active");
-                categoryDiv.classList.remove("zoomed");
-            };
-        });
     });
+    
+    enableCategoryZoom(); // Enable zoom functionality
 }
+
+
+
 
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
@@ -578,5 +535,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+
+
+
+
+
+
+    
 
     
