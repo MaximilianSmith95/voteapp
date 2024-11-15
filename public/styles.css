@@ -858,3 +858,16 @@ main {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     background-color: white;
 }
+.category h2 {
+    font-size: 1.3rem;
+    color: #00a8cc;
+    margin: 0 0 10px;
+    border-bottom: 2px solid #00a8cc;
+    padding-bottom: 5px;
+    cursor: pointer; /* This changes the cursor to a hand */
+    transition: color 0.2s ease;
+}
+
+.category h2:hover {
+    color: #0073e6; /* Optional: Adds a hover effect to reinforce that it's clickable */
+}
