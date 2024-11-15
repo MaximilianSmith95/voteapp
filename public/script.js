@@ -74,7 +74,7 @@ window.filterContent = function () {
 
 // Function to zoom and centralize a category when clicked
 function zoomCategory(event) {
-    const category = event.currentTarget; // Get the clicked category
+    const category = event.currentTarget.closest(".category"); // Get the parent .category div
     const overlay = document.getElementById("overlay");
     overlay.classList.add("active"); // Show the overlay
     category.classList.add("zoomed"); // Add zoom effect to the category
@@ -86,12 +86,6 @@ function zoomCategory(event) {
     };
 }
 
-// Attach zoomCategory function to each category's title
-function enableCategoryZoom() {
-    document.querySelectorAll(".category h2").forEach(title => {
-        title.addEventListener("click", zoomCategory);
-    });
-}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -137,7 +131,14 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
     
-    enableCategoryZoom(); // Enable zoom functionality
+       enableCategoryZoom(); // Enable zoom functionality
+}
+
+// Ensure the enableCategoryZoom function
+function enableCategoryZoom() {
+    document.querySelectorAll(".category h2").forEach(title => {
+        title.addEventListener("click", zoomCategory);
+    });
 }
 
 
