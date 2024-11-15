@@ -131,11 +131,11 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
     
-       enableCategoryZoom(); // Enable zoom functionality
+       addCategoryZoomListeners(); // Enable zoom functionality
 }
 
-// Ensure the enableCategoryZoom function
-function enableCategoryZoom() {
+// Ensure the addCategoryZoomListeners function
+function addCategoryZoomListeners() {
     document.querySelectorAll(".category h2").forEach(title => {
         title.addEventListener("click", zoomCategory);
     });
