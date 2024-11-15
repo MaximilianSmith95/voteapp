@@ -69,38 +69,39 @@ window.filterContent = function () {
 
         category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
     });
-};
-const fuse = new Fuse(allCategoriesData, {
-    keys: ['name', 'subjects.name'], // Searchable fields
-    includeScore: true, // Include score for ranking
-    threshold: 0.3, // Match confidence
-});
-
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value;
-    const results = fuse.search(searchTerm).map(result => result.item);
-    const synonymMap = {
+const synonymMap = {
     store: ['shop', 'market'],
+    car: ['vehicle', 'automobile', 'ride'], // Example additional synonyms
 };
 
 function expandSearchTerm(term) {
-    return synonymMap[term] || [term];
+    // Return the term and its synonyms if available
+    return synonymMap[term.toLowerCase()] || [term];
 }
 
+// Initialize Fuse.js instance
 const fuse = new Fuse(allCategoriesData, {
-    keys: ['name', 'subjects.name'],
-    threshold: 0.4,
+    keys: ['name', 'subjects.name'], // Fields to search in
+    includeScore: true, // Include score to prioritize matches
+    threshold: 0.4, // Match confidence threshold (lower = stricter match)
 });
 
-function filterContent() {
+window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    
+    // Expand search terms to include synonyms
     const expandedTerms = expandSearchTerm(searchTerm);
 
+    // Perform search for each expanded term
     const results = expandedTerms.flatMap(term =>
         fuse.search(term).map(result => result.item)
     );
 
-    renderCategories(results); // Render only the matched categories
+    // Render only the matched categories
+    renderCategories(results);
+};
+
+    
 };
 let suggestionsContainer = document.getElementById('suggestions'); // Add a container in HTML
 
