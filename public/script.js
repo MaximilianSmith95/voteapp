@@ -498,6 +498,50 @@ document.getElementById('overlay').addEventListener('click', () => {
     document.querySelector('#categories').classList.remove('faded');
     document.getElementById('overlay').classList.remove('active');
 });
+// Function to wrap each category in a .category div and ensure titles are in <h2> tags
+function initializeCategoryStructure() {
+    const categoriesContainer = document.getElementById("categories");
+    
+    // Assuming each category currently in `categoriesContainer` is a direct child
+    Array.from(categoriesContainer.children).forEach((categoryElement) => {
+        // Check if the category element is already wrapped in a .category div
+        if (!categoryElement.classList.contains("category")) {
+            // Create a new div wrapper with the .category class
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("category");
+
+            // Check if the first child of the element is already an <h2>
+            if (categoryElement.firstElementChild && categoryElement.firstElementChild.tagName !== "H2") {
+                // If not, create an <h2> for the title
+                const title = document.createElement("h2");
+                title.textContent = categoryElement.firstElementChild.textContent;
+                
+                // Remove the original title element
+                categoryElement.firstElementChild.remove();
+                
+                // Insert the new <h2> as the first child of the wrapper
+                wrapper.appendChild(title);
+            } else {
+                // If the first element is already an <h2>, move it into the wrapper
+                wrapper.appendChild(categoryElement.firstElementChild);
+            }
+            
+            // Move all other content into the wrapper
+            while (categoryElement.firstChild) {
+                wrapper.appendChild(categoryElement.firstChild);
+            }
+            
+            // Replace the original categoryElement with the wrapper
+            categoriesContainer.replaceChild(wrapper, categoryElement);
+        }
+    });
+}
+
+// Call initializeCategoryStructure after DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    initializeCategoryStructure();
+    addCategoryZoomListeners();  // Make sure listeners are attached to the new structure
+});
 
 
 
