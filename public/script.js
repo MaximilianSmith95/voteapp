@@ -72,32 +72,44 @@ window.filterContent = function () {
 };
 // Function to add zoom and fade listeners to categories
 function addCategoryZoomListeners() {
-    document.querySelectorAll('.category h2').forEach(title => {
+    document.querySelectorAll('.category h2').forEach((title, index) => {
+        console.log(`Attaching listener to category title ${index}:`, title.textContent);
+
         title.addEventListener('click', () => {
+            console.log(`Category title clicked: ${title.textContent}`);
+
             // Remove 'zoomed' from any other zoomed category
             document.querySelectorAll('.category').forEach(category => {
                 category.classList.remove('zoomed');
             });
+            console.log("Removed 'zoomed' class from other categories.");
 
             // Add 'zoomed' to clicked category
             const category = title.parentElement;
             category.classList.add('zoomed');
-            
+            console.log("Added 'zoomed' class to the clicked category:", category);
+
             // Add 'faded' class to container to fade out other sections
             document.querySelector('#categories').classList.add('faded');
-            
+            console.log("Added 'faded' class to #categories.");
+
             // Activate the overlay
             document.getElementById('overlay').classList.add('active');
+            console.log("Activated the overlay.");
         });
     });
 
+    // Event listener for overlay to reset view
     document.getElementById('overlay').addEventListener('click', () => {
+        console.log("Overlay clicked, resetting view.");
+
         // Remove zoom and fade effects
         document.querySelectorAll('.category').forEach(category => {
             category.classList.remove('zoomed');
         });
         document.querySelector('#categories').classList.remove('faded');
         document.getElementById('overlay').classList.remove('active');
+        console.log("Removed 'zoomed', 'faded', and 'active' classes.");
     });
 }
 
