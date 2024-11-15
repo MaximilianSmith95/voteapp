@@ -858,8 +858,3 @@ main {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     background-color: white;
 }
-
-/* Fade other categories */
-.category-container.faded .category:not(.zoomed) {
-    opacity: 0.2;
-}
