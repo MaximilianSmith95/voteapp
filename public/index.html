@@ -96,12 +96,12 @@
         <button onclick="showLatestCategories()">Latest</button>
     </nav>
     
-<div id="overlay" class="overlay hidden"></div> 
-    <main id="categories"></main>
 
+    <main id="categories">
+      <div id="overlay" class="overlay hidden"></div>
       <div id="topicsContainer"></div>
-
-<script>
+</main>
+       <script>
         window.addEventListener("load", function() {
             document.getElementById("loading-animation").style.display = "none";
         });
