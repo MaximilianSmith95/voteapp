@@ -827,7 +827,6 @@ main {
     font-size: 1rem;
     resize: vertical;  /* Allow vertical resizing if desired */
     margin-top: 10px;
-}
 /* Overlay styling */
 .overlay {
     display: none;
@@ -856,7 +855,7 @@ main {
     transform: translate(-50%, -50%) scale(1.2);
     z-index: 20;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    background-color: white; /* Ensure it's prominent */
+    background-color: white;
 }
 
 /* Fade other categories */
