@@ -70,7 +70,36 @@ window.filterContent = function () {
         category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
     });
 };
+// Function to add zoom and fade listeners to categories
+function addCategoryZoomListeners() {
+    document.querySelectorAll('.category h2').forEach(title => {
+        title.addEventListener('click', () => {
+            // Remove 'zoomed' from any other zoomed category
+            document.querySelectorAll('.category').forEach(category => {
+                category.classList.remove('zoomed');
+            });
 
+            // Add 'zoomed' to clicked category
+            const category = title.parentElement;
+            category.classList.add('zoomed');
+            
+            // Add 'faded' class to container to fade out other sections
+            document.querySelector('#categories').classList.add('faded');
+            
+            // Activate the overlay
+            document.getElementById('overlay').classList.add('active');
+        });
+    });
+
+    // Reset zoom and fade when clicking the overlay
+    document.getElementById('overlay').addEventListener('click', () => {
+        document.querySelectorAll('.category').forEach(category => {
+            category.classList.remove('zoomed');
+        });
+        document.querySelector('#categories').classList.remove('faded');
+        document.getElementById('overlay').classList.remove('active');
+    });
+}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -116,6 +145,9 @@ function renderCategories(categories) {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
+     // Add zoom listeners to each category after rendering
+    addCategoryZoomListeners();
+
 }
 
 
