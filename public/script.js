@@ -82,6 +82,16 @@ window.filterContent = function () {
 
     renderCategories(results); // Render only the matched categories
 };
+let suggestionsContainer = document.getElementById('suggestions'); // Add a container in HTML
+
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const suggestions = allCategoriesData
+        .flatMap(category => category.subjects.map(subject => subject.name))
+        .filter(name => name.toLowerCase().includes(searchTerm));
+    
+    suggestionsContainer.innerHTML = suggestions.map(name => `<div>${name}</div>`).join('');
+};
 
 // Function to zoom and centralize a category when clicked
 function zoomCategory(event) {
