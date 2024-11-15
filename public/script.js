@@ -129,20 +129,20 @@ function renderCategories(categories) {
 
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
+
+        // Attach the zoom functionality to the category title
+        categoryDiv.querySelector("h2").addEventListener("click", () => {
+            const overlay = document.getElementById("overlay");
+            overlay.classList.add("active");
+            categoryDiv.classList.add("zoomed");
+
+            overlay.onclick = () => {
+                overlay.classList.remove("active");
+                categoryDiv.classList.remove("zoomed");
+            };
+        });
     });
-    
-       addCategoryZoomListeners(); // Enable zoom functionality
 }
-
-// Ensure the addCategoryZoomListeners function
-function addCategoryZoomListeners() {
-    document.querySelectorAll(".category h2").forEach(title => {
-        title.addEventListener("click", zoomCategory);
-    });
-}
-
-
-
 
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
