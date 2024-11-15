@@ -70,49 +70,28 @@ window.filterContent = function () {
         category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
     });
 };
-// Function to add zoom and fade listeners to categories
-function addCategoryZoomListeners() {
-    document.querySelectorAll('.category h2').forEach((title, index) => {
-        console.log(`Attaching listener to category title ${index}:`, title.textContent);
 
-        title.addEventListener('click', () => {
-            console.log(`Category title clicked: ${title.textContent}`);
 
-            // Remove 'zoomed' from any other zoomed category
-            document.querySelectorAll('.category').forEach(category => {
-                category.classList.remove('zoomed');
-            });
-            console.log("Removed 'zoomed' class from other categories.");
+// Function to zoom and centralize a category when clicked
+function zoomCategory(event) {
+    const category = event.currentTarget; // Get the clicked category
+    const overlay = document.getElementById("overlay");
+    overlay.classList.add("active"); // Show the overlay
+    category.classList.add("zoomed"); // Add zoom effect to the category
 
-            // Add 'zoomed' to clicked category
-            const category = title.parentElement;
-            category.classList.add('zoomed');
-            console.log("Added 'zoomed' class to the clicked category:", category);
-
-            // Add 'faded' class to container to fade out other sections
-            document.querySelector('#categories').classList.add('faded');
-            console.log("Added 'faded' class to #categories.");
-
-            // Activate the overlay
-            document.getElementById('overlay').classList.add('active');
-            console.log("Activated the overlay.");
-        });
-    });
-
-    // Event listener for overlay to reset view
-    document.getElementById('overlay').addEventListener('click', () => {
-        console.log("Overlay clicked, resetting view.");
-
-        // Remove zoom and fade effects
-        document.querySelectorAll('.category').forEach(category => {
-            category.classList.remove('zoomed');
-        });
-        document.querySelector('#categories').classList.remove('faded');
-        document.getElementById('overlay').classList.remove('active');
-        console.log("Removed 'zoomed', 'faded', and 'active' classes.");
-    });
+    // Event listener to close zoomed view when overlay is clicked
+    overlay.onclick = () => {
+        overlay.classList.remove("active");
+        category.classList.remove("zoomed");
+    };
 }
 
+// Attach zoomCategory function to each category's title
+function enableCategoryZoom() {
+    document.querySelectorAll(".category h2").forEach(title => {
+        title.addEventListener("click", zoomCategory);
+    });
+}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -157,10 +136,10 @@ function renderCategories(categories) {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
-
-    // Call the function to add zoom event listeners
-    addCategoryZoomListeners();
+    
+    enableCategoryZoom(); // Enable zoom functionality
 }
+
 
 
 
