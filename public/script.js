@@ -79,6 +79,26 @@ const fuse = new Fuse(allCategoriesData, {
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value;
     const results = fuse.search(searchTerm).map(result => result.item);
+    const synonymMap = {
+    store: ['shop', 'market'],
+};
+
+function expandSearchTerm(term) {
+    return synonymMap[term] || [term];
+}
+
+const fuse = new Fuse(allCategoriesData, {
+    keys: ['name', 'subjects.name'],
+    threshold: 0.4,
+});
+
+function filterContent() {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const expandedTerms = expandSearchTerm(searchTerm);
+
+    const results = expandedTerms.flatMap(term =>
+        fuse.search(term).map(result => result.item)
+    );
 
     renderCategories(results); // Render only the matched categories
 };
