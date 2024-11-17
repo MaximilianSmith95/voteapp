@@ -828,7 +828,36 @@ main {
     resize: vertical;  /* Allow vertical resizing if desired */
     margin-top: 10px;
 }
-/* Overlay styling */
+/* Magnifying Glass Icon */
+.magnify-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #0073e6;
+    z-index: 10;
+}
+
+.magnify-icon:hover {
+    color: #005bb5;
+}
+
+/* Zoomed Category */
+.category.zoomed {
+    transform: scale(1.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.5);
+    z-index: 20;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    background-color: white;
+}
+
+/* Overlay for Zoom Effect */
 .overlay {
     display: none;
     position: fixed;
@@ -845,17 +874,4 @@ main {
 .overlay.active {
     display: block;
     opacity: 1;
-}
-
-/* Zoomed category */
-.category.zoomed {
-    transform: scale(1.2);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(1.2);
-    z-index: 20;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    background-color: white;
-    transition: transform 0.3s ease;
 }
