@@ -13,12 +13,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-// Add event listeners for modal open/close
+// Open and Close Modal
 document.getElementById("addContentButton").addEventListener("click", () => {
     document.getElementById("addContentModal").classList.remove("hidden");
 });
 
 document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("addContentModal").classList.add("hidden");
+});
+
+// Close modal by clicking outside
+document.querySelector(".modal-overlay").addEventListener("click", () => {
     document.getElementById("addContentModal").classList.add("hidden");
 });
 
@@ -34,37 +39,54 @@ function populateCategories() {
     });
 }
 
-// Add form submission handling
+// Add More Subjects
+document.getElementById("addSubjectButton").addEventListener("click", () => {
+    const container = document.getElementById("subjectsContainer");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = "subject[]";
+    input.classList.add("subject-field");
+    input.placeholder = "Enter subject";
+    container.appendChild(input);
+});
+
+// Handle Form Submission
 document.getElementById("contentForm").addEventListener("submit", (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.target);
+    const subjects = formData.getAll("subject[]").filter(subject => subject.trim() !== "");
     const content = {
         name: formData.get("userName"),
         email: formData.get("userEmail"),
         category: formData.get("newCategory") || formData.get("category"),
-        subject: formData.get("subject"),
+        subjects: subjects,
     };
 
-    // Mock email sending (Replace with an actual API/email handling service)
-    fetch('https://api.emailservice.com/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            to: "maximilianjacksmith@gmail.com",
-            subject: `New Content Submission: ${content.category}`,
-            text: `
-                Name: ${content.name}
-                Email: ${content.email}
-                Category: ${content.category}
-                Subject: ${content.subject}
-            `,
-        }),
-    })
-        .then(() => alert("Thank you! Your submission has been received."))
-        .catch(() => alert("Error sending your submission. Please try again later."))
-        .finally(() => document.getElementById("addContentModal").classList.add("hidden"));
+    if (content.subjects.length === 0) {
+        alert("Please add at least one subject.");
+        return;
+    }
+
+    // Send Email Using EmailJS or API
+    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        name: content.name,
+        email: content.email,
+        category: content.category,
+        subjects: content.subjects.join(", "),
+    }).then(() => {
+        alert("Your submission has been received. We'll review it soon!");
+    }).catch(() => {
+        alert("Failed to send your submission. Please try again later.");
+    });
+
+    // Reset form and close modal
+    event.target.reset();
+    document.getElementById("addContentModal").classList.add("hidden");
 });
+
+// Initialize categories on page load
+document.addEventListener("DOMContentLoaded", populateCategories);
 
 // Initialize categories on page load
 document.addEventListener("DOMContentLoaded", populateCategories);
