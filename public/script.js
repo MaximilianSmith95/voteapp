@@ -1,49 +1,70 @@
 let allCategoriesData = []; // Global variable to store initial categories data
 
+// Fetch and render categories on page load
 document.addEventListener("DOMContentLoaded", () => {
-    // Fetch categories without geolocation on page load
     fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
-            allCategoriesData = data; // Store the data globally
-            const shuffledData = shuffleArray([...data]); // Shuffle the data for random order
-            renderCategories(shuffledData); // Render shuffled categories
+            allCategoriesData = data; // Store the fetched data
+            renderCategories(data); // Render the categories
         })
-        .catch(error => {
-            console.error('Error fetching categories:', error);
-        });
+        .catch(error => console.error('Error fetching categories:', error));
 });
-document.addEventListener("DOMContentLoaded", () => {
-    // Select all <h2> elements within categories and attach the click event listener
-    document.querySelectorAll('.category h2').forEach(title => {
-        title.addEventListener('click', () => {
-            // Remove 'zoomed' from any other zoomed category
-            document.querySelectorAll('.category').forEach(category => {
-                category.classList.remove('zoomed');
+
+// Function to render categories in the DOM
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear previous content
+
+    categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+        categoryDiv.setAttribute("data-category-id", category.category_id);
+
+        // Dynamic HTML for category content
+        categoryDiv.innerHTML = `
+            <div class="category-title">${category.name}</div>
+            <div class="subjects scrollable">
+                ${category.subjects.map(subject => `
+                    <div class="subject">
+                        <a href="${subject.link}" target="_blank">${subject.name}</a>
+                        <span class="vote-count">${subject.votes}</span>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+
+        categoriesContainer.appendChild(categoryDiv);
+    });
+
+    enableCategoryZoom(); // Attach zoom functionality to categories
+}
+
+// Function to attach zoom functionality to categories
+function enableCategoryZoom() {
+    const overlay = document.getElementById("overlay");
+
+    document.querySelectorAll(".category").forEach(category => {
+        category.addEventListener("click", () => {
+            // Remove 'zoomed' from other categories
+            document.querySelectorAll(".category.zoomed").forEach(zoomedCategory => {
+                zoomedCategory.classList.remove("zoomed");
             });
 
-            // Add 'zoomed' to clicked category
-            const category = title.parentElement;
-            category.classList.add('zoomed');
-            
-            // Add 'faded' class to container to fade out other sections
-            document.querySelector('#categories').classList.add('faded');
-            
-            // Activate the overlay
-            document.getElementById('overlay').classList.add('active');
-        });
-    });
+            // Add 'zoomed' to the selected category
+            category.classList.add("zoomed");
 
-    // Close zoom effect on overlay click
-    document.getElementById('overlay').addEventListener('click', () => {
-        // Remove zoom and fade effects
-        document.querySelectorAll('.category').forEach(category => {
-            category.classList.remove('zoomed');
+            // Show overlay
+            overlay.classList.add("active");
+
+            // Close zoom on overlay click
+            overlay.addEventListener("click", () => {
+                category.classList.remove("zoomed");
+                overlay.classList.remove("active");
+            });
         });
-        document.querySelector('#categories').classList.remove('faded');
-        document.getElementById('overlay').classList.remove('active');
     });
-});
+}
 // Function to call requestUserLocation on button click
 window.enableGeolocationSearch = function () {
     requestUserLocation();
