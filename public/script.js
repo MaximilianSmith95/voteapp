@@ -143,24 +143,27 @@ window.filterContent = function () {
 
 
 // Function to zoom and centralize a category when clicked
-function zoomCategory(event) {
-    const category = event.currentTarget; // Get the clicked category
+function zoomCategory(button) {
+    const category = button.parentElement; // Get the parent category
     const overlay = document.getElementById("overlay");
     overlay.classList.add("active"); // Show the overlay
-    category.classList.add("zoomed"); // Add zoom effect to the category
+    category.classList.add("zoomed"); // Add zoom effect
 
-    // Event listener to close zoomed view when overlay is clicked
+    // Close the zoom effect on overlay click
     overlay.onclick = () => {
         overlay.classList.remove("active");
         category.classList.remove("zoomed");
     };
 }
 
-// Attach zoomCategory function to each category's title
-function enableCategoryZoom() {
-    document.querySelectorAll(".category h2").forEach(title => {
-        title.addEventListener("click", zoomCategory);
-    });
+// Initialize Overlay
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.createElement("div");
+    overlay.id = "overlay";
+    overlay.classList.add("overlay");
+    document.body.appendChild(overlay);
+});
+
 }
 
 // Function to render categories in the DOM
