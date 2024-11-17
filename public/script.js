@@ -117,26 +117,7 @@ window.filterContent = function () {
 };
 
 
-// Function to zoom and centralize a category when clicked
-function zoomCategory(event) {
-    const category = event.currentTarget; // Get the clicked category
-    const overlay = document.getElementById("overlay");
-    overlay.classList.add("active"); // Show the overlay
-    category.classList.add("zoomed"); // Add zoom effect to the category
 
-    // Event listener to close zoomed view when overlay is clicked
-    overlay.onclick = () => {
-        overlay.classList.remove("active");
-        category.classList.remove("zoomed");
-    };
-}
-
-// Attach zoomCategory function to each category's title
-function enableCategoryZoom() {
-    document.querySelectorAll(".category h2").forEach(title => {
-        title.addEventListener("click", zoomCategory);
-    });
-}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -181,9 +162,7 @@ function renderCategories(categories) {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
-    
-    enableCategoryZoom(); // Enable zoom functionality
-}
+
 
 
 
@@ -579,7 +558,65 @@ document.addEventListener("DOMContentLoaded", () => {
     addCategoryZoomListeners();  // Make sure listeners are attached to the new structure
 });
 
+let allCategoriesData = []; // Global variable to store initial categories data
 
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.createElement("div");
+    overlay.id = "overlay";
+    overlay.classList.add("overlay");
+    document.body.appendChild(overlay);
+
+    fetch('/api/categories')
+        .then(response => response.json())
+        .then(data => {
+            allCategoriesData = data; // Store the fetched data
+            renderCategories(data); // Render the categories
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+});
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear previous content
+
+    categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+        categoryDiv.setAttribute("data-category-id", category.category_id);
+
+        categoryDiv.innerHTML = `
+            <h2>${category.name}</h2>
+            <button class="magnify-icon" onclick="zoomCategory(this)">
+                🔍
+            </button>
+            <div class="subjects scrollable">
+                ${category.subjects
+                    .map(subject => `
+                        <div class="subject">
+                            <a href="${subject.link}" target="_blank">${subject.name}</a>
+                            <span class="vote-count">${subject.votes}</span>
+                        </div>
+                    `)
+                    .join("")}
+            </div>
+        `;
+
+        categoriesContainer.appendChild(categoryDiv);
+    });
+
+    enableCategoryZoom(); // Attach zoom functionality to categories
+}
+function zoomCategory(button) {
+    const category = button.parentElement; // Get the parent category div
+    const overlay = document.getElementById("overlay");
+    overlay.classList.add("active"); // Show the overlay
+    category.classList.add("zoomed"); // Add zoom effect
+
+    // Close the zoom effect when clicking the overlay
+    overlay.onclick = () => {
+        overlay.classList.remove("active");
+        category.classList.remove("zoomed");
+    };
+}
 
 
 
