@@ -847,6 +847,7 @@ main {
     opacity: 1;
 }
 
+/* Zoomed category */
 .category.zoomed {
     transform: scale(1.2);
     position: fixed;
@@ -856,18 +857,5 @@ main {
     z-index: 20;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     background-color: white;
-}
-
-#categories.faded .category:not(.zoomed) {
-    opacity: 0.3;
-    pointer-events: none;
-}
-
-.category h2 {
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.category h2:hover {
-    color: #0073e6;
+    transition: transform 0.3s ease;
 }
