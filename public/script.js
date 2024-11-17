@@ -1,14 +1,6 @@
 let allCategoriesData = []; // Global variable to store initial categories data
 
 document.addEventListener("DOMContentLoaded", () => {
-    const acceptButton = document.getElementById("acceptButton");
-    const termsModal = document.getElementById("termsModal");
-
-    acceptButton.addEventListener("click", () => {
-        termsModal.style.display = "none";
-    });
-
-document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
     fetch('/api/categories')
         .then(response => response.json())
@@ -21,37 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error fetching categories:', error);
         });
 });
-document.addEventListener("DOMContentLoaded", () => {
-    // Select all <h2> elements within categories and attach the click event listener
-    document.querySelectorAll('.category h2').forEach(title => {
-        title.addEventListener('click', () => {
-            // Remove 'zoomed' from any other zoomed category
-            document.querySelectorAll('.category').forEach(category => {
-                category.classList.remove('zoomed');
-            });
 
-            // Add 'zoomed' to clicked category
-            const category = title.parentElement;
-            category.classList.add('zoomed');
-            
-            // Add 'faded' class to container to fade out other sections
-            document.querySelector('#categories').classList.add('faded');
-            
-            // Activate the overlay
-            document.getElementById('overlay').classList.add('active');
-        });
-    });
-
-    // Close zoom effect on overlay click
-    document.getElementById('overlay').addEventListener('click', () => {
-        // Remove zoom and fade effects
-        document.querySelectorAll('.category').forEach(category => {
-            category.classList.remove('zoomed');
-        });
-        document.querySelector('#categories').classList.remove('faded');
-        document.getElementById('overlay').classList.remove('active');
-    });
-});
 // Function to call requestUserLocation on button click
 window.enableGeolocationSearch = function () {
     requestUserLocation();
@@ -369,6 +331,123 @@ window.filterByNavTopic = function (topic) {
 
     // Render the shuffled filtered categories
     renderCategories(shuffledFilteredCategories);
+};
+
+
+const navTopicMapping = {
+    Sport: [
+        "Current Liverpool Players",
+        "Current Everton Players",
+        "Most Popular Global Sports",
+        "Most Overrated Soccer Players of the Last Decade",
+        "Most Iconic Underdog Teams in Soccer History",
+        "Best Soccer Rivalries of All Time",
+        "Top Sportswear Stores",
+        "Most Controversial Topics in Sports",
+        "The Best Footballers in Premier League History",
+        "Best European Football Teams",
+        "Best Footballers of All Time",
+        "The Best Football Players of the 21st Century",
+        "The Most Iconic Olympic Moments",
+        "The Best Football Clubs in English History",
+        "The Greatest NBA Players of All Time",
+        "The Best Boxers in History",
+        "The Hardest Olympic Sports",
+        "The Hardest Sports to be the GOAT"
+    ],
+    Travel: [
+        "Best Cafés Liverpool",
+        "Best Restaurants Liverpool",
+        "Best Landmarks Liverpool",
+        "Nights Out Liverpool",
+        "Museums and Galleries Liverpool",
+        "Parks and Outdoor Spaces Liverpool",
+        "Best South American Countries for Backpackers",
+        "Best Vegan Restaurants in the World",
+        "Best Cafes in London",
+        "Best Nightlife Spots in London",
+        "Worst Things About London",
+        "Best Cafes in Manchester",
+        "Best Nightlife Spots in Manchester",
+        "Worst Things About Manchester",
+        "Best Cafes in New York",
+        "Best Nightlife Spots in New York",
+        "Worst Things About New York",
+        "Best Nightlife Spots in Liverpool",
+        "Worst Things About Liverpool",
+        "Top Adventure Destinations for Backpackers",
+        "Best Places to Go Camping in the UK",
+        "Essential Items for Backpacking",
+        "Best Countries for Backpackers",
+        "Best Websites for Backpackers",
+        "The Best Indie Music Venues in Manchester",
+        "Best Places to Rave in the UK",
+        "Best Places to Rave in the World"
+    ],
+    Entertainment: [
+        "Most Disappointing Horror Films of 2024",
+        "Most Confusing Movie Endings of All Time",
+        "Most Unexpected Box Office Flops",
+        "Best Soundtracks from 90s Movies",
+        "The Best British Comedy TV Shows",
+        "The Best Horror Movies of All Time",
+        "The Most Iconic Movie Soundtracks",
+        "Best Actors and Actresses of All Time",
+        "Best British Films",
+        "The Worst Hairstyles in History",
+        "The Most Iconic Movie Soundtracks",
+        "Most Controversial Topics in Film",
+        "The Most Memorable World Cup Moments",
+        "The Best Art Galleries in Liverpool",
+        "The Best Live Music Venues in Liverpool",
+        "The Best Historic Buildings in Manchester",
+        "Famous Landmarks in Manchester",
+        "Top Museums and Galleries in Manchester",
+        "Best Restaurants in Edinburgh",
+        "The Most Historic Sites in Edinburgh",
+        "Best British High Street Clothing Brands",
+        "Best British Online Shopping Sites",
+        "Best British Department Stores"
+    ],
+    Music: [
+        "Most Overplayed Songs of the 2010s",
+        "Most Misinterpreted Song Lyrics",
+        "Weirdest Music Genres You've Probably Never Heard Of",
+        "Most Influential Musicians of All Time",
+        "Most Controversial Topics in Music",
+        "Best New Rap Artists of the 2020s",
+        "Top TikTok Dance Songs of All Time",
+        "Best Pop Songs of the 2010s",
+        "Best Electronic Dance Music (EDM) Songs of the 2010s",
+        "Most Influential Rappers of the 2000s and 2010s",
+        "The Best Indie Music Venues in Manchester"
+    ],
+    History: [
+        "Controversial Artists of the 20th Century",
+        "Most Impactful Philosophers",
+        "Top Political Thinkers of Modern Times",
+        "Most Bizarre Unsolved Mysteries in History",
+        "Most Influential Scientists in History",
+        "The Worst Diseases in Human History",
+        "The Most Fascinating Ancient Civilizations",
+        "The Most Famous British Authors",
+        "The Most Haunted Locations in the UK",
+        "The Most Notable Historic Pubs in London"
+    ],
+    Miscellaneous: [
+        "Popular Internet Games",
+        "Worst President of the United States",
+        "Worst Smells",
+        "Most Famous People, Dead or Alive",
+        "The Future: Predictions and Concerns",
+        "Inventions: Past and Future",
+        "Best British Supermarkets",
+        "Most Popular British Pub Foods",
+        "Best British Gins",
+        "Most Popular British Cheeses",
+        "Best Beers Around the World",
+        "Best Wine-Producing Countries"
+    ]
 };
 
 window.toggleComments = function(subjectId) {
