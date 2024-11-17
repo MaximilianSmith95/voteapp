@@ -6,6 +6,55 @@ document.addEventListener("DOMContentLoaded", () => {
     acceptButton.addEventListener("click", () => {
         termsModal.style.display = "none";
     });
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.createElement("div");
+    overlay.id = "overlay";
+    overlay.classList.add("overlay");
+    document.body.appendChild(overlay);
+
+    let zoomedElement = null;
+
+    // Handle click events on the page
+    document.addEventListener("click", (event) => {
+        const target = event.target;
+
+        // Ignore clicks on buttons, links, or interactive elements
+        if (
+            target.tagName === "BUTTON" ||
+            target.tagName === "A" ||
+            target.closest(".interactive")
+        ) {
+            return;
+        }
+
+        // Zoom in on the nearest .category or reset zoom
+        if (zoomedElement) {
+            resetZoom();
+        } else {
+            const nearestCategory = target.closest(".category");
+            if (nearestCategory) {
+                zoomIn(nearestCategory);
+            }
+        }
+    });
+
+    // Reset zoom on overlay click
+    overlay.addEventListener("click", resetZoom);
+
+    function zoomIn(element) {
+        element.classList.add("zoomed");
+        overlay.classList.add("active");
+        zoomedElement = element;
+    }
+
+    function resetZoom() {
+        if (zoomedElement) {
+            zoomedElement.classList.remove("zoomed");
+            overlay.classList.remove("active");
+            zoomedElement = null;
+        }
+    }
+});
 
     window.addEventListener("click", (event) => {
         if (event.target === termsModal) {
