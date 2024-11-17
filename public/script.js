@@ -2,76 +2,48 @@ let allCategoriesData = []; // Global variable to store initial categories data
 
 document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
-   fetch('/api/categories')
+    fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
-            allCategoriesData = data;
-            const shuffledData = shuffleArray([...data]);
-            renderCategories(shuffledData);
-            enableCategoryZoom();
+            allCategoriesData = data; // Store the data globally
+            const shuffledData = shuffleArray([...data]); // Shuffle the data for random order
+            renderCategories(shuffledData); // Render shuffled categories
         })
         .catch(error => {
             console.error('Error fetching categories:', error);
         });
 });
+document.addEventListener("DOMContentLoaded", () => {
+    // Select all <h2> elements within categories and attach the click event listener
+    document.querySelectorAll('.category h2').forEach(title => {
+        title.addEventListener('click', () => {
+            // Remove 'zoomed' from any other zoomed category
+            document.querySelectorAll('.category').forEach(category => {
+                category.classList.remove('zoomed');
+            });
 
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById('categories');
-    categoriesContainer.innerHTML = "";
-
-    categories.forEach(category => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.classList.add('category');
-        categoryDiv.innerHTML = `
-            <h2>${category.name}</h2>
-            <div class="subjects">
-                ${category.subjects.map(subject => `
-                    <div class="subject">
-                        <p>${subject.name}</p>
-                        <span class="vote-container">
-                            <span class="vote-count">${subject.votes}</span>
-                            <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
-                        </span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-function enableCategoryZoom() {
-    document.querySelectorAll(".category h2").forEach(title => {
-        title.addEventListener("click", zoomCategory);
-    });
-
-    const overlay = document.getElementById("overlay");
-    overlay.addEventListener("click", () => {
-        document.querySelectorAll(".category").forEach(category => {
-            category.classList.remove("zoomed");
+            // Add 'zoomed' to clicked category
+            const category = title.parentElement;
+            category.classList.add('zoomed');
+            
+            // Add 'faded' class to container to fade out other sections
+            document.querySelector('#categories').classList.add('faded');
+            
+            // Activate the overlay
+            document.getElementById('overlay').classList.add('active');
         });
-        document.getElementById('categories').classList.remove('faded');
-        overlay.classList.remove('active');
     });
-}
 
-function zoomCategory(event) {
-    const category = event.currentTarget.parentElement;
-    const overlay = document.getElementById("overlay");
-
-    document.querySelectorAll('.category').forEach(cat => cat.classList.remove('zoomed'));
-    category.classList.add('zoomed');
-    document.getElementById('categories').classList.add('faded');
-    overlay.classList.add('active');
-}
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
+    // Close zoom effect on overlay click
+    document.getElementById('overlay').addEventListener('click', () => {
+        // Remove zoom and fade effects
+        document.querySelectorAll('.category').forEach(category => {
+            category.classList.remove('zoomed');
+        });
+        document.querySelector('#categories').classList.remove('faded');
+        document.getElementById('overlay').classList.remove('active');
+    });
+});
 // Function to call requestUserLocation on button click
 window.enableGeolocationSearch = function () {
     requestUserLocation();
