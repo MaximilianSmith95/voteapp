@@ -7,6 +7,37 @@
         <button id="acceptButton">Got it!</button>
     </div>
 </div>
+<!-- Add Button in the Header -->
+<header>
+    ...
+    <button id="addContentButton" class="top-right-btn">Add Content</button>
+</header>
+
+<!-- Add Content Form Modal -->
+<div id="addContentModal" class="modal hidden">
+    <div class="modal-content">
+        <span id="closeModal" class="close-btn">&times;</span>
+        <h2>Submit Your Content</h2>
+        <form id="contentForm">
+            <label for="userName">Name:</label>
+            <input type="text" id="userName" name="userName" required>
+
+            <label for="userEmail">Email:</label>
+            <input type="email" id="userEmail" name="userEmail" required>
+
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                <option value="">Select Existing</option>
+            </select>
+            <input type="text" id="newCategory" name="newCategory" placeholder="Or Create New Category">
+
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
 
 </div>
     <meta charset="UTF-8">
