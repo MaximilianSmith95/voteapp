@@ -1,6 +1,21 @@
 let allCategoriesData = []; // Global variable to store initial categories data
 
 document.addEventListener("DOMContentLoaded", () => {
+    const acceptButton = document.getElementById("acceptButton");
+    const termsModal = document.getElementById("termsModal");
+
+    acceptButton.addEventListener("click", () => {
+        termsModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (event) => {
+        if (event.target === termsModal) {
+            termsModal.style.display = "none";
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
     fetch('/api/categories')
         .then(response => response.json())
