@@ -149,9 +149,6 @@ function renderCategories(categories) {
         categoryDiv.classList.add("category");
         categoryDiv.setAttribute("data-category-id", category.category_id);
         categoryDiv.innerHTML = `
-            <h2>${category.name}</h2>
-            <button class="magnify-icon" onclick="zoomCategory(this)">🔍</button>
-            <div class="subjects scrollable">
 
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const limitedSubjects = sortedSubjects.slice(0, 100);
