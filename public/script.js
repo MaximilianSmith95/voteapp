@@ -13,6 +13,61 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+// Add event listeners for modal open/close
+document.getElementById("addContentButton").addEventListener("click", () => {
+    document.getElementById("addContentModal").classList.remove("hidden");
+});
+
+document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("addContentModal").classList.add("hidden");
+});
+
+// Populate existing categories in the dropdown
+function populateCategories() {
+    const dropdown = document.getElementById("category");
+    dropdown.innerHTML = `<option value="">Select Existing</option>`;
+    allCategoriesData.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category.name;
+        option.textContent = category.name;
+        dropdown.appendChild(option);
+    });
+}
+
+// Add form submission handling
+document.getElementById("contentForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const content = {
+        name: formData.get("userName"),
+        email: formData.get("userEmail"),
+        category: formData.get("newCategory") || formData.get("category"),
+        subject: formData.get("subject"),
+    };
+
+    // Mock email sending (Replace with an actual API/email handling service)
+    fetch('https://api.emailservice.com/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            to: "maximilianjacksmith@gmail.com",
+            subject: `New Content Submission: ${content.category}`,
+            text: `
+                Name: ${content.name}
+                Email: ${content.email}
+                Category: ${content.category}
+                Subject: ${content.subject}
+            `,
+        }),
+    })
+        .then(() => alert("Thank you! Your submission has been received."))
+        .catch(() => alert("Error sending your submission. Please try again later."))
+        .finally(() => document.getElementById("addContentModal").classList.add("hidden"));
+});
+
+// Initialize categories on page load
+document.addEventListener("DOMContentLoaded", populateCategories);
 
 document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
