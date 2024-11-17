@@ -13,7 +13,37 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error fetching categories:', error);
         });
 });
+document.addEventListener("DOMContentLoaded", () => {
+    // Select all <h2> elements within categories and attach the click event listener
+    document.querySelectorAll('.category h2').forEach(title => {
+        title.addEventListener('click', () => {
+            // Remove 'zoomed' from any other zoomed category
+            document.querySelectorAll('.category').forEach(category => {
+                category.classList.remove('zoomed');
+            });
 
+            // Add 'zoomed' to clicked category
+            const category = title.parentElement;
+            category.classList.add('zoomed');
+            
+            // Add 'faded' class to container to fade out other sections
+            document.querySelector('#categories').classList.add('faded');
+            
+            // Activate the overlay
+            document.getElementById('overlay').classList.add('active');
+        });
+    });
+
+    // Close zoom effect on overlay click
+    document.getElementById('overlay').addEventListener('click', () => {
+        // Remove zoom and fade effects
+        document.querySelectorAll('.category').forEach(category => {
+            category.classList.remove('zoomed');
+        });
+        document.querySelector('#categories').classList.remove('faded');
+        document.getElementById('overlay').classList.remove('active');
+    });
+});
 // Function to call requestUserLocation on button click
 window.enableGeolocationSearch = function () {
     requestUserLocation();
