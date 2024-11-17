@@ -168,14 +168,13 @@ window.filterContent = function () {
 };
 
 
-// Function to zoom and centralize a category when clicked
 function zoomCategory(button) {
-    const category = button.parentElement; // Get the parent category
+    const category = button.parentElement; // Get the parent category div
     const overlay = document.getElementById("overlay");
     overlay.classList.add("active"); // Show the overlay
     category.classList.add("zoomed"); // Add zoom effect
 
-    // Close the zoom effect on overlay click
+    // Close the zoom effect when clicking the overlay
     overlay.onclick = () => {
         overlay.classList.remove("active");
         category.classList.remove("zoomed");
