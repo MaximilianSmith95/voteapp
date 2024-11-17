@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Fetch and render categories on page load
 document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.createElement("div");
+    overlay.id = "overlay";
+    overlay.classList.add("overlay");
+    document.body.appendChild(overlay);
     fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
@@ -24,7 +28,37 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error('Error fetching categories:', error));
 });
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear previous content
 
+    categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+        categoryDiv.setAttribute("data-category-id", category.category_id);
+
+        categoryDiv.innerHTML = `
+            <h2>${category.name}</h2>
+            <button class="magnify-icon" onclick="zoomCategory(this)">
+                🔍
+            </button>
+            <div class="subjects scrollable">
+                ${category.subjects
+                    .map(subject => `
+                        <div class="subject">
+                            <a href="${subject.link}" target="_blank">${subject.name}</a>
+                            <span class="vote-count">${subject.votes}</span>
+                        </div>
+                    `)
+                    .join("")}
+            </div>
+        `;
+
+        categoriesContainer.appendChild(categoryDiv);
+    });
+
+    enableCategoryZoom(); // Attach zoom functionality to categories
+}
 // Function to render categories in the DOM
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
