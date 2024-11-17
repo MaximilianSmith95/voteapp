@@ -582,7 +582,7 @@ function initializeCategoryStructure() {
 // Call initializeCategoryStructure after DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
     initializeCategoryStructure();
-    addCategoryZoomListeners();  // Make sure listeners are attached to the new structure
+    enableCategoryZoom();  // Make sure listeners are attached to the new structure
 });
 
 
