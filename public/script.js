@@ -37,6 +37,11 @@ function renderCategories(categories) {
 
         // Dynamic HTML for category content
         categoryDiv.innerHTML = `
+            <h2>${category.name}</h2>
+            <button class="magnify-icon" onclick="zoomCategory(this)">
+                🔍
+            </button>
+        `;
             <div class="category-title">${category.name}</div>
             <div class="subjects scrollable">
                 ${category.subjects.map(subject => `
