@@ -270,5 +270,78 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
             alert("An error occurred. Please try again later.");
         });
 });
+// Show the modal when "Add Your Business/Content" button is clicked
+document.getElementById("addContentButton").addEventListener("click", () => {
+    const modal = document.getElementById("submitModal");
+    modal.classList.remove("hidden");
+    modal.style.opacity = "1";
+    modal.style.pointerEvents = "auto";
+
+    // Hide the "Add Your Business/Content" button
+    document.getElementById("addContentButton").style.display = "none";
+});
+
+// Hide the modal and show the button when "Close" button is clicked
+document.getElementById("closeModal").addEventListener("click", () => {
+    const modal = document.getElementById("submitModal");
+    modal.style.opacity = "0";
+    modal.style.pointerEvents = "none";
+
+    setTimeout(() => {
+        modal.classList.add("hidden");
+        document.getElementById("addContentButton").style.display = "block"; // Show the button again
+    }, 300); // Wait for the modal fade-out animation
+});
+
+// Close modal on outside click
+document.getElementById("submitModal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+        const modal = document.getElementById("submitModal");
+        modal.style.opacity = "0";
+        modal.style.pointerEvents = "none";
+
+        setTimeout(() => {
+            modal.classList.add("hidden");
+            document.getElementById("addContentButton").style.display = "block"; // Show the button again
+        }, 300);
+    }
+});
+
+// Handle form submission
+document.getElementById("contentForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const formData = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        category: document.getElementById("category").value.trim(),
+        subjects: document.getElementById("subjects").value.trim(),
+    };
+
+    if (!formData.name || !formData.email || !formData.category || !formData.subjects) {
+        alert("Please fill in all fields before submitting.");
+        return;
+    }
+
+    emailjs
+        .send("service_jt3wsyn", "template_yi5z10s", formData)
+        .then(() => {
+            alert("Submission successful! We'll review your content soon.");
+            document.getElementById("contentForm").reset();
+
+            const modal = document.getElementById("submitModal");
+            modal.style.opacity = "0";
+            modal.style.pointerEvents = "none";
+
+            setTimeout(() => {
+                modal.classList.add("hidden");
+                document.getElementById("addContentButton").style.display = "block"; // Show the button again
+            }, 300);
+        })
+        .catch((error) => {
+            console.error("Error sending email:", error);
+            alert("An error occurred. Please try again later.");
+        });
+});
 
 
