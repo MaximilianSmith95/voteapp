@@ -1,18 +1,21 @@
 let allCategoriesData = []; // Global variable to store initial categories data
+// Handle Cookies Notification
 document.addEventListener("DOMContentLoaded", () => {
-    const acceptButton = document.getElementById("acceptButton");
-    const termsModal = document.getElementById("termsModal");
+    const cookiesNotification = document.getElementById("cookiesNotification");
+    const acceptCookiesButton = document.getElementById("acceptCookiesButton");
 
-    acceptButton.addEventListener("click", () => {
-        termsModal.style.display = "none";
-    });
+    // Show the notification if not previously accepted
+    if (!localStorage.getItem("cookiesAccepted")) {
+        cookiesNotification.classList.remove("hidden");
+    }
 
-    window.addEventListener("click", (event) => {
-        if (event.target === termsModal) {
-            termsModal.style.display = "none";
-        }
+    // Handle Accept Button
+    acceptCookiesButton.addEventListener("click", () => {
+        cookiesNotification.classList.add("hidden");
+        localStorage.setItem("cookiesAccepted", "true");
     });
 });
+
 // Open and Close Modal
 document.getElementById("addContentButton").addEventListener("click", () => {
     document.getElementById("addContentModal").classList.remove("hidden");
