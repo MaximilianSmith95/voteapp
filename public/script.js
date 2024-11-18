@@ -215,8 +215,8 @@ window.showLatestCategories = function () {
 // Ensure EmailJS is initialized
 emailjs.init("T0TFQQo9j8d6RBLsj"); // Replace with your actual public key from EmailJS
 
-// Show the modal when "Submit Your Content" button is clicked
-document.getElementById("submitContentButton").addEventListener("click", () => {
+// Show the modal when "Add Your Business/Content" button is clicked
+document.getElementById("addContentButton").addEventListener("click", () => {
     const modal = document.getElementById("submitModal");
     modal.classList.remove("hidden");
     modal.style.opacity = "1";
@@ -270,5 +270,3 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
             alert("An error occurred. Please try again later.");
         });
 });
-
-
