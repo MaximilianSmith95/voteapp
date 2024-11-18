@@ -260,7 +260,7 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
     emailjs
         .send("service_jt3wsyn", "template_yi5z10s", formData)
         .then(() => {
-            alert("Submission successful! We'll review your content soon.");
+            alert("Submission successful! We'll review your content and will add it within 24-72 hours.");
             document.getElementById("contentForm").reset();
             document.getElementById("submitModal").style.opacity = "0";
             setTimeout(() => document.getElementById("submitModal").classList.add("hidden"), 300);
