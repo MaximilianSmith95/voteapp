@@ -212,40 +212,69 @@ window.showLatestCategories = function () {
     const sortedCategories = [...allCategoriesData].sort((a, b) => b.category_id - a.category_id);
     renderCategories(sortedCategories);
 };
+// Ensure EmailJS is initialized
+emailjs.init("T0TFQQo9j8d6RBLsj"); // Replace with your actual public key from EmailJS
+
 // Show the modal when "Submit Your Content" button is clicked
 document.getElementById("submitContentButton").addEventListener("click", () => {
-    document.getElementById("submitModal").classList.remove("hidden");
+    const modal = document.getElementById("submitModal");
+    modal.classList.remove("hidden");
+    modal.style.opacity = "1"; // Set opacity for smooth transition
+    modal.style.pointerEvents = "auto"; // Ensure modal is interactive
 });
 
 // Hide the modal when "Close" button is clicked
 document.getElementById("closeModal").addEventListener("click", () => {
-    document.getElementById("submitModal").classList.add("hidden");
+    const modal = document.getElementById("submitModal");
+    modal.style.opacity = "0"; // Transition effect
+    modal.style.pointerEvents = "none"; // Disable modal interaction during transition
+    setTimeout(() => modal.classList.add("hidden"), 300); // Wait for transition before hiding
+});
+
+// Hide the modal if the user clicks outside the modal content
+document.getElementById("submitModal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) { // Ensure click is outside modal content
+        const modal = document.getElementById("submitModal");
+        modal.style.opacity = "0";
+        modal.style.pointerEvents = "none";
+        setTimeout(() => modal.classList.add("hidden"), 300);
+    }
 });
 
 // Handle form submission
 document.getElementById("contentForm").addEventListener("submit", (e) => {
-    e.preventDefault(); // Prevent form from reloading the page
+    e.preventDefault(); // Prevent default form submission behavior
 
     // Gather form data
     const formData = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        category: document.getElementById("category").value,
-        subjects: document.getElementById("subjects").value,
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        category: document.getElementById("category").value.trim(),
+        subjects: document.getElementById("subjects").value.trim(),
     };
+
+    // Validate form data before sending
+    if (!formData.name || !formData.email || !formData.category || !formData.subjects) {
+        alert("Please fill in all fields before submitting.");
+        return; // Stop submission if validation fails
+    }
 
     // Use EmailJS to send the form data
     emailjs
-        .send("service_jt3wsyn", "template_yi5z10s", formData, "T0TFQQo9j8d6RBLsj") // Replace with your EmailJS template_id
+        .send("service_jt3wsyn", "template_yi5z10s", formData)
         .then(
             () => {
                 alert("Submission successful! We'll review your content soon.");
-                document.getElementById("contentForm").reset();
-                document.getElementById("submitModal").classList.add("hidden");
+                document.getElementById("contentForm").reset(); // Clear form
+                const modal = document.getElementById("submitModal");
+                modal.style.opacity = "0";
+                modal.style.pointerEvents = "none";
+                setTimeout(() => modal.classList.add("hidden"), 300);
             },
             (error) => {
                 console.error("Error sending email:", error);
-                alert("An error occurred. Please try again later.");
+                alert("An error occurred while sending your submission. Please try again later.");
             }
         );
 });
+
