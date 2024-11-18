@@ -110,55 +110,41 @@
             <div class="triangle-gray"></div>
         </div>
         <h1>NerdGoo</h1>
-        <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
+         <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
     </header>
 
-    <!-- Buttons and Navigation -->
-    <button id="geolocationButton" onclick="enableGeolocationSearch()">Categories Near Me</button>
+<button id="geolocationButton" onclick="enableGeolocationSearch()">Categories Near Me</button>
+    
+    
     <nav>
         <button onclick="showAllCategories()">For You</button>
         <button onclick="showAllCategories()">All</button>
         <button onclick="showAllCategories()">Trending</button>
         <button onclick="showLatestCategories()">Latest</button>
     </nav>
+    
 
-    <!-- Main Content -->
     <main id="categories"></main>
-    <div id="overlay" class="overlay hidden"></div>
-    <div id="topicsContainer"></div>
+      <div id="overlay" class="overlay hidden"></div>
+      <div id="topicsContainer"></div>
 
-    <!-- Footer -->
-    <footer>
+
+</main>
+       <script>
+        window.addEventListener("load", function() {
+            document.getElementById("loading-animation").style.display = "none";
+            
+        });
+    </script>
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
+</body>
+ <footer>
         <p>
             By using this site, you agree to our <a href="terms-and-conditions.html" target="_blank">Terms and Conditions</a>.
         </p>
         <p>&copy; 2024 NerdGoo. All rights reserved.</p>
     </footer>
 
-    <!-- Scripts -->
-    <script>
-        // Hide loading animation after the page loads
-        window.addEventListener("load", function() {
-            document.getElementById("loading-animation").classList.add("hidden");
-        });
-
-        // Handle Cookies Notification
-        document.addEventListener("DOMContentLoaded", () => {
-            const cookiesNotification = document.getElementById("cookiesNotification");
-            const acceptCookiesButton = document.getElementById("acceptCookiesButton");
-
-            if (!localStorage.getItem("cookiesAccepted")) {
-                cookiesNotification.classList.remove("hidden");
-            }
-
-            acceptCookiesButton.addEventListener("click", () => {
-                cookiesNotification.classList.add("hidden");
-                localStorage.setItem("cookiesAccepted", "true");
-            });
-        });
-    </script>
-    <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-</body>
 </html>
-
