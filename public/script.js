@@ -15,44 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("cookiesAccepted", "true");
     });
 });
-
-// Open and Close Modal
-document.getElementById("addContentButton").addEventListener("click", () => {
-    document.getElementById("addContentModal").classList.remove("hidden");
-});
-
-document.getElementById("closeModal").addEventListener("click", () => {
-    document.getElementById("addContentModal").classList.add("hidden");
-});
-
-// Close modal by clicking outside
-document.querySelector(".modal-overlay").addEventListener("click", () => {
-    document.getElementById("addContentModal").classList.add("hidden");
-});
-
-// Populate existing categories in the dropdown
-function populateCategories() {
-    const dropdown = document.getElementById("category");
-    dropdown.innerHTML = `<option value="">Select Existing</option>`;
-    allCategoriesData.forEach(category => {
-        const option = document.createElement("option");
-        option.value = category.name;
-        option.textContent = category.name;
-        dropdown.appendChild(option);
-    });
-}
-
-// Add More Subjects
-document.getElementById("addSubjectButton").addEventListener("click", () => {
-    const container = document.getElementById("subjectsContainer");
-    const input = document.createElement("input");
-    input.type = "text";
-    input.name = "subject[]";
-    input.classList.add("subject-field");
-    input.placeholder = "Enter subject";
-    container.appendChild(input);
-});
-
 // Handle Form Submission
 document.getElementById("contentForm").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -86,7 +48,6 @@ document.getElementById("contentForm").addEventListener("submit", (event) => {
             alert("Failed to send your submission. Please try again later.");
         });
 });
-
 
     // Reset form and close modal
     event.target.reset();
