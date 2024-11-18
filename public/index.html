@@ -63,7 +63,48 @@
             </form>
         </div>
     </div>
+<!-- Loading Animation Container -->
+    <div id="loading-animation">
+        <div class="triangle green"></div>
+        <div class="triangle gray"></div>
 
+/* Container for the Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Green Triangle (Upward facing) */
+        .triangle-green {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid #28a745; /* Green color */
+            margin-right: -20px; /* Adjust overlap */
+        }
+
+        /* Gray Triangle (Downward facing) */
+        .triangle-gray {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 80px solid #6c757d; /* Gray color */
+            margin-left: -20px; /* Adjust overlap */
+        }
+
+    </style>
+<div class="logo-container">
+    <!-- Green triangle (Upwards) -->
+    <div class="triangle-green"></div>
+    <!-- Gray triangle (Downwards) -->
+    <div class="triangle-gray"></div>
+</div>
+
+    </div>
     <!-- Header -->
     <header>
         <h1>NerdGoo</h1>
