@@ -69,7 +69,7 @@ document.getElementById("contentForm").addEventListener("submit", (event) => {
     }
 
     // Send Email Using EmailJS or API
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+    emailjs.send("service_jt3wsyn", "template_yi5z10s", {
         name: content.name,
         email: content.email,
         category: content.category,
@@ -84,9 +84,6 @@ document.getElementById("contentForm").addEventListener("submit", (event) => {
     event.target.reset();
     document.getElementById("addContentModal").classList.add("hidden");
 });
-
-// Initialize categories on page load
-document.addEventListener("DOMContentLoaded", populateCategories);
 
 // Initialize categories on page load
 document.addEventListener("DOMContentLoaded", populateCategories);
