@@ -9,7 +9,7 @@
     <!-- EmailJS Initialization -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
-        emailjs.init("YOUR_USER_ID"); <!-- Replace with your actual EmailJS User ID -->
+        emailjs.init; <!-- Replace with your actual EmailJS User ID -->
     </script>
 </head>
 <body>
@@ -63,13 +63,48 @@
             </form>
         </div>
     </div>
-<!-- Loading Animation Container -->
+<body>
+    <!-- Loading Animation Container -->
     <div id="loading-animation">
         <div class="triangle green"></div>
         <div class="triangle gray"></div>
+    </div>
+    <header>
+        <h1>NerdGoo</h1>
+       <style>
+        /* General Reset for Margin and Padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <style>
-/* Container for the Logo */
+        /* Body Styling */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3; /* Light background for contrast */
+            margin: 0;
+        }
+
+        /* Header Styling */
+        header {
+            width: 100%;
+            background-color: #00a9db; /* Bold blue color for contrast */
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: white;
+            margin: 0;
+        }
+
+        /* Container for the Logo */
         .logo-container {
             display: flex;
             align-items: center;
@@ -104,15 +139,6 @@
     <!-- Gray triangle (Downwards) -->
     <div class="triangle-gray"></div>
 </div>
-
-    </div>
-    <!-- Header -->
-    <header>
-        <h1>NerdGoo</h1>
-        <div class="logo-container">
-            <div class="triangle-green"></div>
-            <div class="triangle-gray"></div>
-        </div>
         <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
     </header>
 
