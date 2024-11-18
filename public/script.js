@@ -116,8 +116,7 @@ function renderCategories(categories) {
     });
 }
 
-// Remove any other functionality related to zoom or overlay
-
+// Function to handle upvotes
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
         method: 'POST'
@@ -147,6 +146,53 @@ function upvote(subjectId) {
     .catch(error => console.error('Error upvoting:', error));
 }
 
+// Function to toggle comment visibility
+window.toggleComments = function (subjectId) {
+    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+    commentsContainer.classList.toggle("hidden");
+
+    const toggleButton = commentsContainer.previousElementSibling;
+    toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
+};
+
+// Function to add a comment to a subject
+function addComment(subjectId) {
+    const commentInput = document.getElementById(`comment-input-${subjectId}`);
+    const commentText = commentInput.value.trim();
+    const username = `User${Math.floor(Math.random() * 1000)}`;
+
+    if (commentText) {
+        fetch(`/api/subjects/${subjectId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, comment_text: commentText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchComments(subjectId);
+                commentInput.value = "";
+            }
+        })
+        .catch(error => console.error('Error posting comment:', error));
+    }
+}
+
+// Function to fetch comments
+function fetchComments(subjectId) {
+    fetch(`/api/subjects/${subjectId}/comments`)
+        .then(response => response.json())
+        .then(comments => {
+            const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+            commentContainer.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <strong>${comment.username}</strong>: ${comment.comment_text}
+                </div>
+            `).join("");
+        });
+}
+
+// Shuffle an array
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -154,3 +200,15 @@ function shuffleArray(array) {
     }
     return array;
 }
+
+// Show all categories in random order
+window.showAllCategories = function () {
+    const shuffledCategories = shuffleArray([...allCategoriesData]);
+    renderCategories(shuffledCategories);
+};
+
+// Show latest categories in descending order of `category_id`
+window.showLatestCategories = function () {
+    const sortedCategories = [...allCategoriesData].sort((a, b) => b.category_id - a.category_id);
+    renderCategories(sortedCategories);
+};
