@@ -59,29 +59,34 @@ document.getElementById("contentForm").addEventListener("submit", (event) => {
 
     const formData = new FormData(event.target);
     const subjects = formData.getAll("subject[]").filter(subject => subject.trim() !== "");
+
     const content = {
-        name: formData.get("userName"),
-        email: formData.get("userEmail"),
-        category: formData.get("newCategory") || formData.get("category"),
-        subjects: subjects,
+        name: formData.get("userName"),       // Matches {{name}}
+        email: formData.get("userEmail"),    // Matches {{email}}
+        category: formData.get("newCategory") || formData.get("category"), // Matches {{category}}
+        subjects: subjects.join(", "),       // Matches {{subjects}}
+        reply_to: formData.get("userEmail"), // Optional: Matches {{reply_to}}
     };
 
-    if (content.subjects.length === 0) {
-        alert("Please add at least one subject.");
+    // Validation Check
+    if (!content.name || !content.email || !content.category || subjects.length === 0) {
+        alert("Please fill in all required fields.");
         return;
     }
 
-    // Send Email Using EmailJS or API
-    emailjs.send("service_jt3wsyn", "template_yi5z10s", {
-        name: content.name,
-        email: content.email,
-        category: content.category,
-        subjects: content.subjects.join(", "),
-    }).then(() => {
-        alert("Your submission has been received. We'll review it soon!");
-    }).catch(() => {
-        alert("Failed to send your submission. Please try again later.");
-    });
+    // Send email via EmailJS
+    emailjs.send("service_jt3wsyn", "template_yi5z10s", content)
+        .then(() => {
+            alert("Your submission has been sent successfully!");
+            event.target.reset(); // Reset the form
+            document.getElementById("addContentModal").classList.add("hidden"); // Close modal
+        })
+        .catch((error) => {
+            console.error("EmailJS error:", error);
+            alert("Failed to send your submission. Please try again later.");
+        });
+});
+
 
     // Reset form and close modal
     event.target.reset();
