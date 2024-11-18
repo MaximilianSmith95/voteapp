@@ -212,3 +212,40 @@ window.showLatestCategories = function () {
     const sortedCategories = [...allCategoriesData].sort((a, b) => b.category_id - a.category_id);
     renderCategories(sortedCategories);
 };
+// Show the modal when "Submit Your Content" button is clicked
+document.getElementById("submitContentButton").addEventListener("click", () => {
+    document.getElementById("submitModal").classList.remove("hidden");
+});
+
+// Hide the modal when "Close" button is clicked
+document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("submitModal").classList.add("hidden");
+});
+
+// Handle form submission
+document.getElementById("contentForm").addEventListener("submit", (e) => {
+    e.preventDefault(); // Prevent form from reloading the page
+
+    // Gather form data
+    const formData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        category: document.getElementById("category").value,
+        subjects: document.getElementById("subjects").value,
+    };
+
+    // Use EmailJS to send the form data
+    emailjs
+        .send("service_jt3wsyn", "template_yi5z10s", formData, "T0TFQQo9j8d6RBLsj") // Replace with your EmailJS template_id
+        .then(
+            () => {
+                alert("Submission successful! We'll review your content soon.");
+                document.getElementById("contentForm").reset();
+                document.getElementById("submitModal").classList.add("hidden");
+            },
+            (error) => {
+                console.error("Error sending email:", error);
+                alert("An error occurred. Please try again later.");
+            }
+        );
+});
