@@ -844,9 +844,8 @@ main {
 #submitContentButton:hover {
     background-color: #218838;
 }
-
-/* Modal Styling */
-#submitModal {
+/* Modal Background */
+.modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -857,57 +856,104 @@ main {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    transition: opacity 0.3s ease;
 }
 
+.hidden {
+    display: none;
+}
+
+/* Modal Content */
 .modal-content {
-    background: white;
-    padding: 20px;
+    background-color: white;
     border-radius: 8px;
     width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 0.3s ease;
 }
 
 .modal-content h2 {
-    margin-bottom: 15px;
-    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
 }
 
 .modal-content label {
     display: block;
     margin-top: 10px;
     font-weight: bold;
+    text-align: left;
 }
 
-.modal-content input, 
+.modal-content input,
 .modal-content textarea {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-top: 5px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1rem;
 }
 
+.modal-content textarea {
+    resize: none;
+    height: 100px;
+}
+
 .modal-content button {
-    margin-top: 15px;
+    margin-top: 20px;
     padding: 10px 15px;
-    background-color: #00a8cc;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#submitButton {
+    background-color: #007bff;
+    color: white;
+}
+
+#submitButton:hover {
+    background-color: #0056b3;
+}
+
+#closeModal {
+    background-color: #ff6b6b;
+    color: white;
+    margin-left: 10px;
+}
+
+#closeModal:hover {
+    background-color: #e63939;
+}
+
+/* Smooth Modal Appearance */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+/* Submit Content Button */
+#submitContentButton {
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
+    padding: 10px 20px;
     font-size: 1rem;
+    cursor: pointer;
+    margin: 20px auto;
+    display: block;
+    transition: background-color 0.3s;
 }
 
-.modal-content button:hover {
-    background-color: #00799c;
-}
-
-.modal-content button#closeModal {
-    background-color: #ff6b6b;
-}
-
-.modal-content button#closeModal:hover {
-    background-color: #e55a5a;
+#submitContentButton:hover {
+    background-color: #218838;
 }
