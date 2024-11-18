@@ -86,7 +86,12 @@
     <div class="triangle-gray"></div>
 </div>
         <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
-</header>
+
+          <!-- Add below the search bar -->
+<button id="submitContentButton">Submit Your Content</button>
+
+<!-- Submit Your Content Button -->
+<button id="submitContentButton">Submit Your Content</button>
 
 <!-- Modal for content submission -->
 <div id="submitModal" class="modal hidden">
@@ -99,11 +104,11 @@
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
             
-            <label for="category">Topic:</label>
+            <label for="category">Category:</label>
             <input type="text" id="category" name="category" placeholder="Enter a category" required>
             
             <label for="subjects">Subjects:</label>
-            <textarea id="subjects" name="subjects" placeholder="Enter a relevant subject, or add your business... " required></textarea>
+            <textarea id="subjects" name="subjects" placeholder="Enter subjects (comma-separated)" required></textarea>
             
             <button type="submit" id="submitButton">Submit</button>
             <button type="button" id="closeModal">Close</button>
@@ -113,16 +118,9 @@
 
 
     </header>
-<nav>
 
-<nav>
-    <button class="nav-button blue" id="geolocationButton" onclick="enableGeolocationSearch()">Categories Near Me</button>
-    <button class="nav-button blue" id="submitContentButton">Submit Your Content</button>
-</nav>
-
-<button 
-
-</nav>
+<button id="geolocationButton" onclick="enableGeolocationSearch()">Categories Near Me</button>
+    
     
     <nav>
         <button onclick="showAllCategories()">For You</button>
