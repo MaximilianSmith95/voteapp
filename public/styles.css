@@ -1037,3 +1037,35 @@ nav {
     gap: 15px; /* Add spacing between buttons */
     margin-top: 20px; /* Adjust spacing from the search bar */
 }
+.top-right-button {
+    background-color: #007bff; /* Bright blue color */
+    color: white; /* Text color */
+    font-size: 1.2rem; /* Slightly larger text size */
+    padding: 12px 20px; /* Larger padding for a more prominent button */
+    border: none; /* Remove default border */
+    border-radius: 10px; /* Curved edges */
+    cursor: pointer; /* Pointer cursor on hover */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.2s ease, background-color 0.3s ease; /* Smooth hover effects */
+    margin: 10px; /* Add some spacing around the button */
+}
+
+/* Hover and focus styles */
+.top-right-button:hover {
+    background-color: #0056b3; /* Darker blue for hover effect */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+/* Active state */
+.top-right-button:active {
+    background-color: #004494; /* Even darker blue */
+    transform: translateY(0); /* Reset transform */
+}
+
+/* Optional: Make button adapt to screens */
+@media (max-width: 768px) {
+    .top-right-button {
+        font-size: 1rem; /* Slightly smaller on smaller screens */
+        padding: 10px 16px; /* Adjust padding */
+    }
+}
