@@ -1,61 +1,4 @@
 let allCategoriesData = []; // Global variable to store initial categories data
-// Handle Cookies Notification
-document.addEventListener("DOMContentLoaded", () => {
-    const cookiesNotification = document.getElementById("cookiesNotification");
-    const acceptCookiesButton = document.getElementById("acceptCookiesButton");
-
-    // Show the notification if not previously accepted
-    if (!localStorage.getItem("cookiesAccepted")) {
-        cookiesNotification.classList.remove("hidden");
-    }
-
-    // Handle Accept Button
-    acceptCookiesButton.addEventListener("click", () => {
-        cookiesNotification.classList.add("hidden");
-        localStorage.setItem("cookiesAccepted", "true");
-    });
-});
-// Handle Form Submission
-document.getElementById("contentForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const subjects = formData.getAll("subject[]").filter(subject => subject.trim() !== "");
-
-    const content = {
-        name: formData.get("userName"),       // Matches {{name}}
-        email: formData.get("userEmail"),    // Matches {{email}}
-        category: formData.get("newCategory") || formData.get("category"), // Matches {{category}}
-        subjects: subjects.join(", "),       // Matches {{subjects}}
-        reply_to: formData.get("userEmail"), // Optional: Matches {{reply_to}}
-    };
-
-    // Validation Check
-    if (!content.name || !content.email || !content.category || subjects.length === 0) {
-        alert("Please fill in all required fields.");
-        return;
-    }
-
-    // Send email via EmailJS
-    emailjs.send("service_jt3wsyn", "template_yi5z10s", content)
-        .then(() => {
-            alert("Your submission has been sent successfully!");
-            event.target.reset(); // Reset the form
-            document.getElementById("addContentModal").classList.add("hidden"); // Close modal
-        })
-        .catch((error) => {
-            console.error("EmailJS error:", error);
-            alert("Failed to send your submission. Please try again later.");
-        });
-});
-
-    // Reset form and close modal
-    event.target.reset();
-    document.getElementById("addContentModal").classList.add("hidden");
-});
-
-// Initialize categories on page load
-document.addEventListener("DOMContentLoaded", populateCategories);
 
 document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
@@ -129,6 +72,26 @@ window.filterContent = function () {
 };
 
 
+// Function to zoom and centralize a category when clicked
+function zoomCategory(event) {
+    const category = event.currentTarget; // Get the clicked category
+    const overlay = document.getElementById("overlay");
+    overlay.classList.add("active"); // Show the overlay
+    category.classList.add("zoomed"); // Add zoom effect to the category
+
+    // Event listener to close zoomed view when overlay is clicked
+    overlay.onclick = () => {
+        overlay.classList.remove("active");
+        category.classList.remove("zoomed");
+    };
+}
+
+// Attach zoomCategory function to each category's title
+function enableCategoryZoom() {
+    document.querySelectorAll(".category h2").forEach(title => {
+        title.addEventListener("click", zoomCategory);
+    });
+}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -571,6 +534,4 @@ document.addEventListener("DOMContentLoaded", () => {
     addCategoryZoomListeners();  // Make sure listeners are attached to the new structure
 });
 
-    
 
-    
