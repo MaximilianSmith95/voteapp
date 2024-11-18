@@ -9,69 +9,10 @@
     <!-- EmailJS Initialization -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
-        emailjs.init; <!-- Replace with your actual EmailJS User ID -->
+        emailjs.init("YOUR_USER_ID"); <!-- Replace with your actual EmailJS User ID -->
     </script>
-</head>
-<body>
-    <div id="cookiesNotification" class="cookies-notification hidden">
-    <p>
-        By using NerdGoo, you agree to our use of cookies, behavioral tracking, and tailored advertising. 
-        <a href="terms-and-conditions.html" target="_blank">Learn more</a>.
-    </p>
-    <button id="acceptCookiesButton">Accept</button>
-</div>
 
-    <!-- Terms Modal -->
-    <div id="termsModal" class="modal hidden">
-        <div class="modal-content">
-            <p>By using NerdGoo, you agree to our use of cookies, behavioral tracking, and tailored advertising. <a href="terms-and-conditions.html" target="_blank">Read up on NerdGoo</a> to learn more about our website and policies.</p>
-            <button id="acceptButton">Got it!</button>
-        </div>
-    </div>
-
-    <!-- Add Content Button -->
-    <header>
-        <button id="addContentButton" class="top-right-btn">Add Content</button>
-    </header>
-
-    <!-- Add Content Form Modal -->
-    <div id="addContentModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <span id="closeModal" class="close-btn">&times;</span>
-            <h2>Submit Your Content</h2>
-            <form id="contentForm">
-                <label for="userName">Name:</label>
-                <input type="text" id="userName" name="userName" required>
-
-                <label for="userEmail">Email:</label>
-                <input type="email" id="userEmail" name="userEmail" required>
-
-                <label for="category">Category:</label>
-                <select id="category" name="category">
-                    <option value="">Select Existing</option>
-                </select>
-                <input type="text" id="newCategory" name="newCategory" placeholder="Or Create New Category">
-
-                <div id="subjectsContainer">
-                    <label>Subject:</label>
-                    <input type="text" name="subject[]" class="subject-field" placeholder="Enter subject" required>
-                </div>
-                <button type="button" id="addSubjectButton">Add Another Subject</button>
-
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    </div>
-<body>
-    <!-- Loading Animation Container -->
-    <div id="loading-animation">
-        <div class="triangle green"></div>
-        <div class="triangle gray"></div>
-    </div>
-    <header>
-        <h1>NerdGoo</h1>
-       <style>
+    <style>
         /* General Reset for Margin and Padding */
         * {
             margin: 0;
@@ -81,13 +22,14 @@
 
         /* Body Styling */
         body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             font-family: Arial, sans-serif;
             background-color: #f3f3f3; /* Light background for contrast */
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Header Styling */
@@ -132,13 +74,42 @@
             margin-left: -20px; /* Adjust overlap */
         }
 
+        /* Loading Animation */
+        #loading-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #loading-animation.hidden {
+            display: none;
+        }
     </style>
-<div class="logo-container">
-    <!-- Green triangle (Upwards) -->
-    <div class="triangle-green"></div>
-    <!-- Gray triangle (Downwards) -->
-    <div class="triangle-gray"></div>
-</div>
+</head>
+<body>
+    <!-- Cookies Notification -->
+    <div id="cookiesNotification" class="cookies-notification hidden">
+        <p>
+            By using NerdGoo, you agree to our use of cookies, behavioral tracking, and tailored advertising. 
+            <a href="terms-and-conditions.html" target="_blank">Learn more</a>.
+        </p>
+        <button id="acceptCookiesButton">Accept</button>
+    </div>
+
+    <!-- Loading Animation Container -->
+    <div id="loading-animation">
+        <div class="triangle-green"></div>
+        <div class="triangle-gray"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="triangle-green"></div>
+            <div class="triangle-gray"></div>
+        </div>
+        <h1>NerdGoo</h1>
         <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()">
     </header>
 
@@ -164,17 +135,26 @@
         <p>&copy; 2024 NerdGoo. All rights reserved.</p>
     </footer>
 
-    <!-- Loading Animation -->
-    <div id="loading-animation">
-        <div class="triangle green"></div>
-        <div class="triangle gray"></div>
-    </div>
-
     <!-- Scripts -->
     <script>
         // Hide loading animation after the page loads
         window.addEventListener("load", function() {
-            document.getElementById("loading-animation").style.display = "none";
+            document.getElementById("loading-animation").classList.add("hidden");
+        });
+
+        // Handle Cookies Notification
+        document.addEventListener("DOMContentLoaded", () => {
+            const cookiesNotification = document.getElementById("cookiesNotification");
+            const acceptCookiesButton = document.getElementById("acceptCookiesButton");
+
+            if (!localStorage.getItem("cookiesAccepted")) {
+                cookiesNotification.classList.remove("hidden");
+            }
+
+            acceptCookiesButton.addEventListener("click", () => {
+                cookiesNotification.classList.add("hidden");
+                localStorage.setItem("cookiesAccepted", "true");
+            });
         });
     </script>
     <script src="script.js"></script>
