@@ -995,3 +995,40 @@ main {
 .modal-active #addContentButton {
     display: none;
 }
+/* Common styles for navigation buttons */
+.nav-button {
+    background-color: #007bff; /* Blue color */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px; /* Add space between buttons */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow */
+}
+
+.nav-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarges on hover */
+}
+
+.nav-button:active {
+    background-color: #003f8a; /* Even darker blue on click */
+    transform: scale(0.95); /* Slightly shrinks on click */
+}
+
+.nav-button.blue {
+    background-color: #007bff;
+}
+
+/* Ensure buttons align horizontally */
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Add spacing between buttons */
+    margin-top: 20px; /* Adjust spacing from the search bar */
+}
