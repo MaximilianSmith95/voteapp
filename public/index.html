@@ -90,28 +90,32 @@
           <!-- Add below the search bar -->
 <button id="submitContentButton">Submit Your Content</button>
 
+<!-- Submit Your Content Button -->
+<button id="submitContentButton">Submit Your Content</button>
+
 <!-- Modal for content submission -->
-<div id="submitModal" class="hidden">
+<div id="submitModal" class="modal hidden">
     <div class="modal-content">
         <h2>Submit Your Content</h2>
         <form id="contentForm">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
             
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
             
             <label for="category">Category:</label>
-            <input type="text" id="category" name="category" required>
+            <input type="text" id="category" name="category" placeholder="Enter a category" required>
             
             <label for="subjects">Subjects:</label>
-            <textarea id="subjects" name="subjects" required></textarea>
+            <textarea id="subjects" name="subjects" placeholder="Enter subjects (comma-separated)" required></textarea>
             
-            <button type="submit">Submit</button>
+            <button type="submit" id="submitButton">Submit</button>
             <button type="button" id="closeModal">Close</button>
         </form>
     </div>
 </div>
+
 
     </header>
 
