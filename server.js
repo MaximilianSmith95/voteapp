@@ -5,8 +5,6 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
 
-
-
 const app = express();
 app.set('trust proxy', true);
 app.use(cookieParser());
@@ -19,7 +17,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -38,7 +35,7 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a = 
+    const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -47,23 +44,25 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 };
 
 app.get('/api/categories', (req, res) => {
-    const userLat = parseFloat(req.query.latitude);
-    const userLon = parseFloat(req.query.longitude);
+    const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
 
     const query = `
-        SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
+        SELECT c.category_id, c.name AS category_name,
                s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
 
     db.query(query, (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error('Error fetching categories:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
 
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
-                category = { category_id: row.category_id, name: row.category_name, subjects: [], latitude: row.latitude, longitude: row.longitude };
+                category = { category_id: row.category_id, name: row.category_name, subjects: [] };
                 acc.push(category);
             }
             if (row.subject_id) {
@@ -77,10 +76,9 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        const sortedCategories = categories.map(category => ({
-            ...category,
-            distance: haversine(userLat, userLon, category.latitude, category.longitude)
-        })).sort((a, b) => a.distance - b.distance);
+        const sortedCategories = categories.sort((a, b) => {
+            return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+        });
 
         res.json(sortedCategories);
     });
@@ -88,11 +86,33 @@ app.get('/api/categories', (req, res) => {
 
 app.post('/api/subjects/:id/vote', (req, res) => {
     const subjectId = req.params.id;
-    const query = 'UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?';
 
-    db.query(query, [subjectId], (err) => {
-        if (err) throw err;
-        res.json({ success: true });
+    // Find the category linked to the subject
+    const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
+    db.query(query, [subjectId], (err, results) => {
+        if (err) {
+            console.error('Error fetching category ID:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        const categoryId = results[0]?.category_id;
+        if (categoryId) {
+            // Update cookie-stored preferences
+            const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
+            preferences[categoryId] = (preferences[categoryId] || 0) + 1;
+
+            res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
+        }
+
+        // Increment the subject votes
+        const updateVotesQuery = 'UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?';
+        db.query(updateVotesQuery, [subjectId], (err) => {
+            if (err) {
+                console.error('Error updating votes:', err);
+                return res.status(500).json({ error: 'Failed to update votes' });
+            }
+            res.json({ success: true });
+        });
     });
 });
 
@@ -111,7 +131,6 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     });
 });
 
-
 app.get('/api/subjects/:id/comments', (req, res) => {
     const subjectId = req.params.id;
     const query = `
@@ -126,7 +145,6 @@ app.get('/api/subjects/:id/comments', (req, res) => {
             console.error('Error fetching comments:', err);
             res.status(500).json({ error: 'Failed to fetch comments' });
         } else {
-            // Organize comments and replies
             const commentsMap = {};
             results.forEach(comment => {
                 commentsMap[comment.comment_id] = { ...comment, replies: [] };
@@ -135,10 +153,8 @@ app.get('/api/subjects/:id/comments', (req, res) => {
             const structuredComments = [];
             results.forEach(comment => {
                 if (comment.parent_comment_id) {
-                    // It's a reply, so add it to the parent
                     commentsMap[comment.parent_comment_id].replies.push(commentsMap[comment.comment_id]);
                 } else {
-                    // It's a top-level comment
                     structuredComments.push(commentsMap[comment.comment_id]);
                 }
             });
@@ -148,8 +164,8 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     });
 });
 
-
-const PORT = process.env.PORT || 3500;  
+const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
