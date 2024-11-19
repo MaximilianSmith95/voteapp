@@ -270,3 +270,18 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
             alert("An error occurred. Please try again later.");
         });
 });
+document.addEventListener("DOMContentLoaded", () => {
+    const cookieConsent = document.getElementById("cookieConsent");
+    const acceptCookiesButton = document.getElementById("acceptCookies");
+
+    // Check if cookies were already accepted
+    if (!localStorage.getItem("cookiesAccepted")) {
+        cookieConsent.classList.remove("hidden");
+    }
+
+    // Set cookie consent in localStorage
+    acceptCookiesButton.addEventListener("click", () => {
+        localStorage.setItem("cookiesAccepted", "true");
+        cookieConsent.classList.add("hidden");
+    });
+});
