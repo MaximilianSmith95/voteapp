@@ -3,9 +3,13 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
+const cookieParser = require("cookie-parser");
+
+
 
 const app = express();
 app.set('trust proxy', true);
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
