@@ -1069,3 +1069,23 @@ nav {
         padding: 10px 16px; /* Adjust padding */
     }
 }
+#cookieConsent {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
+#cookieConsent button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
