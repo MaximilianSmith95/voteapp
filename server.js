@@ -31,7 +31,6 @@ db.connect(err => {
     console.log('Connected to MySQL Database');
 });
 
-// Haversine formula for distance calculation
 const haversine = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -44,7 +43,6 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     return R * c;
 };
 
-// API to fetch categories
 app.get('/api/categories', (req, res) => {
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
 
@@ -86,72 +84,38 @@ app.get('/api/categories', (req, res) => {
     });
 });
 
-// API to vote for a subject
 app.post('/api/subjects/:id/vote', (req, res) => {
-    const subjectId = parseInt(req.params.id, 10);
-    const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const subjectId = req.params.id;
 
-    const checkQuery = `
-        SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
-    `;
-
-    db.query(checkQuery, [userIp, subjectId], (err, results) => {
+    // Find the category linked to the subject
+    const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
+    db.query(query, [subjectId], (err, results) => {
         if (err) {
-            console.error('Error checking IP votes:', err);
+            console.error('Error fetching category ID:', err);
             return res.status(500).json({ error: 'Database error' });
         }
 
-        const currentVotes = results[0]?.votes_count || 0;
+        const categoryId = results[0]?.category_id;
+        if (categoryId) {
+            // Update cookie-stored preferences
+            const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
+            preferences[categoryId] = (preferences[categoryId] || 0) + 1;
 
-        if (currentVotes >= 1000) {
-            return res.status(403).json({ error: 'Wow you nerd out on that!! Vote limit reached' });
+            res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
         }
 
-        const incrementQuery = `
-            INSERT INTO IpVotes (ip_address, subject_id, votes_count)
-            VALUES (?, ?, 1)
-            ON DUPLICATE KEY UPDATE votes_count = votes_count + 1
-        `;
-
-        db.query(incrementQuery, [userIp, subjectId], (err) => {
+        // Increment the subject votes
+        const updateVotesQuery = 'UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?';
+        db.query(updateVotesQuery, [subjectId], (err) => {
             if (err) {
-                console.error('Error incrementing IP votes:', err);
-                return res.status(500).json({ error: 'Database error' });
+                console.error('Error updating votes:', err);
+                return res.status(500).json({ error: 'Failed to update votes' });
             }
-
-            const updateVotesQuery = `
-                UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?
-            `;
-
-            db.query(updateVotesQuery, [subjectId], (err) => {
-                if (err) {
-                    console.error('Error updating votes:', err);
-                    return res.status(500).json({ error: 'Failed to update votes' });
-                }
-
-                // Update cookie-stored preferences
-                const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
-                db.query(query, [subjectId], (err, results) => {
-                    if (err) {
-                        console.error('Error fetching category ID:', err);
-                    }
-
-                    const categoryId = results[0]?.category_id;
-                    if (categoryId) {
-                        const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-                        preferences[categoryId] = (preferences[categoryId] || 0) + 1;
-
-                        res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
-                    }
-
-                    res.json({ success: true });
-                });
-            });
+            res.json({ success: true });
         });
     });
 });
 
-// API to add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
@@ -167,7 +131,6 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     });
 });
 
-// API to fetch comments
 app.get('/api/subjects/:id/comments', (req, res) => {
     const subjectId = req.params.id;
     const query = `
@@ -205,4 +168,3 @@ const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
