@@ -274,14 +274,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const cookieConsent = document.getElementById("cookieConsent");
     const acceptCookiesButton = document.getElementById("acceptCookies");
 
+    // Log visibility check
+    console.log("Checking cookie consent visibility...");
+
     // Check if cookies were already accepted
     if (!localStorage.getItem("cookiesAccepted")) {
         cookieConsent.classList.remove("hidden");
+        console.log("Cookie consent banner is now visible.");
+    } else {
+        console.log("Cookie consent already accepted.");
     }
 
-    // Set cookie consent in localStorage
+    // Add event listener to accept cookies
     acceptCookiesButton.addEventListener("click", () => {
         localStorage.setItem("cookiesAccepted", "true");
         cookieConsent.classList.add("hidden");
+        console.log("Cookie consent accepted and banner hidden.");
     });
 });
