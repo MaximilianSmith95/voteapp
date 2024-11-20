@@ -5,6 +5,24 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
 const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Save files in the 'uploads' directory
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage });
+
+// Ensure the 'uploads' directory exists
+const fs = require('fs');
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
 
 const app = express();
 app.set('trust proxy', true);
