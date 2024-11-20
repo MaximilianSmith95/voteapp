@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
+const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
 
 const app = express();
 app.set('trust proxy', true);
@@ -43,6 +44,13 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 };
+
+// Define a rate limiter for the voting endpoint
+const voteLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute window
+    max: 100, // Limit each IP to 100 requests per minute
+    message: { error: 'Too many requests. Please try again later.' } // Custom message
+});
 
 // API to fetch categories
 app.get('/api/categories', (req, res) => {
@@ -87,7 +95,7 @@ app.get('/api/categories', (req, res) => {
 });
 
 // API to vote for a subject
-app.post('/api/subjects/:id/vote', (req, res) => {
+app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => { // Apply rate limiter here
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
