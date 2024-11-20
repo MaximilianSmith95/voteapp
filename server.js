@@ -103,8 +103,8 @@ app.post('/api/subjects/:id/vote', (req, res) => {
 
         const currentVotes = results[0]?.votes_count || 0;
 
-        if (currentVotes >= 1000) {
-            return res.status(403).json({ error: 'Vote limit reached' });
+        if (currentVotes >= 5) {
+            return res.status(403).json({ error: 'Wow you love it! Vote limit reached' });
         }
 
         const incrementQuery = `
