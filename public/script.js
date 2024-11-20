@@ -19,7 +19,6 @@ window.enableGeolocationSearch = function () {
     requestUserLocation();
 };
 
-// Function to request user's location and filter categories by proximity
 function requestUserLocation() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -27,17 +26,13 @@ function requestUserLocation() {
                 const userLatitude = position.coords.latitude;
                 const userLongitude = position.coords.longitude;
 
-                // Fetch categories based on user's geolocation
-                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
+                // Fetch categories sorted by geolocation
+                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`)
                     .then(response => response.json())
                     .then(data => {
-                        // Update the global data with geolocation-sorted categories
-                        allCategoriesData = data;
-
-                        // Render categories sorted by proximity
-                        renderCategories(data);
+                        renderCategories(data); // Render categories sorted by proximity
                     })
-                    .catch(error => console.error('Error fetching categories:', error));
+                    .catch(error => console.error('Error fetching near me categories:', error));
             },
             (error) => {
                 console.error("Geolocation error:", error);
@@ -47,6 +42,7 @@ function requestUserLocation() {
         console.log("Geolocation is not available in this browser.");
     }
 }
+
 
 // Function to filter content based on user input
 window.filterContent = function () {
