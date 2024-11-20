@@ -19,6 +19,15 @@ window.enableGeolocationSearch = function () {
     requestUserLocation();
 };
 
+function loadForYouCategories() {
+    fetch(`/api/categories?type=for-you`)
+        .then(response => response.json())
+        .then(data => {
+            renderCategories(data); // Render categories sorted by preferences
+        })
+        .catch(error => console.error('Error fetching for you categories:', error));
+}
+
 function requestUserLocation() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
