@@ -103,7 +103,7 @@ app.post('/api/subjects/:id/vote', (req, res) => {
 
         const currentVotes = results[0]?.votes_count || 0;
 
-        if (currentVotes >= 5) {
+        if (currentVotes >= 200) {
             return res.status(403).json({ error: 'Wow you love it! Vote limit reached' });
         }
 
