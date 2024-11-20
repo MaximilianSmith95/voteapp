@@ -52,12 +52,12 @@ const voteLimiter = rateLimit({
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
 
-// API to fetch categories
 app.get('/api/categories', (req, res) => {
+    const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
 
     const query = `
-        SELECT c.category_id, c.name AS category_name,
+        SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
@@ -72,7 +72,13 @@ app.get('/api/categories', (req, res) => {
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
-                category = { category_id: row.category_id, name: row.category_name, subjects: [] };
+                category = { 
+                    category_id: row.category_id, 
+                    name: row.category_name, 
+                    subjects: [],
+                    latitude: row.latitude,
+                    longitude: row.longitude 
+                };
                 acc.push(category);
             }
             if (row.subject_id) {
@@ -86,13 +92,31 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        const sortedCategories = categories.sort((a, b) => {
-            return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
-        });
+        if (type === "near") {
+            // Sort by geolocation proximity
+            const userLat = parseFloat(latitude);
+            const userLon = parseFloat(longitude);
 
-        res.json(sortedCategories);
+            const sortedCategories = categories.map(category => ({
+                ...category,
+                distance: haversine(userLat, userLon, category.latitude, category.longitude)
+            })).sort((a, b) => a.distance - b.distance);
+
+            res.json(sortedCategories);
+        } else if (type === "for-you") {
+            // Sort by preferences
+            const sortedCategories = categories.sort((a, b) => {
+                return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+            });
+
+            res.json(sortedCategories);
+        } else {
+            // Default to unsorted (randomized or default logic)
+            res.json(categories);
+        }
     });
 });
+
 
 // API to vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => { // Apply rate limiter here
