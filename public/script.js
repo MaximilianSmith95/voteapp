@@ -2,6 +2,10 @@ let allCategoriesData = []; // Global variable to store initial categories data
 
 document.addEventListener("DOMContentLoaded", () => {
     // Fetch categories without geolocation on page load
+    document.getElementById("geolocationButton").addEventListener("click", requestUserLocation);
+    document.getElementById("forYouButton").addEventListener("click", loadForYouCategories);
+
+    console.log("Event listeners attached to 'Near Me' and 'For You' buttons.");
     fetch('/api/categories')
         .then(response => response.json())
         .then(data => {
