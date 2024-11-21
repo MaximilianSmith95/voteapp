@@ -1,4 +1,10 @@
 let allCategoriesData = []; // Global variable to store initial categories data
+let currentCategoriesLimit = 15; // Start with 15 categories
+
+function renderLimitedCategories(categories, limit = 15) {
+    const limitedCategories = categories.slice(0, limit);
+    renderCategories(limitedCategories); // Reuse existing render logic
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners
@@ -13,75 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             allCategoriesData = data; // Store the data globally
-            const shuffledData = shuffleArray([...data]); // Shuffle the data for random order
-            renderCategories(shuffledData); // Render shuffled categories
+            renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render limited categories
+
+            // Add "Explore More" button
+            const exploreMoreButton = document.getElementById("exploreMoreButton");
+            exploreMoreButton.addEventListener("click", () => {
+                currentCategoriesLimit += 15; // Increase limit
+                renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render more categories
+            });
         })
-        .catch(error => {
-            console.error('Error fetching categories:', error);
-        });
+        .catch(error => console.error('Error fetching categories:', error));
 });
-
-// Function to call requestUserLocation on button click
-window.enableGeolocationSearch = function () {
-    requestUserLocation();
-};
-
-function loadForYouCategories() {
-    fetch(`/api/categories?type=for-you`)
-        .then(response => response.json())
-        .then(data => {
-            renderCategories(data); // Render categories sorted by preferences
-        })
-        .catch(error => console.error('Error fetching for you categories:', error));
-}
-
-function requestUserLocation() {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userLatitude = position.coords.latitude;
-                const userLongitude = position.coords.longitude;
-
-                // Fetch categories sorted by geolocation
-                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderCategories(data); // Render categories sorted by proximity
-                    })
-                    .catch(error => console.error('Error fetching near me categories:', error));
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-            }
-        );
-    } else {
-        console.log("Geolocation is not available in this browser.");
-    }
-}
-
-
-// Function to filter content based on user input
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    const categoriesContainer = document.getElementById("categories");
-    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    categories.forEach(category => {
-        const categoryName = category.querySelector("h2").textContent.toLowerCase();
-        const isCategoryMatch = categoryName.includes(searchTerm);
-        const subjects = Array.from(category.getElementsByClassName("subject"));
-        let subjectMatchFound = false;
-
-        subjects.forEach(subject => {
-            const subjectName = subject.textContent.toLowerCase();
-            const isSubjectMatch = subjectName.includes(searchTerm);
-            subject.classList.toggle("highlighted", isSubjectMatch);
-            if (isSubjectMatch) subjectMatchFound = true;
-        });
-
-        category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
-    });
-};
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -117,7 +65,7 @@ function renderCategories(categories) {
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
-                    <div class="comments" id="comment-section-${subject.subject_id}"></div>
+                    <!-- Voice Recording UI (Lazy-loaded) -->
                 </div>
             `;
             subjectsDiv.appendChild(subjectDiv);
@@ -127,6 +75,72 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
+// Lazy-load voice messaging when comments are toggled
+window.toggleComments = function (subjectId) {
+    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+    commentsContainer.classList.toggle("hidden");
+
+    const toggleButton = commentsContainer.previousElementSibling;
+    toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
+
+    // Lazy-load voice recording UI when comments are revealed
+    if (!commentsContainer.classList.contains("hidden") && !commentsContainer.dataset.voiceInitialized) {
+        const voiceCommentDiv = document.createElement("div");
+        voiceCommentDiv.classList.add("voice-comment");
+        voiceCommentDiv.innerHTML = `
+            <button id="record-button-${subjectId}" onclick="startRecording(${subjectId})">🎤 Record</button>
+            <button id="stop-button-${subjectId}" onclick="stopRecording(${subjectId})" disabled>⏹ Stop</button>
+            <audio id="voice-preview-${subjectId}" controls></audio>
+        `;
+        commentsContainer.appendChild(voiceCommentDiv);
+        commentsContainer.dataset.voiceInitialized = true; // Mark as initialized
+    }
+};
+
+// Voice recording functions
+let mediaRecorder;
+let audioChunks = [];
+
+function startRecording(subjectId) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Voice recording is not supported on this browser.");
+        return;
+    }
+
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPreview = document.getElementById(`voice-preview-${subjectId}`);
+                audioPreview.src = audioUrl;
+
+                // Optional: upload the audioBlob to your server here
+            };
+
+            mediaRecorder.start();
+            document.getElementById(`record-button-${subjectId}`).disabled = true;
+            document.getElementById(`stop-button-${subjectId}`).disabled = false;
+        })
+        .catch(error => {
+            console.error("Error accessing microphone:", error);
+        });
+}
+
+function stopRecording(subjectId) {
+    mediaRecorder.stop();
+    document.getElementById(`record-button-${subjectId}`).disabled = false;
+    document.getElementById(`stop-button-${subjectId}`).disabled = true;
+}
+
 
 // Function to handle upvotes
 function upvote(subjectId) {
