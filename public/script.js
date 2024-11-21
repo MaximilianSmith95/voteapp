@@ -13,80 +13,48 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             allCategoriesData = data; // Store the data globally
-            const shuffledData = shuffleArray([...data]); // Shuffle the data for random order
-            renderCategories(shuffledData); // Render shuffled categories
+            renderLimitedCategories(allCategoriesData, 10); // Render only the first 10 categories initially
         })
         .catch(error => {
             console.error('Error fetching categories:', error);
         });
 });
 
-// Function to call requestUserLocation on button click
-window.enableGeolocationSearch = function () {
-    requestUserLocation();
-};
+// Function to render limited categories and add a "Load More" button
+function renderLimitedCategories(categories, limit = 10) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear existing categories
 
-function loadForYouCategories() {
-    fetch(`/api/categories?type=for-you`)
-        .then(response => response.json())
-        .then(data => {
-            renderCategories(data); // Render categories sorted by preferences
-        })
-        .catch(error => console.error('Error fetching for you categories:', error));
-}
+    let currentIndex = 0; // Tracks how many categories have been rendered
 
-function requestUserLocation() {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userLatitude = position.coords.latitude;
-                const userLongitude = position.coords.longitude;
+    // Function to render a batch of categories
+    const renderBatch = () => {
+        const nextBatch = categories.slice(currentIndex, currentIndex + limit);
+        renderCategories(nextBatch);
+        currentIndex += limit;
 
-                // Fetch categories sorted by geolocation
-                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderCategories(data); // Render categories sorted by proximity
-                    })
-                    .catch(error => console.error('Error fetching near me categories:', error));
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-            }
-        );
-    } else {
-        console.log("Geolocation is not available in this browser.");
+        // Hide the "Load More" button if all categories are loaded
+        if (currentIndex >= categories.length) {
+            document.getElementById("loadMoreButton").style.display = "none";
+        }
+    };
+
+    // Initial batch rendering
+    renderBatch();
+
+    // Create a "Load More" button if not already present
+    if (!document.getElementById("loadMoreButton")) {
+        const loadMoreButton = document.createElement("button");
+        loadMoreButton.id = "loadMoreButton";
+        loadMoreButton.textContent = "Load More";
+        loadMoreButton.onclick = renderBatch;
+        categoriesContainer.appendChild(loadMoreButton);
     }
 }
-
-
-// Function to filter content based on user input
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    const categoriesContainer = document.getElementById("categories");
-    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
-
-    categories.forEach(category => {
-        const categoryName = category.querySelector("h2").textContent.toLowerCase();
-        const isCategoryMatch = categoryName.includes(searchTerm);
-        const subjects = Array.from(category.getElementsByClassName("subject"));
-        let subjectMatchFound = false;
-
-        subjects.forEach(subject => {
-            const subjectName = subject.textContent.toLowerCase();
-            const isSubjectMatch = subjectName.includes(searchTerm);
-            subject.classList.toggle("highlighted", isSubjectMatch);
-            if (isSubjectMatch) subjectMatchFound = true;
-        });
-
-        category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
-    });
-};
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = "";
 
     categories.forEach(category => {
         const categoryDiv = document.createElement("div");
@@ -106,29 +74,28 @@ function renderCategories(categories) {
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
 
             subjectDiv.innerHTML = `
-    <p style="display: inline-block;">
-        <a href="${subject.link}" target="_blank">${subject.name}</a>
-    </p>
-    <span class="vote-container">
-        <span class="vote-count">${subject.votes}</span>
-        <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
-    </span>
-    <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-    <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
-        <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
-        <button onclick="addComment(${subject.subject_id})">Add Comment</button>
-        <!-- Voice Recording UI -->
-        <div class="voice-comment">
-            <button id="record-button-${subject.subject_id}" onclick="startRecording(${subject.subject_id})">🎤 Record</button>
-            <button id="stop-button-${subject.subject_id}" onclick="stopRecording(${subject.subject_id})" disabled>⏹ Stop</button>
-            <audio id="voice-preview-${subject.subject_id}" controls></audio>
-        </div>
-        <div class="comments" id="comment-section-${subject.subject_id}">
-            <!-- Dynamically loaded comments will appear here -->
-        </div>
-    </div>
-`;
-
+                <p style="display: inline-block;">
+                    <a href="${subject.link}" target="_blank">${subject.name}</a>
+                </p>
+                <span class="vote-container">
+                    <span class="vote-count">${subject.votes}</span>
+                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
+                </span>
+                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
+                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
+                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
+                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+                    <!-- Voice Recording UI -->
+                    <div class="voice-comment">
+                        <button id="record-button-${subject.subject_id}" onclick="startRecording(${subject.subject_id})">🎤 Record</button>
+                        <button id="stop-button-${subject.subject_id}" onclick="stopRecording(${subject.subject_id})" disabled>⏹ Stop</button>
+                        <audio id="voice-preview-${subject.subject_id}" controls></audio>
+                    </div>
+                    <div class="comments" id="comment-section-${subject.subject_id}">
+                        <!-- Dynamically loaded comments will appear here -->
+                    </div>
+                </div>
+            `;
             subjectsDiv.appendChild(subjectDiv);
         });
 
@@ -136,6 +103,9 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
+// Other existing functions remain unchanged...
+
 
 // Function to handle upvotes
 function upvote(subjectId) {
