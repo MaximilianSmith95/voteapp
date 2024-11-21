@@ -20,12 +20,16 @@ function setupExploreMoreButton() {
 }
 
 // Function to fetch and render categories with a given limit
-function fetchAndRenderCategories(url, limit = 15) {
+function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
             allCategoriesData = data; // Store the data globally
-            renderLimitedCategories(allCategoriesData, limit); // Render limited categories
+            let filteredData = allCategoriesData;
+            if (transformFn) {
+                filteredData = transformFn(allCategoriesData); // Apply transformation function if provided
+            }
+            renderLimitedCategories(filteredData, limit); // Render limited categories
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
@@ -66,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
-    fetchAndRenderCategories(`/api/categories`, limit);
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
 }
 
 function fetchForYouCategories(limit) {
@@ -79,7 +83,10 @@ function fetchNearMeCategories(limit) {
             (position) => {
                 const userLatitude = position.coords.latitude;
                 const userLongitude = position.coords.longitude;
-                fetchAndRenderCategories(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`, limit);
+                fetchAndRenderCategories(
+                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
+                    limit
+                );
             },
             (error) => {
                 console.error("Geolocation error:", error);
@@ -91,7 +98,9 @@ function fetchNearMeCategories(limit) {
 }
 
 function fetchLatestCategories(limit) {
-    fetchAndRenderCategories(`/api/categories?type=latest`, limit);
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
+        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
+    });
 }
 
 // Function to render categories in the DOM
@@ -139,34 +148,43 @@ function renderCategories(categories) {
     });
 }
 
+// Function to shuffle an array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 // Function to handle upvotes
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
         method: 'POST'
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
-            if (voteCountElement) {
-                const newVoteCount = parseInt(voteCountElement.textContent) + 1;
-                voteCountElement.textContent = newVoteCount;
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
+                if (voteCountElement) {
+                    const newVoteCount = parseInt(voteCountElement.textContent) + 1;
+                    voteCountElement.textContent = newVoteCount;
 
-                const subjectDiv = voteCountElement.closest(".subject");
-                const subjectsContainer = subjectDiv.parentNode;
+                    const subjectDiv = voteCountElement.closest(".subject");
+                    const subjectsContainer = subjectDiv.parentNode;
 
-                const subjectsArray = Array.from(subjectsContainer.children);
-                subjectsArray.sort((a, b) => {
-                    const votesA = parseInt(a.querySelector(".vote-count").textContent);
-                    const votesB = parseInt(b.querySelector(".vote-count").textContent);
-                    return votesB - votesA;
-                });
+                    const subjectsArray = Array.from(subjectsContainer.children);
+                    subjectsArray.sort((a, b) => {
+                        const votesA = parseInt(a.querySelector(".vote-count").textContent);
+                        const votesB = parseInt(b.querySelector(".vote-count").textContent);
+                        return votesB - votesA;
+                    });
 
-                subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
+                    subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
+                }
             }
-        }
-    })
-    .catch(error => console.error('Error upvoting:', error));
+        })
+        .catch(error => console.error('Error upvoting:', error));
 }
 
 // Function to toggle comment visibility
