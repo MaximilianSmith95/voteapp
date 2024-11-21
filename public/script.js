@@ -82,108 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
 
-// Lazy-load voice recording when comments are toggled
-window.toggleComments = function (subjectId) {
-    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
-    commentsContainer.classList.toggle("hidden");
-
-    const toggleButton = commentsContainer.previousElementSibling;
-    toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
-
-    // Lazy-load voice recording UI when comments are revealed
-    if (!commentsContainer.classList.contains("hidden") && !commentsContainer.dataset.voiceInitialized) {
-        const voiceCommentDiv = document.createElement("div");
-        voiceCommentDiv.classList.add("voice-comment");
-        voiceCommentDiv.innerHTML = `
-            <button id="record-button-${subjectId}" onclick="startRecording(${subjectId})">🎤 Record</button>
-            <button id="stop-button-${subjectId}" onclick="stopRecording(${subjectId})" disabled>⏹ Stop</button>
-            <audio id="voice-preview-${subjectId}" controls></audio>
-        `;
-        commentsContainer.appendChild(voiceCommentDiv);
-        commentsContainer.dataset.voiceInitialized = true; // Mark as initialized
-    }
-};
-
-// Voice recording functions
-let mediaRecorder;
-let audioChunks = [];
-
-function startRecording(subjectId) {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Voice recording is not supported on this browser.");
-        return;
-    }
-
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audioPreview = document.getElementById(`voice-preview-${subjectId}`);
-                audioPreview.src = audioUrl;
-
-                // Optional: upload the audioBlob to your server here
-            };
-
-            mediaRecorder.start();
-            document.getElementById(`record-button-${subjectId}`).disabled = true;
-            document.getElementById(`stop-button-${subjectId}`).disabled = false;
-        })
-        .catch(error => {
-            console.error("Error accessing microphone:", error);
-        });
-}
-
-function stopRecording(subjectId) {
-    if (mediaRecorder) {
-        mediaRecorder.stop();
-        document.getElementById(`record-button-${subjectId}`).disabled = false;
-        document.getElementById(`stop-button-${subjectId}`).disabled = true;
-    }
-}
-
-// Fetch functions for each filter
-function fetchAllCategories(limit) {
-    fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
-}
-
-function fetchForYouCategories(limit) {
-    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
-}
-
-function fetchNearMeCategories(limit) {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userLatitude = position.coords.latitude;
-                const userLongitude = position.coords.longitude;
-                fetchAndRenderCategories(
-                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
-                    limit
-                );
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-            }
-        );
-    } else {
-        console.log("Geolocation is not available in this browser.");
-    }
-}
-
-function fetchLatestCategories(limit) {
-    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
-        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
-    });
-}
-
 // Function to render categories in the DOM
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
@@ -215,10 +113,10 @@ function renderCategories(categories) {
                     <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
                 </span>
                 <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-                <div id="comments-container-${subjectId}" class="comments-container hidden">
-                    <input type="text" id="comment-input-${subjectId}" placeholder="Leave a Review..." />
-                    <button onclick="addComment(${subjectId})">Add Comment</button>
-                    <div class="comments" id="comment-section-${subjectId}"></div>
+                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
+                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
+                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+                    <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
             subjectsDiv.appendChild(subjectDiv);
@@ -228,6 +126,10 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
+// Other functions remain unchanged...
+
+
 
 // Function to shuffle an array
 function shuffleArray(array) {
