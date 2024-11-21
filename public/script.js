@@ -117,6 +117,18 @@ function renderCategories(categories) {
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+                    <!-- Voice Recording UI -->
+                <div class="voice-comment">
+                    <button id="record-button-${subject.subject_id}" onclick="startRecording(${subject.subject_id})">🎤 Record</button>
+                    <button id="stop-button-${subject.subject_id}" onclick="stopRecording(${subject.subject_id})" disabled>⏹ Stop</button>
+                    <audio id="voice-preview-${subject.subject_id}" controls></audio>
+                </div>
+
+                <div class="comments" id="comment-section-${subject.subject_id}">
+                    <!-- Dynamically loaded comments will appear here -->
+                </div>
+            </div>
+        `;
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
