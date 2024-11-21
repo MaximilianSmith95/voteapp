@@ -1097,17 +1097,18 @@ nav {
             margin-top: 10px;
             font-style: italic;
         }
-.explore-more {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+#exploreMoreButton {
+    font-size: 18px; /* Increase font size */
+    font-weight: bold; /* Make text bold */
+    padding: 12px 20px; /* Add padding */
+    background-color: #007bff; /* Set background color */
+    color: white; /* Set text color */
+    border: none; /* Remove border */
+    border-radius: 8px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s ease; /* Add hover effect */
 }
-.explore-more:hover {
-    background-color: #0056b3;
+
+#exploreMoreButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
 }
