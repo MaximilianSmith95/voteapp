@@ -2,7 +2,6 @@ let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
 let activeFilterFunction = null; // Track the currently active filter function
 
-
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
     const limitedCategories = categories.slice(0, limit);
@@ -19,6 +18,7 @@ function setupExploreMoreButton() {
         }
     });
 }
+
 // Function to load more categories automatically when scrolling to the bottom
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
@@ -31,6 +31,7 @@ function enableInfiniteScrolling() {
         }
     });
 }
+
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
@@ -75,11 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Event listeners attached to navigation buttons.");
 
     // Default to "All Categories"
-   activeFilterFunction = fetchAllCategories;
+    activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
     setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
+
 // Lazy-load voice recording when comments are toggled
 window.toggleComments = function (subjectId) {
     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
@@ -144,6 +146,7 @@ function stopRecording(subjectId) {
     document.getElementById(`record-button-${subjectId}`).disabled = false;
     document.getElementById(`stop-button-${subjectId}`).disabled = true;
 }
+
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
@@ -262,6 +265,7 @@ function upvote(subjectId) {
         })
         .catch(error => console.error('Error upvoting:', error));
 }
+
 
 // Function to toggle comment visibility
 window.toggleComments = function (subjectId) {
