@@ -106,20 +106,29 @@ function renderCategories(categories) {
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
 
             subjectDiv.innerHTML = `
-                <p style="display: inline-block;">
-                    <a href="${subject.link}" target="_blank">${subject.name}</a>
-                </p>
-                <span class="vote-container">
-                    <span class="vote-count">${subject.votes}</span>
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
-                </span>
-                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
-                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
-                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
-                    <div class="comments" id="comment-section-${subject.subject_id}"></div>
-                </div>
-            `;
+    <p style="display: inline-block;">
+        <a href="${subject.link}" target="_blank">${subject.name}</a>
+    </p>
+    <span class="vote-container">
+        <span class="vote-count">${subject.votes}</span>
+        <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
+    </span>
+    <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
+    <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
+        <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
+        <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+        <!-- Voice Recording UI -->
+        <div class="voice-comment">
+            <button id="record-button-${subject.subject_id}" onclick="startRecording(${subject.subject_id})">🎤 Record</button>
+            <button id="stop-button-${subject.subject_id}" onclick="stopRecording(${subject.subject_id})" disabled>⏹ Stop</button>
+            <audio id="voice-preview-${subject.subject_id}" controls></audio>
+        </div>
+        <div class="comments" id="comment-section-${subject.subject_id}">
+            <!-- Dynamically loaded comments will appear here -->
+        </div>
+    </div>
+`;
+
             subjectsDiv.appendChild(subjectDiv);
         });
 
