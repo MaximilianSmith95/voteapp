@@ -1,8 +1,7 @@
 let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
 let activeFilterFunction = null; // Track the currently active filter function
-let mediaRecorder;
-let audioChunks = [];
+
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
