@@ -18,7 +18,6 @@ function setupExploreMoreButton() {
         }
     });
 }
-
 // Function to load more categories automatically when scrolling to the bottom
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
@@ -31,7 +30,6 @@ function enableInfiniteScrolling() {
         }
     });
 }
-
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
@@ -76,11 +74,46 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Event listeners attached to navigation buttons.");
 
     // Default to "All Categories"
-    activeFilterFunction = fetchAllCategories;
+   activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
     setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
+
+// Fetch functions for each filter
+function fetchAllCategories(limit) {
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
+}
+
+function fetchForYouCategories(limit) {
+    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
+}
+
+function fetchNearMeCategories(limit) {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+                fetchAndRenderCategories(
+                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
+                    limit
+                );
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+            }
+        );
+    } else {
+        console.log("Geolocation is not available in this browser.");
+    }
+}
+
+function fetchLatestCategories(limit) {
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
+        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
+    });
+}
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
@@ -127,10 +160,6 @@ function renderCategories(categories) {
     });
 }
 
-// Other functions remain unchanged...
-
-
-
 // Function to shuffle an array
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -169,7 +198,6 @@ function upvote(subjectId) {
         })
         .catch(error => console.error('Error upvoting:', error));
 }
-
 
 // Function to toggle comment visibility
 window.toggleComments = function (subjectId) {
