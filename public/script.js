@@ -8,34 +8,67 @@ function renderLimitedCategories(categories, limit = 15) {
 
 document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners
-    document.getElementById("geolocationButton").addEventListener("click", requestUserLocation);
-    document.getElementById("forYouButton").addEventListener("click", loadForYouCategories);
-    document.getElementById("allButton").addEventListener("click", showAllCategories);
-    document.getElementById("latestButton").addEventListener("click", showLatestCategories);
+    const geolocationButton = document.getElementById("geolocationButton");
+    if (geolocationButton) {
+        geolocationButton.addEventListener("click", requestUserLocation);
+    }
+
+    const forYouButton = document.getElementById("forYouButton");
+    if (forYouButton) {
+        forYouButton.addEventListener("click", loadForYouCategories);
+    }
+
+    const allButton = document.getElementById("allButton");
+    if (allButton) {
+        allButton.addEventListener("click", showAllCategories);
+    }
+
+    const latestButton = document.getElementById("latestButton");
+    if (latestButton) {
+        latestButton.addEventListener("click", showLatestCategories);
+    }
 
     console.log("Event listeners attached to navigation buttons.");
 
     fetch('/api/categories')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching categories: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
             allCategoriesData = data; // Store the data globally
             renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render limited categories
 
             // Add "Explore More" button
             const exploreMoreButton = document.getElementById("exploreMoreButton");
-            exploreMoreButton.addEventListener("click", () => {
-                currentCategoriesLimit += 15; // Increase limit
-                renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render more categories
-            });
+            if (exploreMoreButton) {
+                exploreMoreButton.addEventListener("click", () => {
+                    exploreMoreButton.disabled = true; // Disable button temporarily
+                    currentCategoriesLimit += 15; // Increase limit
+                    renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render more categories
+                    exploreMoreButton.disabled = false; // Re-enable button
+                });
+            }
         })
-        .catch(error => console.error('Error fetching categories:', error));
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+            const errorContainer = document.getElementById("errorContainer");
+            if (errorContainer) {
+                errorContainer.innerText = "Failed to load categories. Please try again later.";
+                errorContainer.style.display = "block";
+            }
+        });
 });
 
 // Function to render categories in the DOM
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
+    if (!categoriesContainer) return;
     categoriesContainer.innerHTML = "";
 
+    const fragment = document.createDocumentFragment(); // Use fragment to minimize reflows
     categories.forEach(category => {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
@@ -65,26 +98,27 @@ function renderCategories(categories) {
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
-                    <!-- Voice Recording UI (Lazy-loaded) -->
                 </div>
             `;
             subjectsDiv.appendChild(subjectDiv);
         });
 
         categoryDiv.appendChild(subjectsDiv);
-        categoriesContainer.appendChild(categoryDiv);
+        fragment.appendChild(categoryDiv);
     });
+    categoriesContainer.appendChild(fragment);
 }
 
 // Lazy-load voice messaging when comments are toggled
 window.toggleComments = function (subjectId) {
     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
-    commentsContainer.classList.toggle("hidden");
+    if (!commentsContainer) return;
 
+    commentsContainer.classList.toggle("hidden");
     const toggleButton = commentsContainer.previousElementSibling;
     toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
 
-    // Lazy-load voice recording UI when comments are revealed
+    // Lazy-load voice recording UI
     if (!commentsContainer.classList.contains("hidden") && !commentsContainer.dataset.voiceInitialized) {
         const voiceCommentDiv = document.createElement("div");
         voiceCommentDiv.classList.add("voice-comment");
@@ -94,7 +128,7 @@ window.toggleComments = function (subjectId) {
             <audio id="voice-preview-${subjectId}" controls></audio>
         `;
         commentsContainer.appendChild(voiceCommentDiv);
-        commentsContainer.dataset.voiceInitialized = true; // Mark as initialized
+        commentsContainer.dataset.voiceInitialized = true;
     }
 };
 
@@ -121,8 +155,9 @@ function startRecording(subjectId) {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audioPreview = document.getElementById(`voice-preview-${subjectId}`);
-                audioPreview.src = audioUrl;
-
+                if (audioPreview) {
+                    audioPreview.src = audioUrl;
+                }
                 // Optional: upload the audioBlob to your server here
             };
 
@@ -136,11 +171,12 @@ function startRecording(subjectId) {
 }
 
 function stopRecording(subjectId) {
-    mediaRecorder.stop();
-    document.getElementById(`record-button-${subjectId}`).disabled = false;
-    document.getElementById(`stop-button-${subjectId}`).disabled = true;
+    if (mediaRecorder) {
+        mediaRecorder.stop();
+        document.getElementById(`record-button-${subjectId}`).disabled = false;
+        document.getElementById(`stop-button-${subjectId}`).disabled = true;
+    }
 }
-
 
 // Function to handle upvotes
 function upvote(subjectId) {
