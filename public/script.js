@@ -6,6 +6,38 @@ function renderLimitedCategories(categories, limit = 15) {
     renderCategories(limitedCategories); // Reuse existing render logic
 }
 
+// Function to fetch user's geolocation and use it to fetch categories
+function requestUserLocation() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+
+                // Fetch categories sorted by proximity
+                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error fetching geolocation-based categories: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        renderCategories(data);
+                    })
+                    .catch(error => console.error("Error fetching geolocation-based categories:", error));
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                alert("Unable to fetch location. Please allow location access.");
+            }
+        );
+    } else {
+        console.log("Geolocation is not available in this browser.");
+        alert("Geolocation is not supported by your browser.");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners
     const geolocationButton = document.getElementById("geolocationButton");
@@ -108,6 +140,9 @@ function renderCategories(categories) {
     });
     categoriesContainer.appendChild(fragment);
 }
+
+// Other functions (toggleComments, startRecording, stopRecording, etc.) remain unchanged and are already defined in the previous script
+
 
 // Lazy-load voice messaging when comments are toggled
 window.toggleComments = function (subjectId) {
