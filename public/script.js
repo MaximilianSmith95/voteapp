@@ -1,5 +1,7 @@
+let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
 
+// Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
     const limitedCategories = categories.slice(0, limit);
     renderCategories(limitedCategories); // Reuse existing render logic
@@ -18,13 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             allCategoriesData = data; // Store the data globally
-            const shuffledData = shuffleArray([...data]); // Shuffle the data for random order
-            renderCategories(shuffledData); // Render shuffled categories
+            renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render limited categories
+
+            // Add "Explore More" button functionality
+            const exploreMoreButton = document.getElementById("exploreMoreButton");
+            exploreMoreButton.addEventListener("click", () => {
+                currentCategoriesLimit += 15; // Increase limit
+                renderLimitedCategories(allCategoriesData, currentCategoriesLimit); // Render more categories
+            });
         })
-        .catch(error => {
-            console.error('Error fetching categories:', error);
-        });
+        .catch(error => console.error('Error fetching categories:', error));
 });
+
 
 // Function to call requestUserLocation on button click
 window.enableGeolocationSearch = function () {
@@ -132,74 +139,7 @@ function renderCategories(categories) {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
-// Lazy-load voice messaging when comments are toggled
-window.toggleComments = function (subjectId) {
-    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
-    if (!commentsContainer) return;
 
-    commentsContainer.classList.toggle("hidden");
-    const toggleButton = commentsContainer.previousElementSibling;
-    toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
-
-    // Lazy-load voice recording UI
-    if (!commentsContainer.classList.contains("hidden") && !commentsContainer.dataset.voiceInitialized) {
-        const voiceCommentDiv = document.createElement("div");
-        voiceCommentDiv.classList.add("voice-comment");
-        voiceCommentDiv.innerHTML = `
-            <button id="record-button-${subjectId}" onclick="startRecording(${subjectId})">🎤 Record</button>
-            <button id="stop-button-${subjectId}" onclick="stopRecording(${subjectId})" disabled>⏹ Stop</button>
-            <audio id="voice-preview-${subjectId}" controls></audio>
-        `;
-        commentsContainer.appendChild(voiceCommentDiv);
-        commentsContainer.dataset.voiceInitialized = true;
-    }
-};
-
-// Voice recording functions
-let mediaRecorder;
-let audioChunks = [];
-
-function startRecording(subjectId) {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Voice recording is not supported on this browser.");
-        return;
-    }
-
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audioPreview = document.getElementById(`voice-preview-${subjectId}`);
-                if (audioPreview) {
-                    audioPreview.src = audioUrl;
-                }
-                // Optional: upload the audioBlob to your server here
-            };
-
-            mediaRecorder.start();
-            document.getElementById(`record-button-${subjectId}`).disabled = true;
-            document.getElementById(`stop-button-${subjectId}`).disabled = false;
-        })
-        .catch(error => {
-            console.error("Error accessing microphone:", error);
-        });
-}
-
-function stopRecording(subjectId) {
-    if (mediaRecorder) {
-        mediaRecorder.stop();
-        document.getElementById(`record-button-${subjectId}`).disabled = false;
-        document.getElementById(`stop-button-${subjectId}`).disabled = true;
-    }
-}
 // Function to handle upvotes
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
@@ -376,9 +316,3 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Cookie consent accepted and banner hidden.");
     });
 });
-
-
-
-
-
-
