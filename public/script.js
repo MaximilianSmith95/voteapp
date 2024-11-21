@@ -116,12 +116,7 @@ function renderCategories(categories) {
                 <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
-                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>  
-                    <div class="comments" id="comment-section-${subject.subject_id}">
-                    <!-- Dynamically loaded comments will appear here -->
-                </div>
-            </div>
-        `;
+                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
