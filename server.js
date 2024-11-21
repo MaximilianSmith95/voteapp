@@ -5,24 +5,6 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
 const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
-const multer = require('multer');
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Save files in the 'uploads' directory
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
-
-const upload = multer({ storage });
-
-// Ensure the 'uploads' directory exists
-const fs = require('fs');
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
-}
 
 const app = express();
 app.set('trust proxy', true);
@@ -198,29 +180,6 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => { // Apply rate li
                 });
             });
         });
-    });
-});
-// API endpoint for uploading voice notes
-app.post('/api/subjects/:id/comment/audio', upload.single('audio'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, message: 'No file uploaded' });
-    }
-
-    const { id: subjectId } = req.params;
-    const { username } = req.body; // This should come from the frontend
-    const audioPath = `/uploads/${req.file.filename}`;
-
-    // Save file details to the database
-    const query = `
-        INSERT INTO comments (subject_id, username, comment_text, audio_path)
-        VALUES (?, ?, NULL, ?)
-    `;
-    db.query(query, [subjectId, username, audioPath], (err) => {
-        if (err) {
-            console.error('Error inserting comment:', err);
-            return res.status(500).json({ success: false });
-        }
-        res.json({ success: true, audioPath });
     });
 });
 
