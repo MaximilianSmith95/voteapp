@@ -18,7 +18,18 @@ function setupExploreMoreButton() {
         }
     });
 }
-
+// Function to load more categories automatically when scrolling to the bottom
+function enableInfiniteScrolling() {
+    window.addEventListener("scroll", () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 10) { // Check if near bottom
+            if (activeFilterFunction) {
+                currentCategoriesLimit += 15; // Increase limit
+                activeFilterFunction(currentCategoriesLimit); // Load more categories
+            }
+        }
+    });
+}
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
@@ -63,9 +74,10 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Event listeners attached to navigation buttons.");
 
     // Default to "All Categories"
-    activeFilterFunction = fetchAllCategories;
+   activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
     setupExploreMoreButton(); // Set up the Explore More button
+    enableInfiniteScrolling(); // Enable infinite scrolling
 });
 
 // Fetch functions for each filter
