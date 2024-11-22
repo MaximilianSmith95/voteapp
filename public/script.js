@@ -139,8 +139,8 @@ window.filterContent = function () {
         fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
             .then(response => response.json())
             .then(data => {
-                if (data.categories && data.categories.length > 0) {
-                    renderCategories(data.categories);
+                if (data && data.length > 0) {
+                    renderCategories(data);
                 } else {
                     categoriesContainer.innerHTML = "<p>No results found.</p>";
                 }
@@ -150,6 +150,7 @@ window.filterContent = function () {
             });
     }
 };
+
 
 
 function fetchLatestCategories(limit) {
