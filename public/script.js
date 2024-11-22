@@ -125,25 +125,20 @@ window.filterContent = function () {
     categoriesContainer.innerHTML = "<p>Loading...</p>";
 
     // Fetch matching categories and their subjects from the backend
-    if (searchTerm) {
-        fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    // Render full categories from the backend
-                    renderCategories(data, searchTerm);
-                } else {
-                    categoriesContainer.innerHTML = "<p>No results found.</p>";
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching search results:', error);
-                categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
-            });
-    } else {
-        // If the search term is empty, fetch and display all categories
-        fetchAndRenderCategories(`/api/categories`);
-    }
+    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                // Render all categories from the backend
+                renderCategories(data, searchTerm);
+            } else {
+                categoriesContainer.innerHTML = "<p>No results found.</p>";
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+            categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
+        });
 };
 
 function fetchLatestCategories(limit) {
