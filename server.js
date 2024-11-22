@@ -51,6 +51,52 @@ const voteLimiter = rateLimit({
     max: 100, // Limit each IP to 100 requests per minute
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
+app.get('/api/search', (req, res) => {
+    const { query } = req.query;
+
+    if (!query) {
+        return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    const searchQuery = `
+        SELECT c.category_id, c.name AS category_name, 
+               s.subject_id, s.name AS subject_name, s.votes, s.link
+        FROM Categories c
+        LEFT JOIN Subjects s ON c.category_id = s.category_id
+        WHERE c.name LIKE ? OR s.name LIKE ?
+    `;
+
+    db.query(searchQuery, [`%${query}%`, `%${query}%`], (err, results) => {
+        if (err) {
+            console.error('Error executing search query:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        const categories = results.reduce((acc, row) => {
+            let category = acc.find(cat => cat.category_id === row.category_id);
+            if (!category) {
+                category = {
+                    category_id: row.category_id,
+                    name: row.category_name,
+                    subjects: []
+                };
+                acc.push(category);
+            }
+            if (row.subject_id) {
+                category.subjects.push({
+                    subject_id: row.subject_id,
+                    name: row.subject_name,
+                    votes: row.votes,
+                    link: row.link
+                });
+            }
+            return acc;
+        }, []);
+
+        res.json(categories);
+    });
+});
+
 
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
