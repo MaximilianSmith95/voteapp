@@ -18,14 +18,21 @@ function setupExploreMoreButton() {
         }
     });
 }
-// Function to load more categories automatically when scrolling to the bottom
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 10) { // Check if near bottom
+        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
             if (activeFilterFunction) {
-                currentCategoriesLimit += 15; // Increase limit
-                activeFilterFunction(currentCategoriesLimit); // Load more categories
+                currentCategoriesLimit += 15; // Increment the limit
+                activeFilterFunction(currentCategoriesLimit); // Fetch and render more
+            } else {
+                const searchTerm = document.getElementById("searchBar").value;
+                if (searchTerm) {
+                    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
+                        .then(response => response.json())
+                        .then(data => renderCategories(data))
+                        .catch(error => console.error('Error fetching more results:', error));
+                }
             }
         }
     });
