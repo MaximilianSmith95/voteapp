@@ -120,37 +120,18 @@ function fetchNearMeCategories(limit) {
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
     const categoriesContainer = document.getElementById("categories");
-    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
 
-    let matchesFound = false;
+    // Clear existing content while fetching
+    categoriesContainer.innerHTML = "<p>Loading...</p>";
 
-    // Check existing categories in the frontend
-    categories.forEach(category => {
-        const categoryName = category.querySelector("h2").textContent.toLowerCase();
-        const isCategoryMatch = categoryName.includes(searchTerm);
-        const subjects = Array.from(category.getElementsByClassName("subject"));
-        let subjectMatchFound = false;
-
-        // Highlight matching subjects and determine if the category should be shown
-        subjects.forEach(subject => {
-            const subjectName = subject.textContent.toLowerCase();
-            const isSubjectMatch = subjectName.includes(searchTerm);
-            subject.classList.toggle("highlighted", isSubjectMatch);
-            if (isSubjectMatch) subjectMatchFound = true;
-        });
-
-        const shouldDisplay = isCategoryMatch || subjectMatchFound;
-        category.style.display = shouldDisplay ? "block" : "none";
-        if (shouldDisplay) matchesFound = true;
-    });
-
-    // Perform a backend search if searchTerm is entered
+    // Fetch matching categories and their subjects from the backend
     if (searchTerm) {
         fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    renderCategories(data, searchTerm); // Render categories and highlight the search term
+                    // Render full categories from the backend
+                    renderCategories(data, searchTerm);
                 } else {
                     categoriesContainer.innerHTML = "<p>No results found.</p>";
                 }
@@ -160,16 +141,18 @@ window.filterContent = function () {
                 categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
             });
     } else {
-        // If searchTerm is empty, fetch all categories
+        // If the search term is empty, fetch and display all categories
         fetchAndRenderCategories(`/api/categories`);
     }
 };
+
 function fetchLatestCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => {
         return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
     });
 }
 
+// Function to render categories in the DOM
 // Function to render categories in the DOM
 function renderCategories(categories, highlightSearchTerm = "") {
     const categoriesContainer = document.getElementById("categories");
@@ -192,7 +175,7 @@ function renderCategories(categories, highlightSearchTerm = "") {
         // Sort subjects by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
 
-        // Create a container for the subjects
+        // Create a scrollable container for the subjects
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
