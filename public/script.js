@@ -109,6 +109,31 @@ function fetchNearMeCategories(limit) {
     }
 }
 
+
+// Function to filter content based on user input
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const categoriesContainer = document.getElementById("categories");
+    const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
+
+    categories.forEach(category => {
+        const categoryName = category.querySelector("h2").textContent.toLowerCase();
+        const isCategoryMatch = categoryName.includes(searchTerm);
+        const subjects = Array.from(category.getElementsByClassName("subject"));
+        let subjectMatchFound = false;
+
+        subjects.forEach(subject => {
+            const subjectName = subject.textContent.toLowerCase();
+            const isSubjectMatch = subjectName.includes(searchTerm);
+            subject.classList.toggle("highlighted", isSubjectMatch);
+            if (isSubjectMatch) subjectMatchFound = true;
+        });
+
+        category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
+    });
+};
+
+
 function fetchLatestCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => {
         return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
