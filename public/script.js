@@ -144,7 +144,7 @@ window.filterContent = function () {
         if (shouldDisplay) matchesFound = true;
     });
 
-    // If no matches are found, fetch from the backend
+    // If no matches are found locally, fetch from the backend
     if (!matchesFound) {
         fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
             .then(response => response.json())
