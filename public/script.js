@@ -170,32 +170,38 @@ function fetchLatestCategories(limit) {
 // Function to render categories in the DOM
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = "";
+    categoriesContainer.innerHTML = ""; // Clear existing content
 
     categories.forEach(category => {
         const categoryDiv = document.createElement("div");
         categoryDiv.classList.add("category");
         categoryDiv.setAttribute("data-category-id", category.category_id);
+
+        // Render the category name
         categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
 
+        // Sort and limit the subjects by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const limitedSubjects = sortedSubjects.slice(0, 100);
 
+        // Create a container for the subjects
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
+        // Render each subject within the category
         limitedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
 
+            // Subject content
             subjectDiv.innerHTML = `
                 <p style="display: inline-block;">
                     <a href="${subject.link}" target="_blank">${subject.name}</a>
                 </p>
                 <span class="vote-container">
                     <span class="vote-count">${subject.votes}</span>
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button> 
+                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
                 </span>
                 <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
@@ -204,13 +210,19 @@ function renderCategories(categories) {
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
+
+            // Append the subject to the subjects container
             subjectsDiv.appendChild(subjectDiv);
         });
 
+        // Append the subjects container to the category div
         categoryDiv.appendChild(subjectsDiv);
+
+        // Append the category div to the main container
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
 
 // Function to shuffle an array
 function shuffleArray(array) {
