@@ -59,11 +59,15 @@ app.get('/api/search', (req, res) => {
     }
 
     const searchQuery = `
-        SELECT DISTINCT c.category_id, c.name AS category_name,
-                        s.subject_id, s.name AS subject_name, s.votes, s.link
+        SELECT c.category_id, c.name AS category_name,
+               s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id
-        WHERE c.name LIKE ? OR s.name LIKE ?
+        WHERE c.name LIKE ? OR c.category_id IN (
+            SELECT category_id
+            FROM Subjects
+            WHERE name LIKE ?
+        )
     `;
 
     db.query(searchQuery, [`%${query}%`, `%${query}%`], (err, results) => {
@@ -98,6 +102,7 @@ app.get('/api/search', (req, res) => {
         res.json(categories);
     });
 });
+
 
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
