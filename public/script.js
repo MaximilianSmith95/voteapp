@@ -144,23 +144,26 @@ window.filterContent = function () {
         if (shouldDisplay) matchesFound = true;
     });
 
-    // If no matches are found locally, fetch from the backend
-    if (!matchesFound) {
+    // Perform a backend search if searchTerm is entered
+    if (searchTerm) {
         fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    renderCategories(data, searchTerm); // Render full categories fetched from the backend
+                    renderCategories(data, searchTerm); // Render categories and highlight the search term
                 } else {
                     categoriesContainer.innerHTML = "<p>No results found.</p>";
                 }
             })
             .catch(error => {
                 console.error('Error fetching search results:', error);
+                categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
             });
+    } else {
+        // If searchTerm is empty, fetch all categories
+        fetchAndRenderCategories(`/api/categories`);
     }
 };
-
 function fetchLatestCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => {
         return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
