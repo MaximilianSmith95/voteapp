@@ -124,12 +124,14 @@ window.filterContent = function () {
 
     let matchesFound = false;
 
+    // Check existing categories in the frontend
     categories.forEach(category => {
         const categoryName = category.querySelector("h2").textContent.toLowerCase();
         const isCategoryMatch = categoryName.includes(searchTerm);
         const subjects = Array.from(category.getElementsByClassName("subject"));
         let subjectMatchFound = false;
 
+        // Highlight matching subjects and determine if the category should be shown
         subjects.forEach(subject => {
             const subjectName = subject.textContent.toLowerCase();
             const isSubjectMatch = subjectName.includes(searchTerm);
@@ -142,12 +144,13 @@ window.filterContent = function () {
         if (shouldDisplay) matchesFound = true;
     });
 
+    // If no matches are found, fetch from the backend
     if (!matchesFound) {
         fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    renderCategories(data);
+                    renderCategories(data); // Render full categories fetched from the backend
                 } else {
                     categoriesContainer.innerHTML = "<p>No results found.</p>";
                 }
@@ -157,8 +160,6 @@ window.filterContent = function () {
             });
     }
 };
-
-
 
 function fetchLatestCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => {
