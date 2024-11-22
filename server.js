@@ -59,8 +59,8 @@ app.get('/api/search', (req, res) => {
     }
 
     const searchQuery = `
-        SELECT c.category_id, c.name AS category_name, 
-               s.subject_id, s.name AS subject_name, s.votes, s.link
+        SELECT DISTINCT c.category_id, c.name AS category_name,
+                        s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id
         WHERE c.name LIKE ? OR s.name LIKE ?
@@ -82,6 +82,7 @@ app.get('/api/search', (req, res) => {
                 };
                 acc.push(category);
             }
+
             if (row.subject_id) {
                 category.subjects.push({
                     subject_id: row.subject_id,
@@ -90,13 +91,13 @@ app.get('/api/search', (req, res) => {
                     link: row.link
                 });
             }
+
             return acc;
         }, []);
 
         res.json(categories);
     });
 });
-
 
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
