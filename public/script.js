@@ -186,16 +186,15 @@ function renderCategories(categories, highlightSearchTerm = "") {
         }
         categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
-        // Sort and limit the subjects by votes
+        // Sort subjects by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
-        const limitedSubjects = sortedSubjects.slice(0, 100); // Limit to 100 subjects
 
         // Create a container for the subjects
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
         // Render each subject within the category
-        limitedSubjects.forEach(subject => {
+        sortedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
@@ -235,7 +234,6 @@ function renderCategories(categories, highlightSearchTerm = "") {
         categoriesContainer.appendChild(categoryDiv);
     });
 }
-
 
 // Function to shuffle an array
 function shuffleArray(array) {
