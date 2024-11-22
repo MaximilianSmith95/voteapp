@@ -150,7 +150,7 @@ window.filterContent = function () {
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    renderCategories(data); // Render full categories fetched from the backend
+                    renderCategories(data, searchTerm); // Render full categories fetched from the backend
                 } else {
                     categoriesContainer.innerHTML = "<p>No results found.</p>";
                 }
