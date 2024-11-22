@@ -110,11 +110,12 @@ function fetchNearMeCategories(limit) {
 }
 
 
-// Function to filter content based on user input
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
     const categoriesContainer = document.getElementById("categories");
     const categories = Array.from(categoriesContainer.getElementsByClassName("category"));
+
+    let matchesFound = false;
 
     categories.forEach(category => {
         const categoryName = category.querySelector("h2").textContent.toLowerCase();
@@ -129,8 +130,25 @@ window.filterContent = function () {
             if (isSubjectMatch) subjectMatchFound = true;
         });
 
-        category.style.display = isCategoryMatch || subjectMatchFound ? "block" : "none";
+        const shouldDisplay = isCategoryMatch || subjectMatchFound;
+        category.style.display = shouldDisplay ? "block" : "none";
+        if (shouldDisplay) matchesFound = true;
     });
+
+    if (!matchesFound) {
+        fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.categories && data.categories.length > 0) {
+                    renderCategories(data.categories);
+                } else {
+                    categoriesContainer.innerHTML = "<p>No results found.</p>";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+            });
+    }
 };
 
 
