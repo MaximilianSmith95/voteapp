@@ -168,7 +168,7 @@ function fetchLatestCategories(limit) {
 }
 
 // Function to render categories in the DOM
-function renderCategories(categories) {
+function renderCategories(categories, highlightSearchTerm = "") {
     const categoriesContainer = document.getElementById("categories");
     categoriesContainer.innerHTML = ""; // Clear existing content
 
@@ -178,11 +178,17 @@ function renderCategories(categories) {
         categoryDiv.setAttribute("data-category-id", category.category_id);
 
         // Render the category name
-        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
+        let categoryName = category.name;
+        if (highlightSearchTerm) {
+            // Highlight the matching part of the category name
+            const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
+            categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
+        }
+        categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
         // Sort and limit the subjects by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
-        const limitedSubjects = sortedSubjects.slice(0, 100);
+        const limitedSubjects = sortedSubjects.slice(0, 100); // Limit to 100 subjects
 
         // Create a container for the subjects
         const subjectsDiv = document.createElement("div");
@@ -194,10 +200,17 @@ function renderCategories(categories) {
             subjectDiv.classList.add("subject");
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
 
+            // Highlight the matching part of the subject name
+            let subjectName = subject.name;
+            if (highlightSearchTerm) {
+                const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
+                subjectName = subjectName.replace(regex, `<span class="highlighted">$1</span>`);
+            }
+
             // Subject content
             subjectDiv.innerHTML = `
                 <p style="display: inline-block;">
-                    <a href="${subject.link}" target="_blank">${subject.name}</a>
+                    <a href="${subject.link}" target="_blank">${subjectName}</a>
                 </p>
                 <span class="vote-container">
                     <span class="vote-count">${subject.votes}</span>
