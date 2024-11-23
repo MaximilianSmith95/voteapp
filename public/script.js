@@ -197,6 +197,7 @@ function renderCategories(categories, highlightSearchTerm = "") {
     });
 }
 
+
             // Highlight the matching part of the subject name
             let subjectName = subject.name;
             if (highlightSearchTerm) {
