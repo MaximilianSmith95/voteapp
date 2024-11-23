@@ -613,3 +613,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+function fetchAndDisplayTotalVotes() {
+    fetch('/api/totalVotes')
+        .then(response => response.json())
+        .then(data => {
+            const totalVotesElement = document.getElementById('totalVotesDisplay');
+            if (totalVotesElement) {
+                totalVotesElement.textContent = `Total Votes: ${data.totalVotes}`;
+            }
+        })
+        .catch(error => console.error('Error fetching total votes:', error));
+}
+
+// Fetch total votes every 10 seconds to keep it updated
+setInterval(fetchAndDisplayTotalVotes, 10000);
+document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
