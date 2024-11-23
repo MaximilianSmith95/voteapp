@@ -1,7 +1,5 @@
 let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
-let hasMoreContent = true; // Track if more content is available
-let isLoading = false; // Prevent multiple simultaneous fetches
 let activeFilterFunction = null; // Track the currently active filter function
 
 // Function to render a limited number of categories
@@ -14,49 +12,59 @@ function renderLimitedCategories(categories, limit = 15) {
 function setupExploreMoreButton() {
     const exploreMoreButton = document.getElementById("exploreMoreButton");
     exploreMoreButton.addEventListener("click", () => {
-        if (!hasMoreContent) return; // Stop if no more content
         currentCategoriesLimit += 15; // Increase limit
         if (activeFilterFunction) {
-            activeFilterFunction(currentCategoriesLimit)
-                .catch(error => console.error("Error fetching more content:", error));
+            activeFilterFunction(currentCategoriesLimit); // Fetch and render more categories based on the current filter
         }
     });
 }
+let hasMoreContent = true; // Track if more content is available
 
-// Enable infinite scrolling
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
-            if (!hasMoreContent || isLoading) return; // Stop if no more content or already loading
-
-            isLoading = true; // Prevent multiple fetches
-            currentCategoriesLimit += 15; // Increment limit
+            if (!hasMoreContent) {
+                // Display "No more content" message if there are no more items to load
+                const noMoreContentMessage = document.getElementById("noMoreContentMessage");
+                if (!noMoreContentMessage) {
+                    const messageDiv = document.createElement("div");
+                    messageDiv.id = "noMoreContentMessage";
+                    messageDiv.textContent = "You have reached the end of the content.";
+                    messageDiv.style.textAlign = "center";
+                    messageDiv.style.padding = "20px";
+                    document.body.appendChild(messageDiv);
+                }
+                return; // Stop infinite scrolling
+            }
             if (activeFilterFunction) {
-                activeFilterFunction(currentCategoriesLimit)
-                    .then(() => {
-                        isLoading = false; // Allow future fetches
-                    })
-                    .catch(error => {
-                        console.error("Error during infinite scrolling:", error);
-                        isLoading = false; // Reset loading state on error
-                    });
+                currentCategoriesLimit += 15; // Increment the limit
+                activeFilterFunction(currentCategoriesLimit); // Fetch and render more
             } else {
-                console.error("No active filter function defined.");
-                isLoading = false;
+                const searchTerm = document.getElementById("searchBar").value;
+                if (searchTerm) {
+                    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
+                        .then(response => response.json())
+                        .then(data => {
+                        if (data && data.length === 0) {
+                                hasMoreContent = false;
+                            } else {
+                                renderCategories(data);
+                            }
+                        })
+                        .catch(error => console.error('Error fetching more results:', error));
+                }
             }
         }
     });
 }
-
-// Fetch and render categories with a given limit
+// Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
-    return fetch(url)
+    fetch(url)
         .then(response => response.json())
         .then(data => {
-            if (data.length === 0) {
+             if (data.length === 0) {
                 hasMoreContent = false; // Stop further requests if no data
-                displayNoMoreContentMessage();
                 return;
             }
             allCategoriesData = data; // Store the data globally
@@ -66,97 +74,43 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
             }
             renderLimitedCategories(filteredData, limit); // Render limited categories
         })
-        .catch(error => {
-            console.error('Error fetching categories:', error);
-        });
+        .catch(error => console.error('Error fetching categories:', error));
 }
-
-// Display "No more content" message
-function displayNoMoreContentMessage() {
-    const categoriesContainer = document.getElementById("categories");
-    let noMoreContentMessage = document.getElementById("noMoreContentMessage");
-    if (!noMoreContentMessage) {
-        noMoreContentMessage = document.createElement("div");
-        noMoreContentMessage.id = "noMoreContentMessage";
-        noMoreContentMessage.textContent = "You have reached the end of the content.";
-        noMoreContentMessage.style.textAlign = "center";
-        noMoreContentMessage.style.padding = "20px";
-        categoriesContainer.appendChild(noMoreContentMessage);
-    }
-}
-
-// Render categories in the DOM
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById("categories");
-    categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.classList.add("category");
-        categoryDiv.setAttribute("data-category-id", category.category_id);
-
-        const categoryName = category.name;
-        categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
-
-        const subjectsDiv = document.createElement("div");
-        subjectsDiv.classList.add("subjects");
-
-        category.subjects.forEach(subject => {
-            const subjectDiv = document.createElement("div");
-            subjectDiv.classList.add("subject");
-            subjectDiv.innerHTML = `
-                <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
-                <span class="vote-count">${subject.votes}</span>`;
-            subjectsDiv.appendChild(subjectDiv);
-        });
-
-        categoryDiv.appendChild(subjectsDiv);
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-// Filter content on search
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    const categoriesContainer = document.getElementById("categories");
-
-    categoriesContainer.innerHTML = "<p>Loading...</p>";
-    currentCategoriesLimit = 15; // Reset limit
-    hasMoreContent = true; // Reset state
-    isLoading = false;
-
-    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                categoriesContainer.innerHTML = ""; // Clear previous results
-                renderCategories(data); // Render search results
-            } else {
-                categoriesContainer.innerHTML = "<p>No results found.</p>";
-                hasMoreContent = false; // No more results
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching search results:', error);
-            categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
-        });
-};
 
 document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners for navigation buttons
+    document.getElementById("geolocationButton").addEventListener("click", () => {
+        activeFilterFunction = fetchNearMeCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchNearMeCategories(currentCategoriesLimit);
+    });
+
+    document.getElementById("forYouButton").addEventListener("click", () => {
+        activeFilterFunction = fetchForYouCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchForYouCategories(currentCategoriesLimit);
+    });
+
     document.getElementById("allButton").addEventListener("click", () => {
         activeFilterFunction = fetchAllCategories;
         currentCategoriesLimit = 15; // Reset limit
         fetchAllCategories(currentCategoriesLimit);
     });
 
-    // Default load
-    activeFilterFunction = fetchAllCategories;
-    fetchAllCategories(currentCategoriesLimit);
+    document.getElementById("latestButton").addEventListener("click", () => {
+        activeFilterFunction = fetchLatestCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchLatestCategories(currentCategoriesLimit);
+    });
 
-    setupExploreMoreButton(); // Enable "Explore More" button
+    console.log("Event listeners attached to navigation buttons.");
+
+    // Default to "All Categories"
+   activeFilterFunction = fetchAllCategories;
+    fetchAllCategories(currentCategoriesLimit);
+    setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
-
-
 
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
