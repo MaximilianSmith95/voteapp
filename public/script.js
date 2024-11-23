@@ -188,7 +188,7 @@ function renderCategories(categories, highlightSearchTerm = "") {
             }
 
             // Subject content
-            subjectDiv.innerHTML = `
+          subjectDiv.innerHTML = `
     <p style="display: inline-block;">
         <a href="${subject.link}" target="_blank">${subject.name}</a>
     </p>
@@ -201,15 +201,9 @@ function renderCategories(categories, highlightSearchTerm = "") {
         <div id="comment-section-${subject.subject_id}"></div>
         <textarea id="comment-input-${subject.subject_id}" placeholder="Write a comment..."></textarea>
         <button onclick="addComment(${subject.subject_id})">Submit Comment</button>
-        <button onclick="toggleVoiceReview(${subject.subject_id})">Record Voice Review</button>
-        <div id="voice-review-section-${subject.subject_id}" class="hidden">
-            <button id="record-${subject.subject_id}" onclick="startRecording(${subject.subject_id})">Start Recording</button>
-            <button id="stop-${subject.subject_id}" class="hidden" onclick="stopRecording(${subject.subject_id})">Stop Recording</button>
-            <audio id="audio-preview-${subject.subject_id}" controls class="hidden"></audio>
-            <button id="submit-voice-${subject.subject_id}" class="hidden" onclick="submitVoiceReview(${subject.subject_id})">Submit Voice Review</button>
-        </div>
     </div>
 `;
+
 
 
             // Append the subject to the subjects container
