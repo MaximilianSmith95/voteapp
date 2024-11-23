@@ -194,7 +194,6 @@ function renderCategories(categories, highlightSearchTerm = "") {
     });
 }
 
-// Function to handle upvotes
 function upvote(subjectId) {
     fetch(`/api/subjects/${subjectId}/vote`, { method: 'POST' })
         .then(response => response.json())
@@ -202,16 +201,16 @@ function upvote(subjectId) {
             if (data.success) {
                 const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
                 if (voteCountElement) {
-                    // Update the vote count in the DOM
+                    // Increment the vote count
                     const newVoteCount = parseInt(voteCountElement.textContent.trim()) + 1;
                     voteCountElement.textContent = newVoteCount;
                     console.log(`Subject ID ${subjectId} updated to ${newVoteCount} votes.`);
 
-                    // Reorder subjects dynamically after vote
+                    // Get the parent subject div and container
                     const subjectDiv = voteCountElement.closest(".subject");
                     const subjectsContainer = subjectDiv.parentNode;
 
-                    // Convert the NodeList to an array and sort by votes
+                    // Convert subjects into an array and sort by vote counts
                     const subjectsArray = Array.from(subjectsContainer.querySelectorAll(".subject"));
                     subjectsArray.sort((a, b) => {
                         const votesA = parseInt(a.querySelector(".vote-count").textContent.trim()) || 0;
@@ -219,11 +218,13 @@ function upvote(subjectId) {
                         return votesB - votesA; // Descending order
                     });
 
-                    // Append each subject back in sorted order
+                    // Re-append subjects in the new order
                     subjectsArray.forEach(subject => {
-                        subjectsContainer.removeChild(subject); // Ensure the DOM updates visually
-                        subjectsContainer.appendChild(subject);
+                        subjectsContainer.removeChild(subject); // Temporarily remove
+                        subjectsContainer.appendChild(subject); // Re-add in sorted order
                     });
+
+                    console.log("Subjects successfully reordered.");
                 }
             }
         })
