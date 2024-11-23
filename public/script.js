@@ -533,7 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Checking cookie consent visibility...");
 
     // Check if cookies were already accepted
-    if (!localStorage.getItem("cookiesAccepted")) {
+    if (!getCookie("cookiesAccepted")) {
         cookieConsent.classList.remove("hidden");
         console.log("Cookie consent banner is now visible.");
     } else {
@@ -542,8 +542,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add event listener to accept cookies
     acceptCookiesButton.addEventListener("click", () => {
-        localStorage.setItem("cookiesAccepted", "true");
+        setCookie("cookiesAccepted", "true", 365); // Set cookie for 1 year
         cookieConsent.classList.add("hidden");
         console.log("Cookie consent accepted and banner hidden.");
     });
+});
+
+// Utility function to set a cookie with an expiration date
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Convert days to milliseconds
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
+}
+
+// Utility function to get a cookie value by name
+function getCookie(name) {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
+    return null;
+}
+
+// Utility function to track user behavior (e.g., votes) in cookies
+function trackUserBehavior(action, data) {
+    let behaviorData = JSON.parse(getCookie("userBehavior") || "{}");
+
+    if (!behaviorData[action]) {
+        behaviorData[action] = [];
+    }
+
+    // Avoid duplicate entries
+    if (!behaviorData[action].includes(data)) {
+        behaviorData[action].push(data);
+        setCookie("userBehavior", JSON.stringify(behaviorData), 365); // Persist for 1 year
+        console.log(`Action tracked: ${action} - ${data}`);
+    }
+}
+
+// Example usage: Track user voting behavior
+function upvote(subjectId) {
+    fetch(`/api/subjects/${subjectId}/vote`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI
+                const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
+                if (voteCountElement) {
+                    const newVoteCount = parseInt(voteCountElement.textContent) + 1;
+                    voteCountElement.textContent = newVoteCount;
+                }
+
+                // Track vote behavior
+                trackUserBehavior("votes", subjectId);
+            }
+        })
+        .catch(error => console.error('Error upvoting:', error));
+}
+
+// On page load, retrieve and apply stored user behavior (e.g., highlight votes)
+document.addEventListener("DOMContentLoaded", () => {
+    const userBehavior = JSON.parse(getCookie("userBehavior") || "{}");
+
+    if (userBehavior.votes) {
+        userBehavior.votes.forEach(subjectId => {
+            const subjectElement = document.querySelector(`[data-subject-id="${subjectId}"]`);
+            if (subjectElement) {
+                subjectElement.classList.add("voted");
+            }
+        });
+    }
 });
