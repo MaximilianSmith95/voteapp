@@ -223,7 +223,6 @@ function renderCategories(categories, highlightSearchTerm = "") {
 
             // Append the subject to the subjects container
             subjectsDiv.appendChild(subjectDiv);
-        });
 
         // Append the subjects container to the category div
         categoryDiv.appendChild(subjectsDiv);
