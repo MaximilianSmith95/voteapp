@@ -18,46 +18,74 @@ function setupExploreMoreButton() {
         }
     });
 }
-let hasMoreContent = true; // Track if more content is available
+let hasMoreContent = true; // Global variable to track if there's more content
+let isLoading = false; // Prevent multiple simultaneous fetches
 
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
-            if (!hasMoreContent) {
-                // Display "No more content" message if there are no more items to load
-                const noMoreContentMessage = document.getElementById("noMoreContentMessage");
-                if (!noMoreContentMessage) {
-                    const messageDiv = document.createElement("div");
-                    messageDiv.id = "noMoreContentMessage";
-                    messageDiv.textContent = "You have reached the end of the content.";
-                    messageDiv.style.textAlign = "center";
-                    messageDiv.style.padding = "20px";
-                    document.body.appendChild(messageDiv);
-                }
-                return; // Stop infinite scrolling
-            }
+
+        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom of the page
+            if (!hasMoreContent || isLoading) return; // Stop if no more content or already loading
+
+            isLoading = true; // Prevent multiple fetches
             if (activeFilterFunction) {
-                currentCategoriesLimit += 15; // Increment the limit
-                activeFilterFunction(currentCategoriesLimit); // Fetch and render more
-            } else {
-                const searchTerm = document.getElementById("searchBar").value;
-                if (searchTerm) {
-                    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
-                        .then(response => response.json())
-                        .then(data => {
-                        if (data && data.length === 0) {
-                                hasMoreContent = false;
-                            } else {
-                                renderCategories(data);
-                            }
-                        })
-                        .catch(error => console.error('Error fetching more results:', error));
-                }
+                currentCategoriesLimit += 15; // Increase the fetch limit
+                activeFilterFunction(currentCategoriesLimit).then((newContent) => {
+                    if (!newContent || newContent.length === 0) {
+                        hasMoreContent = false; // No more content available
+                        displayNoMoreContentMessage(); // Show a message to the user
+                    }
+                    isLoading = false; // Allow new fetches if needed
+                }).catch(() => {
+                    console.error("Error fetching more content");
+                    isLoading = false;
+                });
             }
         }
     });
 }
+
+function displayNoMoreContentMessage() {
+    const categoriesContainer = document.getElementById("categories");
+    const noMoreContentMessage = document.getElementById("noMoreContentMessage");
+    if (!noMoreContentMessage) {
+        const messageDiv = document.createElement("div");
+        messageDiv.id = "noMoreContentMessage";
+        messageDiv.textContent = "You have reached the end of the content.";
+        messageDiv.style.textAlign = "center";
+        messageDiv.style.padding = "20px";
+        categoriesContainer.appendChild(messageDiv);
+    }
+}
+
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const categoriesContainer = document.getElementById("categories");
+
+    // Reset variables for new search
+    categoriesContainer.innerHTML = "<p>Loading...</p>";
+    currentCategoriesLimit = 15; // Reset limit
+    hasMoreContent = true; // Assume more content is available
+    isLoading = false;
+
+    // Fetch matching categories from the backend
+    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                renderCategories(data);
+            } else {
+                hasMoreContent = false; // No results
+                categoriesContainer.innerHTML = "<p>No results found.</p>";
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+            categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
+        });
+};
+
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
