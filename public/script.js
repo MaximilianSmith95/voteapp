@@ -1,6 +1,8 @@
-let allCategoriesData = []; // Global variable to store initial categories data
+// Global variables
+let hasMoreContent = true; // Track if more content is available
+let isLoading = false; // Prevent multiple simultaneous fetches
 let currentCategoriesLimit = 15; // Start with 15 categories
-let activeFilterFunction = null; // Track the currently active filter function
+let isSearchMode = false; // Track if we are in search mode
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
@@ -18,11 +20,6 @@ function setupExploreMoreButton() {
         }
     });
 }
-// Global variables
-let hasMoreContent = true; // Track if more content is available
-let isLoading = false; // Prevent multiple simultaneous fetches
-let currentCategoriesLimit = 15; // Start with 15 categories
-let isSearchMode = false; // Track if we are in search mode
 
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
