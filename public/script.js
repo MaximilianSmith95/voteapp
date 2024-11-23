@@ -294,7 +294,7 @@ window.toggleComments = function (subjectId) {
     const toggleButton = commentsContainer.previousElementSibling;
     toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
 
-  // Dynamically load comments and voice recording controls only when expanded
+    // Dynamically load comments and voice recording controls only when expanded
     if (!commentsContainer.classList.contains("hidden")) {
         // Fetch comments if not already loaded
         if (!commentsContainer.dataset.loaded) {
@@ -354,16 +354,6 @@ function fetchComments(subjectId) {
         });
 }
 
-// Function to toggle the voice review recording section
-function toggleVoiceReview(subjectId) {
-    const voiceReviewSection = document.getElementById(`voice-review-section-${subjectId}`);
-    voiceReviewSection.classList.toggle("hidden");
-}
-
-// Variables for media recorder
-let mediaRecorder;
-let audioChunks = [];
-
 // Function to start recording voice reviews
 function startRecording(subjectId) {
     navigator.mediaDevices.getUserMedia({ audio: true })
@@ -421,6 +411,7 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
+
 
 
 // Shuffle an array
