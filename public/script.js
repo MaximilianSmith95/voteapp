@@ -32,6 +32,7 @@ function enableInfiniteScrolling() {
     });
 }
 
+
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
@@ -87,13 +88,13 @@ window.filterContent = function () {
     // Clear existing content while fetching
     categoriesContainer.innerHTML = "<p>Loading...</p>";
 
-    // Update active filter function to ensure search results persist
+    // Update active filter function to ensure it works with infinite scrolling
     activeFilterFunction = (limit) => {
         fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${limit}`)
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    renderCategories(data, searchTerm);
+                    renderCategories(data, searchTerm); // Render search results
                 } else {
                     categoriesContainer.innerHTML = "<p>No results found.</p>";
                 }
