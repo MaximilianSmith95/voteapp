@@ -17,7 +17,8 @@ function setupExploreMoreButton() {
         if (!hasMoreContent) return; // Stop if no more content
         currentCategoriesLimit += 15; // Increase limit
         if (activeFilterFunction) {
-            activeFilterFunction(currentCategoriesLimit); // Fetch and render more categories based on the current filter
+            activeFilterFunction(currentCategoriesLimit)
+                .catch(error => console.error("Error fetching more content:", error));
         }
     });
 }
@@ -32,11 +33,17 @@ function enableInfiniteScrolling() {
             isLoading = true; // Prevent multiple fetches
             currentCategoriesLimit += 15; // Increment limit
             if (activeFilterFunction) {
-                activeFilterFunction(currentCategoriesLimit).then(() => {
-                    isLoading = false; // Allow future fetches
-                });
+                activeFilterFunction(currentCategoriesLimit)
+                    .then(() => {
+                        isLoading = false; // Allow future fetches
+                    })
+                    .catch(error => {
+                        console.error("Error during infinite scrolling:", error);
+                        isLoading = false; // Reset loading state on error
+                    });
             } else {
-                isLoading = false; // Reset loading if no filter is active
+                console.error("No active filter function defined.");
+                isLoading = false;
             }
         }
     });
@@ -44,7 +51,7 @@ function enableInfiniteScrolling() {
 
 // Fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
-    fetch(url)
+    return fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.length === 0) {
@@ -148,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupExploreMoreButton(); // Enable "Explore More" button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
+
 
 
 // Fetch functions for each filter
