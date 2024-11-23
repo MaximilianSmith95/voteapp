@@ -285,6 +285,16 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     });
 });
 
+app.get('/api/totalVotes', (req, res) => {
+    const query = 'SELECT SUM(votes) AS total_votes FROM subjects';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching total votes:', err);
+            return res.status(500).json({ error: 'Failed to fetch total votes' });
+        }
+        res.json({ totalVotes: results[0].total_votes || 0 });
+    });
+});
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
