@@ -510,4 +510,3 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Cookie consent accepted and banner hidden.");
     });
 });
-
