@@ -189,20 +189,28 @@ function renderCategories(categories, highlightSearchTerm = "") {
 
             // Subject content
             subjectDiv.innerHTML = `
-                <p style="display: inline-block;">
-                    <a href="${subject.link}" target="_blank">${subjectName}</a>
-                </p>
-                <span class="vote-container">
-                    <span class="vote-count">${subject.votes}</span>
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
-                </span>
-                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
-                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
-                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
-                    <div class="comments" id="comment-section-${subject.subject_id}"></div>
-                </div>
-            `;
+    <p style="display: inline-block;">
+        <a href="${subject.link}" target="_blank">${subject.name}</a>
+    </p>
+    <span class="vote-container">
+        <span class="vote-count">${subject.votes}</span>
+        <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
+    </span>
+    <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
+    <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
+        <div id="comment-section-${subject.subject_id}"></div>
+        <textarea id="comment-input-${subject.subject_id}" placeholder="Write a comment..."></textarea>
+        <button onclick="addComment(${subject.subject_id})">Submit Comment</button>
+        <button onclick="toggleVoiceReview(${subject.subject_id})">Record Voice Review</button>
+        <div id="voice-review-section-${subject.subject_id}" class="hidden">
+            <button id="record-${subject.subject_id}" onclick="startRecording(${subject.subject_id})">Start Recording</button>
+            <button id="stop-${subject.subject_id}" class="hidden" onclick="stopRecording(${subject.subject_id})">Stop Recording</button>
+            <audio id="audio-preview-${subject.subject_id}" controls class="hidden"></audio>
+            <button id="submit-voice-${subject.subject_id}" class="hidden" onclick="submitVoiceReview(${subject.subject_id})">Submit Voice Review</button>
+        </div>
+    </div>
+`;
+
 
             // Append the subject to the subjects container
             subjectsDiv.appendChild(subjectDiv);
