@@ -262,6 +262,11 @@ window.toggleComments = function (subjectId) {
 
     const toggleButton = commentsContainer.previousElementSibling;
     toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
+
+    // Fetch comments when expanding the section
+    if (!commentsContainer.classList.contains("hidden")) {
+        fetchComments(subjectId);
+    }
 };
 
 // Function to add a comment to a subject
@@ -298,8 +303,89 @@ function fetchComments(subjectId) {
                     <strong>${comment.username}</strong>: ${comment.comment_text}
                 </div>
             `).join("");
+
+            // Fetch voice reviews and append them to the comment section
+            fetch(`/api/subjects/${subjectId}/voice-reviews`)
+                .then(response => response.json())
+                .then(voiceReviews => {
+                    voiceReviews.forEach(review => {
+                        const audioElement = document.createElement('audio');
+                        audioElement.controls = true;
+                        audioElement.src = review.audio_url;
+                        commentContainer.appendChild(audioElement);
+                    });
+                });
         });
 }
+
+// Function to toggle the voice review recording section
+function toggleVoiceReview(subjectId) {
+    const voiceReviewSection = document.getElementById(`voice-review-section-${subjectId}`);
+    voiceReviewSection.classList.toggle("hidden");
+}
+
+// Variables for media recorder
+let mediaRecorder;
+let audioChunks = [];
+
+// Function to start recording voice reviews
+function startRecording(subjectId) {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+
+            audioChunks = [];
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPreview = document.getElementById(`audio-preview-${subjectId}`);
+                audioPreview.src = audioUrl;
+                audioPreview.classList.remove("hidden");
+
+                const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+                submitButton.dataset.audioBlob = audioBlob;
+                submitButton.classList.remove("hidden");
+            };
+
+            document.getElementById(`record-${subjectId}`).classList.add("hidden");
+            document.getElementById(`stop-${subjectId}`).classList.remove("hidden");
+        })
+        .catch(error => console.error('Error accessing microphone:', error));
+}
+
+// Function to stop recording voice reviews
+function stopRecording(subjectId) {
+    mediaRecorder.stop();
+    document.getElementById(`stop-${subjectId}`).classList.add("hidden");
+    document.getElementById(`record-${subjectId}`).classList.remove("hidden");
+}
+
+// Function to submit the recorded voice review
+function submitVoiceReview(subjectId) {
+    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+    const audioBlob = submitButton.dataset.audioBlob;
+
+    const formData = new FormData();
+    formData.append("audio", audioBlob);
+
+    fetch(`/api/subjects/${subjectId}/voice-review`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Voice review submitted successfully!");
+        }
+    })
+    .catch(error => console.error('Error submitting voice review:', error));
+}
+
 
 // Shuffle an array
 function shuffleArray(array) {
