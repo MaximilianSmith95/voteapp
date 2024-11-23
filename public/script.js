@@ -197,42 +197,6 @@ function renderCategories(categories, highlightSearchTerm = "") {
     });
 }
 
-
-            // Highlight the matching part of the subject name
-            let subjectName = subject.name;
-            if (highlightSearchTerm) {
-                const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
-                subjectName = subjectName.replace(regex, `<span class="highlighted">$1</span>`);
-            }
-
-            // Subject content
-            subjectDiv.innerHTML = `
-                <p style="display: inline-block;">
-                    <a href="${subject.link}" target="_blank">${subjectName}</a>
-                </p>
-                <span class="vote-container">
-                    <span class="vote-count">${subject.votes}</span>
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
-                </span>
-                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
-                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
-                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
-                    <div class="comments" id="comment-section-${subject.subject_id}"></div>
-                </div>
-            `;
-
-            // Append the subject to the subjects container
-            subjectsDiv.appendChild(subjectDiv);
-
-        // Append the subjects container to the category div
-        categoryDiv.appendChild(subjectsDiv);
-
-        // Append the category div to the main container
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
 // Function to shuffle an array
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
