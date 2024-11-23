@@ -624,11 +624,9 @@ function fetchAndDisplayTotalVotes() {
                 totalVotesElement.textContent = `Total Votes: ${data.totalVotes}`;
             }
         })
-        .catch(error => console.error('Error fetching total votes:', error));
+.catch(error => console.error('Error fetching total votes:', error));
 }
 
 // Fetch total votes every 10 seconds to keep it updated
 setInterval(fetchAndDisplayTotalVotes, 10000);
 document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
-    });
-});
