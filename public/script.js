@@ -18,10 +18,25 @@ function setupExploreMoreButton() {
         }
     });
 }
+let hasMoreContent = true; // Track if more content is available
+
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
+            if (!hasMoreContent) {
+                // Display "No more content" message if there are no more items to load
+                const noMoreContentMessage = document.getElementById("noMoreContentMessage");
+                if (!noMoreContentMessage) {
+                    const messageDiv = document.createElement("div");
+                    messageDiv.id = "noMoreContentMessage";
+                    messageDiv.textContent = "You have reached the end of the content.";
+                    messageDiv.style.textAlign = "center";
+                    messageDiv.style.padding = "20px";
+                    document.body.appendChild(messageDiv);
+                }
+                return; // Stop infinite scrolling
+            }
             if (activeFilterFunction) {
                 currentCategoriesLimit += 15; // Increment the limit
                 activeFilterFunction(currentCategoriesLimit); // Fetch and render more
@@ -30,7 +45,13 @@ function enableInfiniteScrolling() {
                 if (searchTerm) {
                     fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
                         .then(response => response.json())
-                        .then(data => renderCategories(data))
+                        .then(data => {
+                        if (data && data.length === 0) {
+                                hasMoreContent = false;
+                            } else {
+                                renderCategories(data);
+                            }
+                        })
                         .catch(error => console.error('Error fetching more results:', error));
                 }
             }
@@ -42,6 +63,10 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+             if (data.length === 0) {
+                hasMoreContent = false; // Stop further requests if no data
+                return;
+            }
             allCategoriesData = data; // Store the data globally
             let filteredData = allCategoriesData;
             if (transformFn) {
