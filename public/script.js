@@ -529,12 +529,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const cookieConsent = document.getElementById("cookieConsent");
     const acceptCookiesButton = document.getElementById("acceptCookies");
 
-    // Log visibility check
-    console.log("Checking cookie consent visibility...");
-
     // Check if cookies were already accepted
     if (!getCookie("cookiesAccepted")) {
-        cookieConsent.classList.remove("hidden");
+        cookieConsent.classList.remove("hidden"); // Show the banner
         console.log("Cookie consent banner is now visible.");
     } else {
         console.log("Cookie consent already accepted.");
@@ -543,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add event listener to accept cookies
     acceptCookiesButton.addEventListener("click", () => {
         setCookie("cookiesAccepted", "true", 365); // Set cookie for 1 year
-        cookieConsent.classList.add("hidden");
+        cookieConsent.classList.add("hidden"); // Hide the banner
         console.log("Cookie consent accepted and banner hidden.");
     });
 });
@@ -551,7 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Utility function to set a cookie with an expiration date
 function setCookie(name, value, days) {
     const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Convert days to milliseconds
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // Convert days to milliseconds
     const expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
 }
@@ -563,6 +560,7 @@ function getCookie(name) {
     if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
     return null;
 }
+
 
 // Utility function to track user behavior (e.g., votes) in cookies
 function trackUserBehavior(action, data) {
