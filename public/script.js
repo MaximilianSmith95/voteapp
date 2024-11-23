@@ -1,8 +1,6 @@
-// Global variables
-let hasMoreContent = true; // Track if more content is available
-let isLoading = false; // Prevent multiple simultaneous fetches
+let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
-let isSearchMode = false; // Track if we are in search mode
+let activeFilterFunction = null; // Track the currently active filter function
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
@@ -20,137 +18,46 @@ function setupExploreMoreButton() {
         }
     });
 }
+let hasMoreContent = true; // Track if more content is available
 
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-
-        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom of the page
-            if (!hasMoreContent || isLoading) return; // Stop if no more content or already loading
-
-            isLoading = true; // Prevent multiple fetches
-
-            if (isSearchMode) {
-                // Infinite scroll for search results
-                currentCategoriesLimit += 15; // Increment search result limit
-                fetchSearchResults(); // Fetch more search results
+        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
+            if (!hasMoreContent) {
+                // Display "No more content" message if there are no more items to load
+                const noMoreContentMessage = document.getElementById("noMoreContentMessage");
+                if (!noMoreContentMessage) {
+                    const messageDiv = document.createElement("div");
+                    messageDiv.id = "noMoreContentMessage";
+                    messageDiv.textContent = "You have reached the end of the content.";
+                    messageDiv.style.textAlign = "center";
+                    messageDiv.style.padding = "20px";
+                    document.body.appendChild(messageDiv);
+                }
+                return; // Stop infinite scrolling
+            }
+            if (activeFilterFunction) {
+                currentCategoriesLimit += 15; // Increment the limit
+                activeFilterFunction(currentCategoriesLimit); // Fetch and render more
             } else {
-                // Infinite scroll for default categories
-                currentCategoriesLimit += 15; // Increment default limit
-                fetchAllCategories(currentCategoriesLimit); // Fetch more default categories
+                const searchTerm = document.getElementById("searchBar").value;
+                if (searchTerm) {
+                    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
+                        .then(response => response.json())
+                        .then(data => {
+                        if (data && data.length === 0) {
+                                hasMoreContent = false;
+                            } else {
+                                renderCategories(data);
+                            }
+                        })
+                        .catch(error => console.error('Error fetching more results:', error));
+                }
             }
         }
     });
 }
-
-function fetchSearchResults() {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                renderCategories(data, searchTerm); // Append search results
-            } else {
-                hasMoreContent = false; // No more search results
-                displayNoMoreContentMessage();
-            }
-            isLoading = false; // Allow further fetches
-        })
-        .catch(error => {
-            console.error("Error fetching search results:", error);
-            isLoading = false;
-        });
-}
-
-function fetchAllCategories(limit) {
-    fetch(`/api/categories?limit=${limit}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                renderCategories(data); // Render categories
-            } else {
-                hasMoreContent = false; // No more categories
-                displayNoMoreContentMessage();
-            }
-            isLoading = false; // Allow further fetches
-        })
-        .catch(error => {
-            console.error("Error fetching categories:", error);
-            isLoading = false;
-        });
-}
-
-function displayNoMoreContentMessage() {
-    const categoriesContainer = document.getElementById("categories");
-    let noMoreContentMessage = document.getElementById("noMoreContentMessage");
-    if (!noMoreContentMessage) {
-        noMoreContentMessage = document.createElement("div");
-        noMoreContentMessage.id = "noMoreContentMessage";
-        noMoreContentMessage.textContent = "You have reached the end of the content.";
-        noMoreContentMessage.style.textAlign = "center";
-        noMoreContentMessage.style.padding = "20px";
-        categoriesContainer.appendChild(noMoreContentMessage);
-    }
-}
-
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    const categoriesContainer = document.getElementById("categories");
-
-    // Reset state for new search
-    categoriesContainer.innerHTML = "<p>Loading...</p>";
-    currentCategoriesLimit = 15; // Reset limit
-    hasMoreContent = true; // Assume more content is available
-    isLoading = false; // Ensure loading is reset
-    isSearchMode = true; // Enable search mode
-
-    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                renderCategories(data);
-            } else {
-                hasMoreContent = false; // No results
-                categoriesContainer.innerHTML = "<p>No results found.</p>";
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching search results:", error);
-            categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
-        });
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Attach event listeners for navigation buttons
-    document.getElementById("searchBar").addEventListener("keyup", filterContent);
-
-    document.getElementById("forYouButton").addEventListener("click", () => {
-        isSearchMode = false; // Disable search mode
-        currentCategoriesLimit = 15; // Reset limit
-        fetchForYouCategories(currentCategoriesLimit);
-    });
-
-    document.getElementById("allButton").addEventListener("click", () => {
-        isSearchMode = false; // Disable search mode
-        currentCategoriesLimit = 15; // Reset limit
-        fetchAllCategories(currentCategoriesLimit);
-    });
-
-    document.getElementById("latestButton").addEventListener("click", () => {
-        isSearchMode = false; // Disable search mode
-        currentCategoriesLimit = 15; // Reset limit
-        fetchLatestCategories(currentCategoriesLimit);
-    });
-
-    console.log("Event listeners attached to navigation buttons.");
-
-    // Default to "All Categories"
-    isSearchMode = false; // Default is not in search mode
-    fetchAllCategories(currentCategoriesLimit);
-    enableInfiniteScrolling(); // Enable infinite scrolling
-});
-
-
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
