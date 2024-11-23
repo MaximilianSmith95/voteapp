@@ -271,9 +271,14 @@ window.toggleComments = function (subjectId) {
     const toggleButton = commentsContainer.previousElementSibling;
     toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
 
-    // Fetch comments when expanding the section
+  // Dynamically load comments and voice recording controls only when expanded
     if (!commentsContainer.classList.contains("hidden")) {
-        fetchComments(subjectId);
+        // Fetch comments if not already loaded
+        if (!commentsContainer.dataset.loaded) {
+            fetchComments(subjectId);
+            initializeVoiceRecordingControls(subjectId);
+            commentsContainer.dataset.loaded = true; // Mark as loaded
+        }
     }
 };
 
