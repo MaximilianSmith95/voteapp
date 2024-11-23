@@ -196,34 +196,39 @@ function renderCategories(categories, highlightSearchTerm = "") {
 
 // Function to handle upvotes
 function upvote(subjectId) {
-    fetch(`/api/subjects/${subjectId}/vote`, {
-        method: 'POST'
-    })
+    fetch(`/api/subjects/${subjectId}/vote`, { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
                 if (voteCountElement) {
-                    const newVoteCount = parseInt(voteCountElement.textContent) + 1;
+                    // Update the vote count in the DOM
+                    const newVoteCount = parseInt(voteCountElement.textContent.trim()) + 1;
                     voteCountElement.textContent = newVoteCount;
+                    console.log(`Subject ID ${subjectId} updated to ${newVoteCount} votes.`);
 
+                    // Reorder subjects dynamically after vote
                     const subjectDiv = voteCountElement.closest(".subject");
                     const subjectsContainer = subjectDiv.parentNode;
 
-                    const subjectsArray = Array.from(subjectsContainer.children);
+                    // Convert the NodeList to an array and sort by votes
+                    const subjectsArray = Array.from(subjectsContainer.querySelectorAll(".subject"));
                     subjectsArray.sort((a, b) => {
-                        const votesA = parseInt(a.querySelector(".vote-count").textContent);
-                        const votesB = parseInt(b.querySelector(".vote-count").textContent);
-                        return votesB - votesA;
+                        const votesA = parseInt(a.querySelector(".vote-count").textContent.trim()) || 0;
+                        const votesB = parseInt(b.querySelector(".vote-count").textContent.trim()) || 0;
+                        return votesB - votesA; // Descending order
                     });
 
-                    subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
+                    // Append each subject back in sorted order
+                    subjectsArray.forEach(subject => {
+                        subjectsContainer.removeChild(subject); // Ensure the DOM updates visually
+                        subjectsContainer.appendChild(subject);
+                    });
                 }
             }
         })
         .catch(error => console.error('Error upvoting:', error));
 }
-
 // Add and fetch comments functionality remains as provided in the original script.
 
 // Variables for media recorder
