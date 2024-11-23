@@ -630,3 +630,5 @@ function fetchAndDisplayTotalVotes() {
 // Fetch total votes every 10 seconds to keep it updated
 setInterval(fetchAndDisplayTotalVotes, 10000);
 document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
+    });
+});
