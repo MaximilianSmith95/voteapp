@@ -290,7 +290,6 @@ window.toggleComments = function (subjectId) {
 };
             initializeVoiceRecordingControls(subjectId);
             commentsContainer.dataset.loaded = true; // Mark as loaded
-        }
     }
 };
 
