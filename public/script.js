@@ -31,7 +31,13 @@ function enableInfiniteScrolling() {
         }
     });
 }
-
+document.addEventListener("DOMContentLoaded", () => {
+    // Default to "All Categories"
+    activeFilterFunction = fetchAllCategories;
+    fetchAllCategories(currentCategoriesLimit);
+    setupExploreMoreButton(); // Set up the Explore More button
+    enableInfiniteScrolling(); // Enable infinite scrolling
+});
 
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
