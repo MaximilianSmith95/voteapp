@@ -18,6 +18,8 @@ function setupExploreMoreButton() {
         }
     });
 }
+
+// Function to enable infinite scrolling
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
@@ -25,18 +27,11 @@ function enableInfiniteScrolling() {
             if (activeFilterFunction) {
                 currentCategoriesLimit += 15; // Increment the limit
                 activeFilterFunction(currentCategoriesLimit); // Fetch and render more
-            } else {
-                const searchTerm = document.getElementById("searchBar").value;
-                if (searchTerm) {
-                    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${currentCategoriesLimit}`)
-                        .then(response => response.json())
-                        .then(data => renderCategories(data))
-                        .catch(error => console.error('Error fetching more results:', error));
-                }
             }
         }
     });
 }
+
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
@@ -53,7 +48,6 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Attach event listeners for navigation buttons
     document.getElementById("geolocationButton").addEventListener("click", () => {
         activeFilterFunction = fetchNearMeCategories;
         currentCategoriesLimit = 15; // Reset limit
@@ -78,14 +72,41 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchLatestCategories(currentCategoriesLimit);
     });
 
-    console.log("Event listeners attached to navigation buttons.");
-
     // Default to "All Categories"
-   activeFilterFunction = fetchAllCategories;
+    activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
     setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
+
+// Search functionality with persistent context
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const categoriesContainer = document.getElementById("categories");
+
+    // Clear existing content while fetching
+    categoriesContainer.innerHTML = "<p>Loading...</p>";
+
+    // Update active filter function to ensure search results persist
+    activeFilterFunction = (limit) => {
+        fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    renderCategories(data, searchTerm);
+                } else {
+                    categoriesContainer.innerHTML = "<p>No results found.</p>";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+                categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
+            });
+    };
+
+    // Immediately trigger the search
+    activeFilterFunction(currentCategoriesLimit);
+};
 
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
@@ -115,6 +136,15 @@ function fetchNearMeCategories(limit) {
         console.log("Geolocation is not available in this browser.");
     }
 }
+
+function fetchLatestCategories(limit) {
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
+        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
+    });
+}
+
+// Render function and other feature-specific functions remain the same...
+
 
 
 window.filterContent = function () {
