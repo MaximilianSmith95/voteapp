@@ -1,3 +1,4 @@
+// Global variables
 let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
 let activeFilterFunction = null; // Track the currently active filter function
@@ -171,13 +172,12 @@ function renderCategories(categories, highlightSearchTerm = "") {
         // Render the category name
         let categoryName = category.name;
         if (highlightSearchTerm) {
-            // Highlight the matching part of the category name
             const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
             categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
         }
         categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
-        // Render subjects
+        // Render subjects sorted by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
@@ -188,6 +188,16 @@ function renderCategories(categories, highlightSearchTerm = "") {
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
             subjectDiv.innerHTML = `
                 <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
+                <span class="vote-container">
+                    <span class="vote-count">${subject.votes}</span>
+                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
+                </span>
+                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
+                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
+                    <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
+                    <button onclick="addComment(${subject.subject_id})">Add Comment</button>
+                    <div class="comments" id="comment-section-${subject.subject_id}"></div>
+                </div>
             `;
             subjectsDiv.appendChild(subjectDiv);
         });
@@ -195,15 +205,6 @@ function renderCategories(categories, highlightSearchTerm = "") {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
-}
-
-// Function to shuffle an array
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
 }
 
 // Function to handle upvotes
@@ -219,6 +220,7 @@ function upvote(subjectId) {
                     const newVoteCount = parseInt(voteCountElement.textContent) + 1;
                     voteCountElement.textContent = newVoteCount;
 
+                    // Resort subjects by vote count
                     const subjectDiv = voteCountElement.closest(".subject");
                     const subjectsContainer = subjectDiv.parentNode;
 
@@ -236,33 +238,41 @@ function upvote(subjectId) {
         .catch(error => console.error('Error upvoting:', error));
 }
 
-// Variables for media recorder
-let mediaRecorder;
-let audioChunks = [];
+// Function to add a comment to a subject
+function addComment(subjectId) {
+    const commentInput = document.getElementById(`comment-input-${subjectId}`);
+    const commentText = commentInput.value.trim();
+    const username = `User${Math.floor(Math.random() * 1000)}`;
 
-// Function to initialize voice recording controls dynamically
-function initializeVoiceRecordingControls(subjectId) {
-    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+    if (commentText) {
+        fetch(`/api/subjects/${subjectId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, comment_text: commentText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchComments(subjectId);
+                commentInput.value = "";
+            }
+        })
+        .catch(error => console.error('Error posting comment:', error));
+    }
+}
 
-    // Add voice review controls dynamically
-    const voiceReviewSection = document.createElement("div");
-    voiceReviewSection.id = `voice-review-section-${subjectId}`;
-    voiceReviewSection.classList.add("hidden"); // Initially hidden
-    voiceReviewSection.innerHTML = `
-        <button id="record-${subjectId}" onclick="startRecording(${subjectId})">Start Recording</button>
-        <button id="stop-${subjectId}" class="hidden" onclick="stopRecording(${subjectId})">Stop Recording</button>
-        <audio id="audio-preview-${subjectId}" controls class="hidden"></audio>
-        <button id="submit-voice-${subjectId}" class="hidden" onclick="submitVoiceReview(${subjectId})">Submit Voice Review</button>
-    `;
-
-    // Add a button to toggle voice review visibility
-    const voiceReviewToggle = document.createElement("button");
-    voiceReviewToggle.textContent = "Record Voice Review";
-    voiceReviewToggle.onclick = () => voiceReviewSection.classList.toggle("hidden");
-
-    // Append the new elements to the comments container
-    commentsContainer.appendChild(voiceReviewToggle);
-    commentsContainer.appendChild(voiceReviewSection);
+// Function to fetch comments
+function fetchComments(subjectId) {
+    fetch(`/api/subjects/${subjectId}/comments`)
+        .then(response => response.json())
+        .then(comments => {
+            const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+            commentContainer.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <strong>${comment.username}</strong>: ${comment.comment_text}
+                </div>
+            `).join("");
+        });
 }
 
 // Function to toggle comment visibility
@@ -273,11 +283,11 @@ window.toggleComments = function (subjectId) {
     const toggleButton = commentsContainer.previousElementSibling;
     toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
 
-    // Dynamically load comments and voice recording controls only when expanded
+    // Fetch comments only when expanded
     if (!commentsContainer.classList.contains("hidden")) {
-        // Fetch comments if not already loaded
-        if (!commentsContainer.dataset.loaded) {
-            fetchComments(subjectId);
+        fetchComments(subjectId);
+    }
+};
             initializeVoiceRecordingControls(subjectId);
             commentsContainer.dataset.loaded = true; // Mark as loaded
         }
