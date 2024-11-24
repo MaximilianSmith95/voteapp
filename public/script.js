@@ -375,29 +375,40 @@ function stopRecording(subjectId) {
     document.getElementById(`record-${subjectId}`).classList.remove("hidden");
 }
 
-// Function to submit the recorded voice review
 function submitVoiceReview(subjectId) {
     const submitButton = document.getElementById(`submit-voice-${subjectId}`);
     const audioBlob = submitButton.dataset.audioBlob;
 
+    if (!audioBlob) {
+        alert("No audio recording found! Please record your review first.");
+        return;
+    }
+
     const formData = new FormData();
-    formData.append("audio", audioBlob);
+    formData.append("audio", audioBlob, "voice_review.webm"); // Provide a filename
     formData.append("username", "Anonymous"); // Optional username
 
     fetch(`/api/subjects/${subjectId}/voice-review`, {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Voice review submitted successfully!");
-            fetchComments(subjectId); // Reload comments to show new review
-        } else {
-            alert("Failed to submit voice review.");
-        }
-    })
-    .catch(error => console.error('Error submitting voice review:', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert("Voice review submitted successfully!");
+                fetchComments(subjectId); // Reload comments to show new review
+            } else {
+                alert("Failed to submit voice review.");
+            }
+        })
+        .catch(error => {
+            console.error("Error submitting voice review:", error);
+        });
 }
 
 
