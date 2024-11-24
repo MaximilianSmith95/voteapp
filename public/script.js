@@ -388,6 +388,9 @@ function submitVoiceReview(subjectId) {
     formData.append("audio", audioBlob, "voice_review.webm"); // Provide a filename
     formData.append("username", "Anonymous"); // Optional username
 
+    console.log("Submitting voice review for subject:", subjectId);
+    console.log("Audio Blob:", audioBlob);
+
     fetch(`/api/subjects/${subjectId}/voice-review`, {
         method: 'POST',
         body: formData
@@ -410,6 +413,7 @@ function submitVoiceReview(subjectId) {
             console.error("Error submitting voice review:", error);
         });
 }
+
 
 
 // Shuffle an array
