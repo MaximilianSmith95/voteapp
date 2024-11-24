@@ -271,13 +271,10 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     db.query(query, [subjectId], (err, results) => {
         if (err) {
             console.error('Error fetching comments:', err);
-            res.status(500).json({ error: 'Failed to fetch comments' });
-        } else {
-            const comments = results.filter(comment => !comment.is_voice_review);
-            const voiceReviews = results.filter(comment => comment.is_voice_review);
-
-            res.json({ comments, voiceReviews });
+            return res.status(500).json({ error: 'Failed to fetch comments' });
         }
+
+        res.json(results); // Send all comments (both text and voice reviews)
     });
 });
 
