@@ -349,3 +349,15 @@ app.get('/api/subjects/:id/comments', (req, res) => {
         }
     });
 });
+// API to fetch total votes from all subjects
+app.get('/api/totalVotes', (req, res) => {
+    const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching total votes:', err);
+            res.status(500).json({ error: 'Database error' });
+        } else {
+            res.json({ totalVotes: results[0]?.totalVotes || 0 });
+        }
+    });
+});
