@@ -13,8 +13,7 @@ const upload = multer({ storage: multer.memoryStorage() }); // Use memory storag
 const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    region: 'eu-north-1' 
-
+    region: 'eu-north-1' // Correct region configuration
 });
 
 const app = express();
@@ -62,6 +61,8 @@ const voteLimiter = rateLimit({
     max: 100, // Limit each IP to 100 requests per minute
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
+
+// Search API
 app.get('/api/search', (req, res) => {
     const { query } = req.query;
 
@@ -114,7 +115,7 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-
+// Fetch categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
@@ -135,12 +136,12 @@ app.get('/api/categories', (req, res) => {
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
-                category = { 
-                    category_id: row.category_id, 
-                    name: row.category_name, 
+                category = {
+                    category_id: row.category_id,
+                    name: row.category_name,
                     subjects: [],
                     latitude: row.latitude,
-                    longitude: row.longitude 
+                    longitude: row.longitude
                 };
                 acc.push(category);
             }
@@ -156,7 +157,6 @@ app.get('/api/categories', (req, res) => {
         }, []);
 
         if (type === "near") {
-            // Sort by geolocation proximity
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
 
@@ -167,22 +167,19 @@ app.get('/api/categories', (req, res) => {
 
             res.json(sortedCategories);
         } else if (type === "for-you") {
-            // Sort by preferences
             const sortedCategories = categories.sort((a, b) => {
                 return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
             });
 
             res.json(sortedCategories);
         } else {
-            // Default to unsorted (randomized or default logic)
             res.json(categories);
         }
     });
 });
 
-
-// API to vote for a subject
-app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => { // Apply rate limiter here
+// Vote for a subject
+app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
@@ -224,7 +221,6 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => { // Apply rate li
                     return res.status(500).json({ error: 'Failed to update votes' });
                 }
 
-                // Update cookie-stored preferences
                 const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
                 db.query(query, [subjectId], (err, results) => {
                     if (err) {
@@ -246,7 +242,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => { // Apply rate li
     });
 });
 
-// API to add a comment
+// Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
@@ -262,11 +258,11 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     });
 });
 
-// API to fetch comments
+// Combined comments and voice reviews fetch
 app.get('/api/subjects/:id/comments', (req, res) => {
     const subjectId = req.params.id;
     const query = `
-        SELECT comment_id, parent_comment_id, username, comment_text, created_at
+        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
         FROM comments
         WHERE subject_id = ?
         ORDER BY created_at ASC;
@@ -277,33 +273,18 @@ app.get('/api/subjects/:id/comments', (req, res) => {
             console.error('Error fetching comments:', err);
             res.status(500).json({ error: 'Failed to fetch comments' });
         } else {
-            const commentsMap = {};
-            results.forEach(comment => {
-                commentsMap[comment.comment_id] = { ...comment, replies: [] };
-            });
+            const comments = results.filter(comment => !comment.is_voice_review);
+            const voiceReviews = results.filter(comment => comment.is_voice_review);
 
-            const structuredComments = [];
-            results.forEach(comment => {
-                if (comment.parent_comment_id) {
-                    commentsMap[comment.parent_comment_id].replies.push(commentsMap[comment.comment_id]);
-                } else {
-                    structuredComments.push(commentsMap[comment.comment_id]);
-                }
-            });
-
-            res.json(structuredComments);
+            res.json({ comments, voiceReviews });
         }
     });
 });
 
-const PORT = process.env.PORT || 3500;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
+// Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
-    const username = req.body.username || 'Anonymous'; // Optional username
+    const username = req.body.username || 'Anonymous';
     const audioFile = req.file;
 
     if (!audioFile) {
@@ -334,26 +315,7 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     }
 });
 
-// Fetch voice reviews along with text comments
-app.get('/api/subjects/:id/comments', (req, res) => {
-    const subjectId = req.params.id;
-    const query = `
-        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
-        FROM comments
-        WHERE subject_id = ?
-        ORDER BY created_at ASC;
-    `;
-
-    db.query(query, [subjectId], (err, results) => {
-        if (err) {
-            console.error('Error fetching comments:', err);
-            res.status(500).json({ error: 'Failed to fetch comments' });
-        } else {
-            res.json(results);
-        }
-    });
-});
-// API to fetch total votes from all subjects
+// Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
     const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
     db.query(query, (err, results) => {
@@ -365,42 +327,8 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
-// Route to upload voice reviews
-app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
-    const { id: subjectId } = req.params;
-    const username = req.body.username || 'Anonymous'; // Optional username
-    const audioFile = req.file;
 
-    if (!audioFile) {
-        return res.status(400).json({ error: 'Audio file is required' });
-    }
-
-    const s3Params = {
-        Bucket: process.env.S3_BUCKET_NAME, // The bucket name you set in AWS
-        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
-        Body: audioFile.buffer,
-        ContentType: audioFile.mimetype,
-        ACL: 'public-read' // Allows public access to the uploaded file
-    };
-
-    try {
-        // Upload file to S3
-        const s3Response = await s3.upload(s3Params).promise();
-
-        // Save file URL to database
-        const query = `
-            INSERT INTO comments (subject_id, username, audio_path, is_voice_review)
-            VALUES (?, ?, ?, TRUE)
-        `;
-        db.query(query, [subjectId, username, s3Response.Location], (err) => {
-            if (err) {
-                console.error('Error saving voice review:', err);
-                return res.status(500).json({ error: 'Failed to save review' });
-            }
-            res.json({ success: true, url: s3Response.Location });
-        });
-    } catch (err) {
-        console.error('Error uploading to S3:', err);
-        res.status(500).json({ error: 'Upload failed' });
-    }
+const PORT = process.env.PORT || 3500;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
