@@ -301,13 +301,6 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
-
-// AWS S3 setup (Replace with real credentials)
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
-
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
     const username = req.body.username || 'Anonymous'; // Optional username
