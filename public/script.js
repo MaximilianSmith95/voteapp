@@ -371,18 +371,28 @@ function startRecording(subjectId) {
 // Function to stop recording voice reviews
 function stopRecording(subjectId) {
     mediaRecorder.stop();
+
     document.getElementById(`stop-${subjectId}`).classList.add("hidden");
     document.getElementById(`record-${subjectId}`).classList.remove("hidden");
+
+    mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audioPreview = document.getElementById(`audio-preview-${subjectId}`);
+        audioPreview.src = audioUrl;
+        audioPreview.classList.remove("hidden");
+
+        const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+        submitButton.dataset.audioBlob = audioBlob;
+
+        console.log("Audio Blob Created:", audioBlob);
+    };
 }
 
-function submitVoiceReview(subjectId) {
-    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-    const audioBlob = submitButton.dataset.audioBlob;
-
-    if (!audioBlob) {
-        alert("No audio recording found! Please record your review first.");
-        return;
-    }
 
     const formData = new FormData();
     formData.append("audio", audioBlob, "voice_review.webm"); // Provide a filename
