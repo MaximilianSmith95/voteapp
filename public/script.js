@@ -1,7 +1,6 @@
 let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
 let activeFilterFunction = null; // Track the currently active filter function
-let infiniteScrollEnabled = true; // Control infinite scroll behavior
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
@@ -23,8 +22,6 @@ function setupExploreMoreButton() {
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
-        if (!infiniteScrollEnabled) return; // Disable if not applicable
-
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
             if (activeFilterFunction) {
@@ -34,6 +31,13 @@ function enableInfiniteScrolling() {
         }
     });
 }
+document.addEventListener("DOMContentLoaded", () => {
+    // Default to "All Categories"
+    activeFilterFunction = fetchAllCategories;
+    fetchAllCategories(currentCategoriesLimit);
+    setupExploreMoreButton(); // Set up the Explore More button
+    enableInfiniteScrolling(); // Enable infinite scrolling
+});
 
 // Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
@@ -51,30 +55,25 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Attach event listeners for navigation buttons
     document.getElementById("geolocationButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchNearMeCategories;
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
     document.getElementById("forYouButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchForYouCategories;
         currentCategoriesLimit = 15; // Reset limit
         fetchForYouCategories(currentCategoriesLimit);
     });
 
     document.getElementById("allButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchAllCategories;
         currentCategoriesLimit = 15; // Reset limit
         fetchAllCategories(currentCategoriesLimit);
     });
 
     document.getElementById("latestButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchLatestCategories;
         currentCategoriesLimit = 15; // Reset limit
         fetchLatestCategories(currentCategoriesLimit);
@@ -87,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
 
-// Search functionality with infinite scroll disabled
+// Search functionality with persistent context
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
     const categoriesContainer = document.getElementById("categories");
@@ -95,20 +94,25 @@ window.filterContent = function () {
     // Clear existing content while fetching
     categoriesContainer.innerHTML = "<p>Loading...</p>";
 
-    // Disable infinite scroll for searches
-    infiniteScrollEnabled = false;
+    // Update active filter function to ensure it works with infinite scrolling
+    activeFilterFunction = (limit) => {
+        fetch(`/api/search?query=${encodeURIComponent(searchTerm)}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    renderCategories(data, searchTerm); // Render search results
+                } else {
+                    categoriesContainer.innerHTML = "<p>No results found.</p>";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+                categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
+            });
+    };
 
-    // Fetch matching categories and their subjects from the backend
-    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                renderCategories(data, searchTerm); // Render search results
-            } else {
-                categoriesContainer.innerHTML = "<p>No results found.</p>";
-            }
-        })
-        .catch(error => console.error('Error fetching search results:', error));
+    // Immediately trigger the search
+    activeFilterFunction(currentCategoriesLimit);
 };
 
 // Fetch functions for each filter
@@ -146,6 +150,41 @@ function fetchLatestCategories(limit) {
     });
 }
 
+// Render function and other feature-specific functions remain the same...
+
+
+
+window.filterContent = function () {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const categoriesContainer = document.getElementById("categories");
+
+    // Clear existing content while fetching
+    categoriesContainer.innerHTML = "<p>Loading...</p>";
+
+    // Fetch matching categories and their subjects from the backend
+    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                // Render all categories from the backend
+                renderCategories(data, searchTerm);
+            } else {
+                categoriesContainer.innerHTML = "<p>No results found.</p>";
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+            categoriesContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
+        });
+};
+
+function fetchLatestCategories(limit) {
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
+        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
+    });
+}
+
+// Function to render categories in the DOM
 // Function to render categories in the DOM
 function renderCategories(categories, highlightSearchTerm = "") {
     const categoriesContainer = document.getElementById("categories");
@@ -159,22 +198,37 @@ function renderCategories(categories, highlightSearchTerm = "") {
         // Render the category name
         let categoryName = category.name;
         if (highlightSearchTerm) {
+            // Highlight the matching part of the category name
             const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
             categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
         }
         categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
-        // Render subjects sorted by votes
+        // Sort subjects by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
+
+        // Create a scrollable container for the subjects
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
+        // Render each subject within the category
         sortedSubjects.forEach(subject => {
             const subjectDiv = document.createElement("div");
             subjectDiv.classList.add("subject");
             subjectDiv.setAttribute("data-subject-id", subject.subject_id);
+
+            // Highlight the matching part of the subject name
+            let subjectName = subject.name;
+            if (highlightSearchTerm) {
+                const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
+                subjectName = subjectName.replace(regex, `<span class="highlighted">$1</span>`);
+            }
+
+            // Subject content
             subjectDiv.innerHTML = `
-                <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
+                <p style="display: inline-block;">
+                    <a href="${subject.link}" target="_blank">${subjectName}</a>
+                </p>
                 <span class="vote-container">
                     <span class="vote-count">${subject.votes}</span>
                     <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
@@ -186,51 +240,57 @@ function renderCategories(categories, highlightSearchTerm = "") {
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
+
+            // Append the subject to the subjects container
             subjectsDiv.appendChild(subjectDiv);
         });
 
+        // Append the subjects container to the category div
         categoryDiv.appendChild(subjectsDiv);
+
+        // Append the category div to the main container
         categoriesContainer.appendChild(categoryDiv);
     });
 }
 
+// Function to shuffle an array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Function to handle upvotes
 function upvote(subjectId) {
-    fetch(`/api/subjects/${subjectId}/vote`, { method: 'POST' })
+    fetch(`/api/subjects/${subjectId}/vote`, {
+        method: 'POST'
+    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 const voteCountElement = document.querySelector(`[data-subject-id="${subjectId}"] .vote-count`);
                 if (voteCountElement) {
-                    // Increment the vote count
-                    const newVoteCount = parseInt(voteCountElement.textContent.trim()) + 1;
+                    const newVoteCount = parseInt(voteCountElement.textContent) + 1;
                     voteCountElement.textContent = newVoteCount;
-                    console.log(`Subject ID ${subjectId} updated to ${newVoteCount} votes.`);
 
-                    // Get the parent subject div and container
                     const subjectDiv = voteCountElement.closest(".subject");
                     const subjectsContainer = subjectDiv.parentNode;
 
-                    // Convert subjects into an array and sort by vote counts
-                    const subjectsArray = Array.from(subjectsContainer.querySelectorAll(".subject"));
+                    const subjectsArray = Array.from(subjectsContainer.children);
                     subjectsArray.sort((a, b) => {
-                        const votesA = parseInt(a.querySelector(".vote-count").textContent.trim()) || 0;
-                        const votesB = parseInt(b.querySelector(".vote-count").textContent.trim()) || 0;
-                        return votesB - votesA; // Descending order
+                        const votesA = parseInt(a.querySelector(".vote-count").textContent);
+                        const votesB = parseInt(b.querySelector(".vote-count").textContent);
+                        return votesB - votesA;
                     });
 
-                    // Re-append subjects in the new order
-                    subjectsArray.forEach(subject => {
-                        subjectsContainer.removeChild(subject); // Temporarily remove
-                        subjectsContainer.appendChild(subject); // Re-add in sorted order
-                    });
-
-                    console.log("Subjects successfully reordered.");
+                    subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
                 }
             }
         })
         .catch(error => console.error('Error upvoting:', error));
 }
-// Add and fetch comments functionality remains as provided in the original script.
 
 // Variables for media recorder
 let mediaRecorder;
@@ -560,9 +620,9 @@ function fetchAndDisplayTotalVotes() {
                 totalVotesElement.textContent = `Total Votes: ${data.totalVotes}`;
             }
         })
-.catch(error => console.error('Error fetching total votes:', error));
-}
-
-// Fetch total votes every 10 seconds to keep it updated
-setInterval(fetchAndDisplayTotalVotes, 10000);
-document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
+        .catch(error => console.error('Error fetching total votes:', error));
+    }
+    
+    // Fetch total votes every 10 seconds to keep it updated
+    setInterval(fetchAndDisplayTotalVotes, 10000);
+    document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
