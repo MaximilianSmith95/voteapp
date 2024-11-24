@@ -562,3 +562,41 @@ function fetchAndDisplayTotalVotes() {
     // Fetch total votes every 10 seconds to keep it updated
     setInterval(fetchAndDisplayTotalVotes, 10000);
     document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
+
+function submitVoiceReview(subjectId) {
+    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+    const audioBlob = submitButton.dataset.audioBlob;
+
+    const formData = new FormData();
+    formData.append("audio", audioBlob);
+    formData.append("username", "User123"); // Optional username
+
+    fetch(`/api/subjects/${subjectId}/voice-review`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Voice review submitted successfully!");
+            fetchComments(subjectId); // Reload comments to show new review
+        }
+    })
+    .catch(error => console.error('Error submitting voice review:', error));
+}
+
+function fetchComments(subjectId) {
+    fetch(`/api/subjects/${subjectId}/comments`)
+        .then(response => response.json())
+        .then(comments => {
+            const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+            commentContainer.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <strong>${comment.username}</strong>: 
+                    ${comment.is_voice_review ? 
+                        `<audio controls src="${comment.audio_path}"></audio>` : 
+                        `<p>${comment.comment_text}</p>`}
+                </div>
+            `).join("");
+        });
+}
