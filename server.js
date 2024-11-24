@@ -281,8 +281,12 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 // Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
-    const username = req.body.username || 'Anonymous';
+    const username = req.body.username || 'Anonymous'; // Optional username
     const audioFile = req.file;
+
+    console.log("Request Body:", req.body); // Check if username or other form data is received
+    console.log("Subject ID:", subjectId); // Check if subjectId is being passed correctly
+    console.log("Audio File:", audioFile); // Check if audio file is being uploaded
 
     if (!audioFile) {
         return res.status(400).json({ error: 'Audio file is required' });
@@ -311,6 +315,7 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         res.status(500).json({ error: 'Upload failed' });
     }
 });
+
 
 // Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
