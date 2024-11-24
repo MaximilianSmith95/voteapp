@@ -5,6 +5,16 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
 const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
+const AWS = require('aws-sdk');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
+
+// AWS S3 Configuration
+const s3 = new AWS.S3({
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: Europe (Stockholm) eu-north-1
+});
 
 const app = express();
 app.set('trust proxy', true);
@@ -360,4 +370,43 @@ app.get('/api/totalVotes', (req, res) => {
             res.json({ totalVotes: results[0]?.totalVotes || 0 });
         }
     });
+});
+// Route to upload voice reviews
+app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
+    const { id: subjectId } = req.params;
+    const username = req.body.username || 'Anonymous'; // Optional username
+    const audioFile = req.file;
+
+    if (!audioFile) {
+        return res.status(400).json({ error: 'Audio file is required' });
+    }
+
+    const s3Params = {
+        Bucket: process.env.S3_BUCKET_NAME, // The bucket name you set in AWS
+        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
+        Body: audioFile.buffer,
+        ContentType: audioFile.mimetype,
+        ACL: 'public-read' // Allows public access to the uploaded file
+    };
+
+    try {
+        // Upload file to S3
+        const s3Response = await s3.upload(s3Params).promise();
+
+        // Save file URL to database
+        const query = `
+            INSERT INTO comments (subject_id, username, audio_path, is_voice_review)
+            VALUES (?, ?, ?, TRUE)
+        `;
+        db.query(query, [subjectId, username, s3Response.Location], (err) => {
+            if (err) {
+                console.error('Error saving voice review:', err);
+                return res.status(500).json({ error: 'Failed to save review' });
+            }
+            res.json({ success: true, url: s3Response.Location });
+        });
+    } catch (err) {
+        console.error('Error uploading to S3:', err);
+        res.status(500).json({ error: 'Upload failed' });
+    }
 });
