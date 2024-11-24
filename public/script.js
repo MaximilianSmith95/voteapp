@@ -302,28 +302,22 @@ function addComment(subjectId) {
 
 // Function to fetch comments and voice reviews together
 function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
+    fetch(`/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
         .then(data => {
-            const { comments, voiceReviews } = data;
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-
-            // Render text comments
-            commentContainer.innerHTML = comments.map(comment => `
+            
+            // Render comments (text and voice reviews)
+            commentContainer.innerHTML = data.map(comment => `
                 <div class="comment">
-                    <strong>${comment.username}</strong>: ${comment.comment_text}
+                    <strong>${comment.username}</strong>: 
+                    ${comment.is_voice_review ? 
+                        `<audio controls src="${comment.audio_path}"></audio>` : 
+                        `<p>${comment.comment_text}</p>`}
                 </div>
             `).join("");
-
-            // Append audio elements for voice reviews
-            voiceReviews.forEach(review => {
-                const audioElement = document.createElement('audio');
-                audioElement.controls = true;
-                audioElement.src = review.audio_url;
-                commentContainer.appendChild(audioElement);
-            });
         })
-        .catch(error => console.error('Error fetching comments and reviews:', error));
+        .catch(error => console.error('Error fetching comments:', error));
 }
 
             // Fetch voice reviews and append them to the comment section
