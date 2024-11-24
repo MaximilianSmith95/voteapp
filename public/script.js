@@ -302,7 +302,7 @@ function addComment(subjectId) {
 
 // Function to fetch comments and voice reviews together
 function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
+    fetch(`/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
@@ -382,6 +382,7 @@ function submitVoiceReview(subjectId) {
 
     const formData = new FormData();
     formData.append("audio", audioBlob);
+    formData.append("username", "Anonymous"); // Optional username
 
     fetch(`/api/subjects/${subjectId}/voice-review`, {
         method: 'POST',
@@ -391,10 +392,14 @@ function submitVoiceReview(subjectId) {
     .then(data => {
         if (data.success) {
             alert("Voice review submitted successfully!");
+            fetchComments(subjectId); // Reload comments to show new review
+        } else {
+            alert("Failed to submit voice review.");
         }
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
+
 
 // Shuffle an array
 function shuffleArray(array) {
