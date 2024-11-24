@@ -285,17 +285,67 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     });
 });
 
-app.get('/api/totalVotes', (req, res) => {
-    const query = 'SELECT SUM(votes) AS total_votes FROM subjects';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching total votes:', err);
-            return res.status(500).json({ error: 'Failed to fetch total votes' });
-        }
-        res.json({ totalVotes: results[0].total_votes || 0 });
-    });
-});
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+
+// AWS S3 setup (Replace with real credentials)
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+
+app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
+    const { id: subjectId } = req.params;
+    const username = req.body.username || 'Anonymous'; // Optional username
+    const audioFile = req.file;
+
+    if (!audioFile) {
+        return res.status(400).json({ error: 'Audio file is required' });
+    }
+
+    const s3Params = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
+        Body: audioFile.buffer,
+        ContentType: audioFile.mimetype,
+        ACL: 'public-read'
+    };
+
+    try {
+        const s3Response = await s3.upload(s3Params).promise();
+        const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
+        db.query(query, [subjectId, username, s3Response.Location], (err) => {
+            if (err) {
+                console.error('Error saving voice review:', err);
+                return res.status(500).json({ error: 'Failed to save review' });
+            }
+            res.json({ success: true, url: s3Response.Location });
+        });
+    } catch (err) {
+        console.error('Error uploading to S3:', err);
+        res.status(500).json({ error: 'Upload failed' });
+    }
+});
+
+// Fetch voice reviews along with text comments
+app.get('/api/subjects/:id/comments', (req, res) => {
+    const subjectId = req.params.id;
+    const query = `
+        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
+        FROM comments
+        WHERE subject_id = ?
+        ORDER BY created_at ASC;
+    `;
+
+    db.query(query, [subjectId], (err, results) => {
+        if (err) {
+            console.error('Error fetching comments:', err);
+            res.status(500).json({ error: 'Failed to fetch comments' });
+        } else {
+            res.json(results);
+        }
+    });
 });
