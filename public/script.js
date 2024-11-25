@@ -302,7 +302,7 @@ function addComment(subjectId) {
 
 // Function to fetch comments and voice reviews together
 function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments`)
+    fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
         .then(response => response.json())
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
@@ -371,58 +371,30 @@ function startRecording(subjectId) {
 // Function to stop recording voice reviews
 function stopRecording(subjectId) {
     mediaRecorder.stop();
-
     document.getElementById(`stop-${subjectId}`).classList.add("hidden");
     document.getElementById(`record-${subjectId}`).classList.remove("hidden");
-
-    mediaRecorder.ondataavailable = event => {
-        audioChunks.push(event.data);
-    };
-
-    mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audioPreview = document.getElementById(`audio-preview-${subjectId}`);
-        audioPreview.src = audioUrl;
-        audioPreview.classList.remove("hidden");
-
-        const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-        submitButton.dataset.audioBlob = audioBlob;
-
-        console.log("Audio Blob Created:", audioBlob);
-
-        // Submit the voice review after creating the blob
-        const formData = new FormData();
-        formData.append("audio", audioBlob, "voice_review.webm"); // Provide a filename
-        formData.append("username", "Anonymous"); // Optional username
-
-        console.log("Submitting voice review for subject:", subjectId);
-        console.log("Audio Blob:", audioBlob);
-
-        fetch(`/api/subjects/${subjectId}/voice-review`, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert("Voice review submitted successfully!");
-                    fetchComments(subjectId); // Reload comments to show new review
-                } else {
-                    alert("Failed to submit voice review.");
-                }
-            })
-            .catch(error => {
-                console.error("Error submitting voice review:", error);
-            });
-    };
 }
 
+// Function to submit the recorded voice review
+function submitVoiceReview(subjectId) {
+    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+    const audioBlob = submitButton.dataset.audioBlob;
+
+    const formData = new FormData();
+    formData.append("audio", audioBlob);
+
+    fetch(`/api/subjects/${subjectId}/voice-review`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Voice review submitted successfully!");
+        }
+    })
+    .catch(error => console.error('Error submitting voice review:', error));
+}
 
 // Shuffle an array
 function shuffleArray(array) {
@@ -605,45 +577,26 @@ function fetchAndDisplayTotalVotes() {
     document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
 
 function submitVoiceReview(subjectId) {
-  const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-  const audioBlob = submitButton.dataset.audioBlob; // Retrieve the audio blob
+    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+    const audioBlob = submitButton.dataset.audioBlob;
 
-  // Check if audioBlob exists
-  if (!audioBlob) {
-    alert("No audio file recorded. Please record before submitting.");
-    return;
-  }
+    const formData = new FormData();
+    formData.append("audio", audioBlob);
+    formData.append("username", "User123"); // Optional username
 
-  const formData = new FormData();
-  formData.append("audio", audioBlob, "voice_review.webm"); // Provide a filename
-  formData.append("username", "Anonymous"); // Optional username
-
-  console.log("Submitting voice review for subject:", subjectId);
-  console.log("Audio Blob:", audioBlob);
-
-  fetch(`/api/subjects/${subjectId}/voice-review`, {
-    method: 'POST',
-    body: formData, // Send the FormData
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
+    fetch(`/api/subjects/${subjectId}/voice-review`, {
+        method: 'POST',
+        body: formData
     })
-    .then((data) => {
-      if (data.success) {
-        alert("Voice review submitted successfully!");
-        fetchComments(subjectId); // Reload comments to show new review
-      } else {
-        alert("Failed to submit voice review.");
-      }
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Voice review submitted successfully!");
+            fetchComments(subjectId); // Reload comments to show new review
+        }
     })
-    .catch((error) => {
-      console.error("Error submitting voice review:", error);
-    });
+    .catch(error => console.error('Error submitting voice review:', error));
 }
-
 
 function fetchComments(subjectId) {
     fetch(`/api/subjects/${subjectId}/comments`)
