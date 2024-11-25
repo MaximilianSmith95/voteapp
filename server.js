@@ -316,10 +316,12 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
             res.json({ success: true, url: s3Response.Location });
         });
     } catch (err) {
+        console.log("S3 Response:", s3Response);
         console.error('Error processing voice review:', err);
         res.status(500).json({ error: 'Failed to process voice review.' });
     }
 });
+
 
 
 
