@@ -306,40 +306,37 @@ function fetchComments(subjectId) {
         .then(response => response.json())
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+            commentContainer.innerHTML = ""; // Clear existing comments
 
-            // Clear existing content
-            commentContainer.innerHTML = "";
-
-            // Render text comments and voice reviews
-            data.comments.forEach(comment => {
+            // Render all comments (both text and voice reviews)
+            data.forEach(comment => {
                 const commentElement = document.createElement("div");
                 commentElement.classList.add("comment");
 
-                // Add username
+                // Username
                 const usernameElement = document.createElement("strong");
                 usernameElement.textContent = `${comment.username}: `;
                 commentElement.appendChild(usernameElement);
 
-                // Add text comment
-                if (!comment.is_voice_review) {
-                    const textElement = document.createElement("p");
-                    textElement.textContent = comment.comment_text;
-                    commentElement.appendChild(textElement);
-                }
-
-                // Add voice review
+                // Text comment or voice review
                 if (comment.is_voice_review) {
                     const audioElement = document.createElement("audio");
                     audioElement.controls = true;
                     audioElement.src = comment.audio_path;
                     commentElement.appendChild(audioElement);
+                } else {
+                    const textElement = document.createElement("p");
+                    textElement.textContent = comment.comment_text;
+                    commentElement.appendChild(textElement);
                 }
 
+                // Append comment to the container
                 commentContainer.appendChild(commentElement);
             });
         })
-        .catch(error => console.error("Error fetching comments:", error));
+        .catch(error => console.error('Error fetching comments:', error));
 }
+
 
 // Function to start recording voice reviews
 function startRecording(subjectId) {
@@ -601,18 +598,4 @@ function submitVoiceReview(subjectId) {
     .catch(error => console.error('Error submitting voice review:', error));
 }
 
-// function fetchComments(subjectId) {
-//     fetch(`/api/subjects/${subjectId}/comments`)
-//         .then(response => response.json())
-//         .then(comments => {
-//             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-//             commentContainer.innerHTML = comments.map(comment => `
-//                 <div class="comment">
-//                     <strong>${comment.username}</strong>: 
-//                     ${comment.is_voice_review ? 
-//                         `<audio controls src="${comment.audio_path}"></audio>` : 
-//                         `<p>${comment.comment_text}</p>`}
-//                 </div>
-//             `).join("");
-//         });
-// }
+f
