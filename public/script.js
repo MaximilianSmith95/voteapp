@@ -398,12 +398,11 @@ function submitVoiceReview(subjectId) {
                 alert("Voice review submitted successfully!");
                 fetchComments(subjectId); // Reload comments to show new review
             }
-        })
-        console.log(audioBlob);
-    console.log([...formData.entries()]);
-        catch((error) => console.error("Error submitting voice review:", error));
+    })
+    .catch((error) => {
+        console.error("Error submitting voice review:", error);
+    });
 }
-
 
 // Shuffle an array
 function shuffleArray(array) {
