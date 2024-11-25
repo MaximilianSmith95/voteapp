@@ -380,30 +380,30 @@ function stopRecording(subjectId) {
 }
 
 // Function to submit the recorded voice review
-function submitVoiceReview(subjectId) {
-    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-    const audioBlob = submitButton.dataset.audioBlob;
+// function submitVoiceReview(subjectId) {
+//     const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+//     const audioBlob = submitButton.dataset.audioBlob;
 
-    const formData = new FormData();
-    formData.append("audio", audioBlob); // Ensure this blob is set correctly
-    formData.append("username", "User123"); // Optional username
+//     const formData = new FormData();
+//     formData.append("audio", audioBlob); // Ensure this blob is set correctly
+//     formData.append("username", "User123"); // Optional username
 
-    console.log([...formData.entries()]);
-    fetch(`/api/subjects/${subjectId}/voice-review`, {
-        method: 'POST',
-        body: formData,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                alert("Voice review submitted successfully!");
-                fetchComments(subjectId); // Reload comments to show new review
-            }
-    })
-    .catch((error) => {
-        console.error("Error submitting voice review:", error);
-    });
-}
+    
+//     fetch(`/api/subjects/${subjectId}/voice-review`, {
+//         method: 'POST',
+//         body: formData,
+//     })
+//         .then((response) => response.json())
+//         .then((data) => {
+//             if (data.success) {
+//                 alert("Voice review submitted successfully!");
+//                 fetchComments(subjectId); // Reload comments to show new review
+//             }
+//     })
+//     .catch((error) => {
+//         console.error("Error submitting voice review:", error);
+//     });
+// }
 
 // Shuffle an array
 function shuffleArray(array) {
