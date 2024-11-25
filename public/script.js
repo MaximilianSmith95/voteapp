@@ -302,7 +302,7 @@ function addComment(subjectId) {
 
 // Function to fetch comments and voice reviews together
 function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
+    fetch(`/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
@@ -311,7 +311,7 @@ function fetchComments(subjectId) {
             commentContainer.innerHTML = "";
 
             // Render text comments and voice reviews
-            data.forEach(comment => {
+            data.comments.forEach(comment => {
                 const commentElement = document.createElement("div");
                 commentElement.classList.add("comment");
 
@@ -320,24 +320,27 @@ function fetchComments(subjectId) {
                 usernameElement.textContent = `${comment.username}: `;
                 commentElement.appendChild(usernameElement);
 
-                // Add text or voice review
-                if (comment.is_voice_review) {
-                    const audioElement = document.createElement("audio");
-                    audioElement.controls = true;
-                    audioElement.src = comment.audio_path;
-                    commentElement.appendChild(audioElement);
-                } else {
+                // Add text comment
+                if (!comment.is_voice_review) {
                     const textElement = document.createElement("p");
                     textElement.textContent = comment.comment_text;
                     commentElement.appendChild(textElement);
                 }
 
-                // Append the comment to the container
+                // Add voice review
+                if (comment.is_voice_review) {
+                    const audioElement = document.createElement("audio");
+                    audioElement.controls = true;
+                    audioElement.src = comment.audio_path;
+                    commentElement.appendChild(audioElement);
+                }
+
                 commentContainer.appendChild(commentElement);
             });
         })
-        .catch(error => console.error("Error fetching comments and reviews:", error));
+        .catch(error => console.error("Error fetching comments:", error));
 }
+
 // Function to start recording voice reviews
 function startRecording(subjectId) {
     navigator.mediaDevices.getUserMedia({ audio: true })
