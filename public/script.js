@@ -605,40 +605,43 @@ function fetchAndDisplayTotalVotes() {
     document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
 
 function submitVoiceReview(subjectId) {
-    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-    const audioBlob = submitButton.dataset.audioBlob;
+  const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+  const audioBlob = submitButton.dataset.audioBlob; // Retrieve the audio blob
 
-    if (!audioBlob) {
-        alert("Audio file not available for upload.");
-        return;
-    }
+  // Check if audioBlob exists
+  if (!audioBlob) {
+    alert("No audio file recorded. Please record before submitting.");
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append("audio", audioBlob, "voice_review.webm"); // Field name must match backend
-    formData.append("username", "Anonymous"); // Field name must match backend
+  const formData = new FormData();
+  formData.append("audio", audioBlob, "voice_review.webm"); // Provide a filename
+  formData.append("username", "Anonymous"); // Optional username
 
-    fetch(`/api/subjects/${subjectId}/voice-review`, {
-        method: 'POST',
-        body: formData
+  console.log("Submitting voice review for subject:", subjectId);
+  console.log("Audio Blob:", audioBlob);
+
+  fetch(`/api/subjects/${subjectId}/voice-review`, {
+    method: 'POST',
+    body: formData, // Send the FormData
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                alert("Voice review submitted successfully!");
-                fetchComments(subjectId); // Reload comments to display the new review
-            } else {
-                alert("Failed to submit voice review.");
-            }
-        })
-        .catch(error => {
-            console.error("Error submitting voice review:", error);
-            alert("An error occurred while submitting your voice review.");
-        });
+    .then((data) => {
+      if (data.success) {
+        alert("Voice review submitted successfully!");
+        fetchComments(subjectId); // Reload comments to show new review
+      } else {
+        alert("Failed to submit voice review.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error submitting voice review:", error);
+    });
 }
 
 
