@@ -288,6 +288,8 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     const audioFile = req.file;
 
     if (!audioFile) {
+        console.log("Audio Blob:", audioBlob);
+        console.log("Audio file received:", req.file);
         return res.status(400).json({ error: 'Audio file is required' });
     }
 
