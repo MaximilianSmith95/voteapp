@@ -602,6 +602,12 @@ function fetchComments(subjectId) {
     fetch(`/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
         .then(comments => {
+            console.log("Fetched comments:", comments); // Debugging output
+        // Ensure `comments` is an array before proceeding
+        if (!Array.isArray(comments)) {
+            console.error("API returned an unexpected format:", comments);
+            return;
+        }
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
             commentContainer.innerHTML = comments.map(comment => `
                 <div class="comment">
