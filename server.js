@@ -11,9 +11,9 @@ const upload = multer({ storage: multer.memoryStorage() }); // Use memory storag
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
-  accessKeyId: process.env.S3_ACCESS_KEY_ID,
-  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-  region: 'eu-north-1', // Correct region configuration
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: 'eu-north-1' // Correct region configuration
 });
 
 const app = express();
@@ -271,10 +271,13 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     db.query(query, [subjectId], (err, results) => {
         if (err) {
             console.error('Error fetching comments:', err);
-            return res.status(500).json({ error: 'Failed to fetch comments' });
-        }
+            res.status(500).json({ error: 'Failed to fetch comments' });
+        } else {
+            const comments = results.filter(comment => !comment.is_voice_review);
+            const voiceReviews = results.filter(comment => comment.is_voice_review);
 
-        res.json(results); // Send all comments (both text and voice reviews)
+            res.json({ comments, voiceReviews });
+        }
     });
 });
 
@@ -285,85 +288,32 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     const audioFile = req.file;
 
     if (!audioFile) {
-        console.error('Audio file missing.');
-        return res.status(400).json({ error: 'Audio file is required.' });
+        return res.status(400).json({ error: 'Audio file is required' });
     }
 
+    const s3Params = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
+        Body: audioFile.buffer,
+        ContentType: audioFile.mimetype,
+        ACL: 'public-read'
+    };
+
     try {
-        console.log('Audio File Details:', {
-            originalname: audioFile.originalname,
-            mimetype: audioFile.mimetype,
-            size: audioFile.size,
-        });
-
-        // Validate file size
-        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-        if (audioFile.size > MAX_FILE_SIZE) {
-            return res.status(400).json({ error: 'File size exceeds 5 MB limit.' });
-        }
-
-        // Validate MIME type
-        const allowedTypes = ['audio/webm', 'audio/ogg', 'audio/mpeg'];
-        if (!allowedTypes.includes(audioFile.mimetype)) {
-            return res.status(400).json({ error: 'Unsupported audio format.' });
-        }
-
-        // Upload to S3
-const AWS = require('aws-sdk');
-const fileBuffer = req.file.buffer; // Use middleware like multer to parse file uploads
-const fileName = `voice_review_${Date.now()}.webm`; // Dynamic file name for uniqueness
-
-
-// AWS S3 Configuration
-const s3 = new AWS.S3({
-  accessKeyId: process.env.S3_ACCESS_KEY_ID,
-  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-  region: 'eu-north-1', // Correct region configuration
-});
-
-// Upload to S3
-const params = {
-  Bucket: process.env.S3_BUCKET_NAME,
-  Key: `uploads/${fileName}`, // Ensure correct folder path
-  Body: fileBuffer, // Should contain the audio file buffer
-  ContentType: 'audio/webm', // Ensure the correct content type
-};
-
-s3.upload(params, (err, data) => {
-  if (err) {
-    console.error("S3 Upload Error:", err);
-    return res.status(500).send({ error: "Failed to upload to S3" });
-  }
-  console.log("S3 Upload Success:", data);
-  res.status(200).send({ url: data.Location }); // Respond with the S3 URL
-});
-
-
         const s3Response = await s3.upload(s3Params).promise();
-        console.log('S3 Upload Response:', s3Response);
-
-        // Insert into database
-        const query = `
-            INSERT INTO comments (subject_id, username, audio_path, is_voice_review)
-            VALUES (?, ?, ?, TRUE)
-        `;
-        db.query(query, [subjectId, username, s3Response.Location], (err, results) => {
+        const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
+        db.query(query, [subjectId, username, s3Response.Location], (err) => {
             if (err) {
-                console.error('Database Error:', err);
-                return res.status(500).json({ error: 'Database insertion failed.' });
+                console.error('Error saving voice review:', err);
+                return res.status(500).json({ error: 'Failed to save review' });
             }
-            console.log('Database Insert Successful:', results);
             res.json({ success: true, url: s3Response.Location });
         });
     } catch (err) {
-        console.error('Error:', err);
-        res.status(500).json({ error: 'Internal server error.' });
+        console.error('Error uploading to S3:', err);
+        res.status(500).json({ error: 'Upload failed' });
     }
 });
-
-
-
-
 
 // Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
