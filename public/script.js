@@ -385,20 +385,25 @@ function submitVoiceReview(subjectId) {
     const audioBlob = submitButton.dataset.audioBlob;
 
     const formData = new FormData();
-    formData.append("audio", audioBlob);
+    formData.append("audio", audioBlob); // Ensure this blob is set correctly
+    formData.append("username", "User123"); // Optional username
 
     fetch(`/api/subjects/${subjectId}/voice-review`, {
         method: 'POST',
-        body: formData
+        body: formData,
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Voice review submitted successfully!");
-        }
-    })
-    .catch(error => console.error('Error submitting voice review:', error));
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                alert("Voice review submitted successfully!");
+                fetchComments(subjectId); // Reload comments to show new review
+            }
+        })
+        console.log(audioBlob);
+    console.log([...formData.entries()]);
+        .catch((error) => console.error("Error submitting voice review:", error));
 }
+
 
 // Shuffle an array
 function shuffleArray(array) {
