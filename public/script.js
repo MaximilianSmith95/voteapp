@@ -305,6 +305,7 @@ function fetchComments(subjectId) {
     fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
         .then(response => response.json())
         .then(data => {
+            console.log("Fetched comments:", data); // Debugging output
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
 
             // Clear existing content
@@ -343,6 +344,7 @@ function fetchComments(subjectId) {
         })
         .catch(error => console.error("Error fetching comments and reviews:", error));
 }
+
 
 // Function to start recording voice reviews
 function startRecording(subjectId) {
