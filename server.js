@@ -309,11 +309,21 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         }
 
         // Upload to S3
-        const params = {
+const AWS = require('aws-sdk');
+
+// AWS S3 Configuration
+const s3 = new AWS.S3({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: 'eu-north-1', // Correct region configuration
+});
+
+// Upload to S3
+const params = {
   Bucket: process.env.S3_BUCKET_NAME,
   Key: `uploads/${fileName}`, // Ensure correct folder path
-  Body: fileBuffer,
-  ContentType: 'audio/webm'
+  Body: fileBuffer, // Should contain the audio file buffer
+  ContentType: 'audio/webm', // Ensure the correct content type
 };
 
 s3.upload(params, (err, data) => {
@@ -321,8 +331,10 @@ s3.upload(params, (err, data) => {
     console.error("S3 Upload Error:", err);
     return res.status(500).send({ error: "Failed to upload to S3" });
   }
-  res.status(200).send({ url: data.Location });
+  console.log("S3 Upload Success:", data);
+  res.status(200).send({ url: data.Location }); // Respond with the S3 URL
 });
+
 
         const s3Response = await s3.upload(s3Params).promise();
         console.log('S3 Upload Response:', s3Response);
