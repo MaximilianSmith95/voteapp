@@ -311,8 +311,9 @@ function fetchComments(subjectId) {
             // Clear existing content
             commentContainer.innerHTML = "";
 
-            // Ensure `data.comments` is an array before proceeding
+            // Check if data and comments are valid
             if (data && Array.isArray(data.comments)) {
+                // Render text comments
                 data.comments.forEach(comment => {
                     const commentElement = document.createElement("div");
                     commentElement.classList.add("comment");
@@ -341,7 +342,7 @@ function fetchComments(subjectId) {
                 console.warn("No comments found or `comments` is not an array:", data);
             }
         })
-        .catch(error => console.error("Error fetching comments and reviews:", error));
+        .catch(error => console.error("Error fetching comments:", error));
 }
 
 // Function to start recording voice reviews
