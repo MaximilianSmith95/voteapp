@@ -283,21 +283,23 @@ function addComment(subjectId) {
     const username = `User${Math.floor(Math.random() * 1000)}`;
 
     if (commentText) {
-        fetch(`/api/subjects/${subjectId}/comment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, comment_text: commentText })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                fetchComments(subjectId);
-                commentInput.value = "";
-            }
-        })
-        .catch(error => console.error('Error posting comment:', error));
-    }
-}
+        fetch(`/api/subjects/${subjectId}/comments`)
+    .then(response => response.json())
+    .then(comments => {
+        if (!comments.length) {
+            console.log("No comments found for this subject.");
+        }
+        const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+        commentContainer.innerHTML = comments.map(comment => `
+            <div class="comment">
+                <strong>${comment.username}</strong>: 
+                ${comment.is_voice_review ? 
+                    `<audio controls src="${comment.audio_path}"></audio>` : 
+                    `<p>${comment.comment_text}</p>`}
+            </div>
+        `).join("");
+    })
+    .catch(error => console.error("Error fetching comments:", error));
 
 
 // Function to fetch comments and voice reviews together
