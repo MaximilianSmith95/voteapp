@@ -10,7 +10,7 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
 
 // AWS S3 Configuration
-const s3 = new AWS.S3({
+const s3 = new AWS.S3({ region: "eu-north-1" });
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
     region: 'eu-north-1' // Correct region configuration
@@ -309,13 +309,20 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         }
 
         // Upload to S3
-        const s3Params = {
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
-            Body: audioFile.buffer,
-            ContentType: audioFile.mimetype,
-            ACL: 'public-read',
-        };
+        const params = {
+  Bucket: process.env.S3_BUCKET_NAME,
+  Key: `uploads/${fileName}`, // Ensure correct folder path
+  Body: fileBuffer,
+  ContentType: 'audio/webm'
+};
+
+s3.upload(params, (err, data) => {
+  if (err) {
+    console.error("S3 Upload Error:", err);
+    return res.status(500).send({ error: "Failed to upload to S3" });
+  }
+  res.status(200).send({ url: data.Location });
+});
 
         const s3Response = await s3.upload(s3Params).promise();
         console.log('S3 Upload Response:', s3Response);
