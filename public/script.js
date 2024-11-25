@@ -593,6 +593,8 @@ function submitVoiceReview(subjectId) {
     formData.append("audio", audioBlob);
     formData.append("username", "User123"); // Optional username
 
+    console.log([...formData.entries()]);
+    
     fetch(`/api/subjects/${subjectId}/voice-review`, {
         method: 'POST',
         body: formData
