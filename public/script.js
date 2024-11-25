@@ -351,11 +351,11 @@ function startRecording(subjectId) {
             };
 
             mediaRecorder.onstop = () => {
-    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-    console.log("Recorded Audio Blob:", audioBlob);
-    const audioUrl = URL.createObjectURL(audioBlob);
-    document.getElementById(`audio-preview-${subjectId}`).src = audioUrl;
-};
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPreview = document.getElementById(`audio-preview-${subjectId}`);
+                audioPreview.src = audioUrl;
+                audioPreview.classList.remove("hidden");
 
                 const submitButton = document.getElementById(`submit-voice-${subjectId}`);
                 submitButton.dataset.audioBlob = audioBlob;
