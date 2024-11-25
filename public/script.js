@@ -302,17 +302,11 @@ function addComment(subjectId) {
 
 // Function to fetch comments and voice reviews together
 function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments`)
+    fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
         .then(response => response.json())
-        .then(comments => {
+        .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-            commentContainer.innerHTML = comments.map(comment => `
-                <div class="comment">
-                    <strong>${comment.username}</strong>: 
-                    ${comment.is_voice_review ? 
-                        `<audio controls src="${comment.audio_path}"></audio>` : 
-                        `<p>${comment.comment_text}</p>`}
-                </div>
+
             // Clear existing content
             commentContainer.innerHTML = "";
 
@@ -609,20 +603,13 @@ function fetchComments(subjectId) {
         .then(response => response.json())
         .then(comments => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-           fetchComments(subjectId)
-    .then(comments => {
-        if (!Array.isArray(comments)) {
-            console.error("Invalid comments data:", comments);
-            commentContainer.innerHTML = "<p>No comments available.</p>";
-            return;
-        }
-        commentContainer.innerHTML = comments.map(comment => `
-            <div class="comment">
-                <strong>${comment.username}</strong>: 
-                ${comment.is_voice_review ? 
-                    `<audio controls src="${comment.audio_path}"></audio>` : 
-                    `<p>${comment.comment_text}</p>`}
-            </div>
-        `).join("");
-    })
-    .catch(error => console.error("Error fetching comments:", error));
+            commentContainer.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <strong>${comment.username}</strong>: 
+                    ${comment.is_voice_review ? 
+                        `<audio controls src="${comment.audio_path}"></audio>` : 
+                        `<p>${comment.comment_text}</p>`}
+                </div>
+            `).join("");
+        });
+}
