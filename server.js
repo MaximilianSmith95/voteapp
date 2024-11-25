@@ -287,10 +287,22 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     const username = req.body.username || 'Anonymous';
     const audioFile = req.file;
 
+    // Check if audio file is present
     if (!audioFile) {
+        console.error('No audio file received in the request.');
         return res.status(400).json({ error: 'Audio file is required' });
     }
 
+    // Log file and body details for debugging
+    console.log('File received:', {
+        fieldname: audioFile.fieldname,
+        originalname: audioFile.originalname,
+        mimetype: audioFile.mimetype,
+        size: audioFile.size
+    });
+    console.log('Body received:', req.body);
+
+    // S3 upload parameters
     const s3Params = {
         Bucket: process.env.S3_BUCKET_NAME,
         Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
@@ -300,19 +312,23 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     };
 
     try {
+        // Attempt to upload the file to S3
         const s3Response = await s3.upload(s3Params).promise();
+        console.log('S3 upload successful:', s3Response);
+
+        // Save review details to the database
         const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
         db.query(query, [subjectId, username, s3Response.Location], (err) => {
             if (err) {
-                console.error('Error saving voice review:', err);
-                return res.status(500).json({ error: 'Failed to save review' });
+                console.error('Database error while saving voice review:', err);
+                return res.status(500).json({ error: 'Failed to save review in database' });
             }
             res.json({ success: true, url: s3Response.Location });
         });
     } catch (err) {
-        console.error('Error uploading to S3:', err);
-        console.log(req.file);
-        res.status(500).json({ error: 'Upload failed' });
+        // Handle any errors during the S3 upload
+        console.error('Error during S3 upload:', err.message);
+        return res.status(500).json({ error: 'Failed to upload to S3' });
     }
 });
 
