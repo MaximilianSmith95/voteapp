@@ -284,37 +284,43 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     const username = req.body.username || 'Anonymous'; // Optional username
     const audioFile = req.file;
 
-    console.log("Request Body:", req.body); // Check if username or other form data is received
-    console.log("Subject ID:", subjectId); // Check if subjectId is being passed correctly
-    console.log("Audio File:", audioFile); // Check if audio file is being uploaded
-
+    // Validate audio file presence
     if (!audioFile) {
-        return res.status(400).json({ error: 'Audio file is required' });
+        console.error('Audio file missing from request.');
+        return res.status(400).json({ error: 'Audio file is required.' });
     }
 
-    const s3Params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
-        Body: audioFile.buffer,
-        ContentType: audioFile.mimetype,
-        ACL: 'public-read'
-    };
-
     try {
+        // Upload to AWS S3
+        const s3Params = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
+            Body: audioFile.buffer,
+            ContentType: audioFile.mimetype,
+            ACL: 'public-read',
+        };
+
         const s3Response = await s3.upload(s3Params).promise();
-        const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
+        console.log('S3 Upload Successful:', s3Response);
+
+        // Insert into database
+        const query = `
+            INSERT INTO comments (subject_id, username, audio_path, is_voice_review)
+            VALUES (?, ?, ?, TRUE)
+        `;
         db.query(query, [subjectId, username, s3Response.Location], (err) => {
             if (err) {
-                console.error('Error saving voice review:', err);
-                return res.status(500).json({ error: 'Failed to save review' });
+                console.error('Database error while saving voice review:', err);
+                return res.status(500).json({ error: 'Failed to save voice review.' });
             }
             res.json({ success: true, url: s3Response.Location });
         });
     } catch (err) {
-        console.error('Error uploading to S3:', err);
-        res.status(500).json({ error: 'Upload failed' });
+        console.error('Error processing voice review:', err);
+        res.status(500).json({ error: 'Failed to process voice review.' });
     }
 });
+
 
 
 // Fetch total votes
