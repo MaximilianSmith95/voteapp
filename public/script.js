@@ -310,34 +310,40 @@ function fetchComments(subjectId) {
             // Clear existing content
             commentContainer.innerHTML = "";
 
-            // Render text comments and voice reviews
-            data.forEach(comment => {
-                const commentElement = document.createElement("div");
-                commentElement.classList.add("comment");
+            // Ensure `data.comments` is an array before proceeding
+            if (data && Array.isArray(data.comments)) {
+                // Render text comments and voice reviews
+                data.comments.forEach(comment => {
+                    const commentElement = document.createElement("div");
+                    commentElement.classList.add("comment");
 
-                // Add username
-                const usernameElement = document.createElement("strong");
-                usernameElement.textContent = `${comment.username}: `;
-                commentElement.appendChild(usernameElement);
+                    // Add username
+                    const usernameElement = document.createElement("strong");
+                    usernameElement.textContent = `${comment.username}: `;
+                    commentElement.appendChild(usernameElement);
 
-                // Add text or voice review
-                if (comment.is_voice_review) {
-                    const audioElement = document.createElement("audio");
-                    audioElement.controls = true;
-                    audioElement.src = comment.audio_path;
-                    commentElement.appendChild(audioElement);
-                } else {
-                    const textElement = document.createElement("p");
-                    textElement.textContent = comment.comment_text;
-                    commentElement.appendChild(textElement);
-                }
+                    // Add text or voice review
+                    if (comment.is_voice_review) {
+                        const audioElement = document.createElement("audio");
+                        audioElement.controls = true;
+                        audioElement.src = comment.audio_path;
+                        commentElement.appendChild(audioElement);
+                    } else {
+                        const textElement = document.createElement("p");
+                        textElement.textContent = comment.comment_text;
+                        commentElement.appendChild(textElement);
+                    }
 
-                // Append the comment to the container
-                commentContainer.appendChild(commentElement);
-            });
+                    // Append the comment to the container
+                    commentContainer.appendChild(commentElement);
+                });
+            } else {
+                console.warn("No comments found or `comments` is not an array:", data);
+            }
         })
         .catch(error => console.error("Error fetching comments and reviews:", error));
 }
+
 // Function to start recording voice reviews
 function startRecording(subjectId) {
     navigator.mediaDevices.getUserMedia({ audio: true })
