@@ -310,6 +310,9 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
 
         // Upload to S3
 const AWS = require('aws-sdk');
+const fileBuffer = req.file.buffer; // Use middleware like multer to parse file uploads
+const fileName = `voice_review_${Date.now()}.webm`; // Dynamic file name for uniqueness
+
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
