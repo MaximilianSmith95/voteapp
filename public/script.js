@@ -306,35 +306,39 @@ function fetchComments(subjectId) {
         .then(response => response.json())
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-            commentContainer.innerHTML = ""; // Clear existing comments
 
-            // Render all comments (both text and voice reviews)
-            data.forEach(comment => {
+            // Clear existing content
+            commentContainer.innerHTML = "";
+
+            // Render text comments and voice reviews
+            data.comments.forEach(comment => {
                 const commentElement = document.createElement("div");
                 commentElement.classList.add("comment");
 
-                // Username
+                // Add username
                 const usernameElement = document.createElement("strong");
                 usernameElement.textContent = `${comment.username}: `;
                 commentElement.appendChild(usernameElement);
 
-                // Text comment or voice review
-                if (comment.is_voice_review) {
-                    const audioElement = document.createElement("audio");
-                    audioElement.controls = true;
-                    audioElement.src = comment.audio_path;
-                    commentElement.appendChild(audioElement);
-                } else {
+                // Add text comment
+                if (!comment.is_voice_review) {
                     const textElement = document.createElement("p");
                     textElement.textContent = comment.comment_text;
                     commentElement.appendChild(textElement);
                 }
 
-                // Append comment to the container
+                // Add voice review
+                if (comment.is_voice_review) {
+                    const audioElement = document.createElement("audio");
+                    audioElement.controls = true;
+                    audioElement.src = comment.audio_path;
+                    commentElement.appendChild(audioElement);
+                }
+
                 commentContainer.appendChild(commentElement);
             });
         })
-        .catch(error => console.error('Error fetching comments:', error));
+        .catch(error => console.error("Error fetching comments:", error));
 }
 
 
