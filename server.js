@@ -10,10 +10,10 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
 
 // AWS S3 Configuration
-const s3 = new AWS.S3({ region: "eu-north-1" });
-    accessKeyId: process.env.S3_ACCESS_KEY_ID,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    region: 'eu-north-1' // Correct region configuration
+const s3 = new AWS.S3({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: 'eu-north-1', // Correct region configuration
 });
 
 const app = express();
