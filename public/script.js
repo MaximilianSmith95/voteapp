@@ -401,7 +401,7 @@ function submitVoiceReview(subjectId) {
         })
         console.log(audioBlob);
     console.log([...formData.entries()]);
-        .catch((error) => console.error("Error submitting voice review:", error));
+        catch((error) => console.error("Error submitting voice review:", error));
 }
 
 
