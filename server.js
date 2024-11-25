@@ -299,7 +299,14 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         Body: audioFile.buffer,
         ContentType: audioFile.mimetype,
         ACL: 'public-read'
+
+        if (!req.file) {
+    console.error("No file uploaded");
+    return res.status(400).json({ error: "Audio file is missing" });
+}
+
     };
+    
 
     try {
         const s3Response = await s3.upload(s3Params).promise();
