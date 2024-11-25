@@ -311,6 +311,7 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         });
     } catch (err) {
         console.error('Error uploading to S3:', err);
+        console.log(req.file);
         res.status(500).json({ error: 'Upload failed' });
     }
 });
