@@ -302,11 +302,17 @@ function addComment(subjectId) {
 
 // Function to fetch comments and voice reviews together
 function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments-with-reviews`)
+    fetch(`/api/subjects/${subjectId}/comments`)
         .then(response => response.json())
-        .then(data => {
+        .then(comments => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-
+            commentContainer.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <strong>${comment.username}</strong>: 
+                    ${comment.is_voice_review ? 
+                        `<audio controls src="${comment.audio_path}"></audio>` : 
+                        `<p>${comment.comment_text}</p>`}
+                </div>
             // Clear existing content
             commentContainer.innerHTML = "";
 
