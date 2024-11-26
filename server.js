@@ -115,19 +115,19 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-// Fetch categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
+    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
-    const query = `
+    const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
 
-    db.query(query, (err, results) => {
+    db.query(baseQuery, (err, results) => {
         if (err) {
             console.error('Error fetching categories:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -156,27 +156,51 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        if (type === "near") {
-            const userLat = parseFloat(latitude);
-            const userLon = parseFloat(longitude);
+        if (type === "for-you") {
+            const relatedCategoriesQuery = `
+                SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
+                FROM Subjects s1
+                INNER JOIN Subjects s2 ON s1.name = s2.name AND s1.category_id != s2.category_id
+                WHERE s1.category_id IN (
+                    SELECT category_id FROM UserPreferences WHERE device_id = ?
+                )
+                GROUP BY s1.category_id, s2.category_id
+                ORDER BY shared_subjects DESC;
+            `;
 
-            const sortedCategories = categories.map(category => ({
-                ...category,
-                distance: haversine(userLat, userLon, category.latitude, category.longitude)
-            })).sort((a, b) => a.distance - b.distance);
+            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
+                if (relatedErr) {
+                    console.error('Error fetching related categories:', relatedErr);
+                    return res.status(500).json({ error: 'Database error' });
+                }
 
-            res.json(sortedCategories);
-        } else if (type === "for-you") {
-            const sortedCategories = categories.sort((a, b) => {
-                return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+                const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
+
+                const forYouCategoryIds = new Set([
+                    ...Object.keys(preferences).map(Number), // User-preferred categories
+                    ...relatedCategoryIds // Related categories
+                ]);
+
+                let forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
+
+                // If no "For You" categories found, fallback to randomizing categories
+                if (forYouCategories.length === 0) {
+                    forYouCategories = categories.sort(() => 0.5 - Math.random());
+                }
+
+                // Sort by user preference weight
+                const sortedCategories = forYouCategories.sort((a, b) => {
+                    return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+                });
+
+                res.json(sortedCategories);
             });
-
-            res.json(sortedCategories);
         } else {
             res.json(categories);
         }
     });
 });
+
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
