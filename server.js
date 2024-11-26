@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
 const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
+const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
@@ -22,13 +23,24 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Device ID Middleware: Place this after cookieParser and before routes
+app.use((req, res, next) => {
+    if (!req.cookies.deviceId) {
+        const deviceId = uuidv4();
+        res.cookie('deviceId', deviceId, { httpOnly: true, secure: true });
+        req.deviceId = deviceId;
+    } else {
+        req.deviceId = req.cookies.deviceId;
+    }
+    next();
+});
 app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
         return res.redirect(`https://${req.hostname}${req.url}`);
     }
     next();
 });
-
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -118,7 +130,6 @@ app.get('/api/search', (req, res) => {
 // Fetch categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
-    const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
 
     const query = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
@@ -157,19 +168,19 @@ app.get('/api/categories', (req, res) => {
         }, []);
 
         if (type === "near") {
+            if (!latitude || !longitude) {
+                return res.status(400).json({ error: 'Latitude and longitude are required for near me categories.' });
+            }
+
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
 
-            const sortedCategories = categories.map(category => ({
-                ...category,
-                distance: haversine(userLat, userLon, category.latitude, category.longitude)
-            })).sort((a, b) => a.distance - b.distance);
-
-            res.json(sortedCategories);
-        } else if (type === "for-you") {
-            const sortedCategories = categories.sort((a, b) => {
-                return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
-            });
+            const sortedCategories = categories
+                .map(category => ({
+                    ...category,
+                    distance: haversine(userLat, userLon, category.latitude, category.longitude)
+                }))
+                .sort((a, b) => a.distance - b.distance);
 
             res.json(sortedCategories);
         } else {
@@ -178,10 +189,32 @@ app.get('/api/categories', (req, res) => {
     });
 });
 
-// Vote for a subject
+app.get('/api/categories/for-you', (req, res) => {
+    const deviceId = req.cookies.deviceId || req.headers['x-forwarded-for'] || 'unknown';
+
+    const query = `
+        SELECT c.category_id, c.name AS category_name,
+               COALESCE(up.weight, 0) AS weight
+        FROM Categories c
+        LEFT JOIN UserPreferences up
+        ON c.category_id = up.category_id AND up.device_id = ?
+        ORDER BY weight DESC, c.name ASC;
+    `;
+
+    db.query(query, [deviceId], (err, results) => {
+        if (err) {
+            console.error('Error fetching personalized categories:', err);
+            return res.status(500).json({ error: 'Failed to fetch personalized categories' });
+        }
+
+        res.json(results);
+    });
+});
+
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const deviceId = req.cookies.deviceId || req.headers['x-forwarded-for'] || 'unknown';
 
     const checkQuery = `
         SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
@@ -221,6 +254,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                     return res.status(500).json({ error: 'Failed to update votes' });
                 }
 
+                // Fetch the category ID associated with the subject
                 const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
                 db.query(query, [subjectId], (err, results) => {
                     if (err) {
@@ -228,7 +262,22 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                     }
 
                     const categoryId = results[0]?.category_id;
+
+                    // Update preferences in UserPreferences table
                     if (categoryId) {
+                        const updatePreferenceQuery = `
+                            INSERT INTO UserPreferences (device_id, category_id, weight)
+                            VALUES (?, ?, 1)
+                            ON DUPLICATE KEY UPDATE weight = weight + 1
+                        `;
+
+                        db.query(updatePreferenceQuery, [deviceId, categoryId], (err) => {
+                            if (err) {
+                                console.error('Error updating preferences:', err);
+                            }
+                        });
+
+                        // Update cookie-based preferences for backward compatibility
                         const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
                         preferences[categoryId] = (preferences[categoryId] || 0) + 1;
 
@@ -241,6 +290,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
         });
     });
 });
+
 
 // Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
