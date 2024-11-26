@@ -158,17 +158,7 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        if (type === "near") {
-            const userLat = parseFloat(latitude);
-            const userLon = parseFloat(longitude);
-
-            const sortedCategories = categories.map(category => ({
-                ...category,
-                distance: haversine(userLat, userLon, category.latitude, category.longitude)
-            })).sort((a, b) => a.distance - b.distance);
-
-            res.json(sortedCategories);
-        } else if (type === "for-you") {
+        if (type === "for-you") {
             const relatedCategoriesQuery = `
                 SELECT DISTINCT s1.category_id AS category_id_1, s2.category_id AS category_id_2
                 FROM Subjects s1
@@ -213,7 +203,12 @@ app.get('/api/categories', (req, res) => {
                         ...similarCategoryIds
                     ]);
 
-                    const forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
+                    let forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
+
+                    // If no "For You" categories found, randomize the categories
+                    if (forYouCategories.length === 0) {
+                        forYouCategories = categories.sort(() => 0.5 - Math.random());
+                    }
 
                     // Sort categories: Voted first, then related, then collaborative
                     const sortedCategories = forYouCategories.sort((a, b) => {
@@ -222,87 +217,14 @@ app.get('/api/categories', (req, res) => {
                         return bWeight - aWeight; // Higher preference weight first
                     });
 
-                    return res.json(sortedCategories); // Fixed: Ensure this response is properly handled
+                    return res.json(sortedCategories); // Return the sorted or randomized categories
                 });
             });
         } else {
-            res.json(categories); // Corrected: Properly aligned `else` block
+            res.json(categories);
         }
     });
 });
-
-// Vote for a subject
-app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
-    const subjectId = parseInt(req.params.id, 10);
-    const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
-
-    const checkQuery = `
-        SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
-    `;
-
-    db.query(checkQuery, [userIp, subjectId], (err, results) => {
-        if (err) {
-            console.error('Error checking IP votes:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        const currentVotes = results[0]?.votes_count || 0;
-
-        if (currentVotes >= 200) {
-            return res.status(403).json({ error: 'Wow you love it! Vote limit reached' });
-        }
-
-        const incrementQuery = `
-            INSERT INTO IpVotes (ip_address, subject_id, votes_count)
-            VALUES (?, ?, 1)
-            ON DUPLICATE KEY UPDATE votes_count = votes_count + 1
-        `;
-
-        db.query(incrementQuery, [userIp, subjectId], (err) => {
-            if (err) {
-                console.error('Error incrementing IP votes:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            const updateVotesQuery = `
-                UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?
-            `;
-
-            db.query(updateVotesQuery, [subjectId], (err) => {
-                if (err) {
-                    console.error('Error updating votes:', err);
-                    return res.status(500).json({ error: 'Failed to update votes' });
-                }
-
-                const categoryQuery = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
-                db.query(categoryQuery, [subjectId], (err, results) => {
-                    if (err) {
-                        console.error('Error fetching category ID:', err);
-                    }
-
-                    const categoryId = results[0]?.category_id;
-                    if (categoryId) {
-                        // Update user preferences
-                        const preferenceQuery = `
-                            INSERT INTO UserPreferences (device_id, category_id, weight)
-                            VALUES (?, ?, 1)
-                            ON DUPLICATE KEY UPDATE weight = weight + 1
-                        `;
-                        db.query(preferenceQuery, [deviceId, categoryId], (err) => {
-                            if (err) {
-                                console.error('Error updating user preferences:', err);
-                            }
-                        });
-                    }
-
-                    res.json({ success: true });
-                });
-            });
-        });
-    });
-});
-
 
 // Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
