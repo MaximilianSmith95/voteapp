@@ -395,21 +395,6 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
-const query = `
-    SELECT c.*, IFNULL(up.weight, 0) AS weight
-    FROM Categories c
-    LEFT JOIN UserPreferences up
-    ON c.category_id = up.category_id AND up.device_id = ?
-    ORDER BY weight DESC;
-`;
-db.query(query, [deviceId], (err, results) => {
-    if (err) {
-        console.error('Error fetching personalized categories:', err);
-        return res.status(500).json({ error: 'Database error' });
-    }
-    res.json(results);
-});
-
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
