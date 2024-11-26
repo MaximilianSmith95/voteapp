@@ -116,9 +116,14 @@ function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
 }
 
-function fetchForYouCategories(limit) {
-    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
+function fetchForYouCategories(limit = 15) {
+    const deviceId = getOrSetDeviceId();
+    fetch(`/api/categories/for-you?deviceId=${deviceId}&limit=${limit}`)
+        .then(response => response.json())
+        .then(data => renderLimitedCategories(data, limit))
+        .catch(error => console.error('Error fetching "For You" categories:', error));
 }
+
 
 function fetchNearMeCategories(limit) {
     if ("geolocation" in navigator) {
@@ -220,6 +225,16 @@ function upvote(subjectId) {
 
                     subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
                 }
+
+                // Trigger "For You" Recommendations Update (optional visual indication)
+                if (document.getElementById("forYouButton")) {
+                    const forYouButton = document.getElementById("forYouButton");
+                    forYouButton.classList.add('update-triggered'); // Add a visual indicator
+                    setTimeout(() => forYouButton.classList.remove('update-triggered'), 1000);
+                }
+            } else if (data.error) {
+                // Handle backend errors like "Vote limit reached"
+                alert(data.error);
             }
         })
         .catch(error => console.error('Error upvoting:', error));
@@ -608,6 +623,17 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
+function getOrSetDeviceId() {
+    let deviceId = document.cookie.split('; ').find(row => row.startsWith('deviceId='))?.split('=')[1];
+
+    if (!deviceId) {
+        deviceId = crypto.randomUUID(); // Generate a new UUID
+        document.cookie = `deviceId=${deviceId}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+    }
+
+    return deviceId;
+}
+
 // function fetchComments(subjectId) {
 //     fetch(`/api/subjects/${subjectId}/comments`)
 //         .then(response => response.json())
