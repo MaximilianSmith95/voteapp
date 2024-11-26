@@ -3,17 +3,16 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
-const cookieParser = require("cookie-parser");
-const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
+const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 const AWS = require('aws-sdk');
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
+const upload = multer({ storage: multer.memoryStorage() });
 
-// AWS S3 Configuration
 const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    region: 'eu-north-1' // Correct region configuration
+    region: 'eu-north-1'
 });
 
 const app = express();
@@ -42,7 +41,6 @@ db.connect(err => {
     console.log('Connected to MySQL Database');
 });
 
-// Haversine formula for distance calculation
 const haversine = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -55,14 +53,12 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     return R * c;
 };
 
-// Define a rate limiter for the voting endpoint
 const voteLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute window
-    max: 100, // Limit each IP to 100 requests per minute
-    message: { error: 'Too many requests. Please try again later.' } // Custom message
+    windowMs: 60 * 1000,
+    max: 100,
+    message: { error: 'Too many requests. Please try again later.' }
 });
 
-// Search API
 app.get('/api/search', (req, res) => {
     const { query } = req.query;
 
@@ -115,21 +111,20 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-
-// Fetch categories
 app.get('/api/categories', (req, res) => {
-    const { latitude, longitude, type } = req.query;
+    const { latitude, longitude, type, limit = 15, offset = 0 } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
+    const deviceId = req.cookies.device_id;
 
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
-        LEFT JOIN Subjects s ON c.category_id = s.category_id;
+        LEFT JOIN Subjects s ON c.category_id = s.category_id
+        LIMIT ? OFFSET ?;
     `;
 
-    db.query(baseQuery, (err, results) => {
+    db.query(baseQuery, [parseInt(limit), parseInt(offset)], (err, results) => {
         if (err) {
             console.error('Error fetching categories:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -196,28 +191,25 @@ app.get('/api/categories', (req, res) => {
 
                     const similarCategoryIds = similarResults.map(row => row.category_id);
 
-                    // Combine all categories: preferences, related, and similar users
                     const forYouCategoryIds = new Set([
-                        ...Object.keys(preferences).map(Number), // Voted categories
+                        ...Object.keys(preferences).map(Number),
                         ...relatedCategoryIds,
                         ...similarCategoryIds
                     ]);
 
                     let forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
 
-                    // If no "For You" categories found, randomize the categories
                     if (forYouCategories.length === 0) {
                         forYouCategories = categories.sort(() => 0.5 - Math.random());
                     }
 
-                    // Sort categories: Voted first, then related, then collaborative
                     const sortedCategories = forYouCategories.sort((a, b) => {
                         const aWeight = preferences[a.category_id] || 0;
                         const bWeight = preferences[b.category_id] || 0;
-                        return bWeight - aWeight; // Higher preference weight first
+                        return bWeight - aWeight;
                     });
 
-                    return res.json(sortedCategories); // Return the sorted or randomized categories
+                    return res.json(sortedCategories);
                 });
             });
         } else {
@@ -226,110 +218,6 @@ app.get('/api/categories', (req, res) => {
     });
 });
 
-// Add a comment
-app.post('/api/subjects/:id/comment', (req, res) => {
-    const { id: subjectId } = req.params;
-    const { username, comment_text, parent_comment_id = null } = req.body;
-
-    const query = `INSERT INTO comments (subject_id, username, comment_text, parent_comment_id) VALUES (?, ?, ?, ?)`;
-    db.query(query, [subjectId, username, comment_text, parent_comment_id], (err) => {
-        if (err) {
-            console.error('Error inserting comment:', err);
-            res.json({ success: false });
-        } else {
-            res.json({ success: true });
-        }
-    });
-});
-
-// Combined comments and voice reviews fetch
-app.get('/api/subjects/:id/comments', (req, res) => {
-    const subjectId = req.params.id;
-    const query = `
-        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
-        FROM comments
-        WHERE subject_id = ?
-        ORDER BY created_at ASC;
-    `;
-
-    db.query(query, [subjectId], (err, results) => {
-        if (err) {
-            console.error('Error fetching comments:', err);
-            res.status(500).json({ error: 'Failed to fetch comments' });
-        } else {
-            const comments = results.filter(comment => !comment.is_voice_review);
-            const voiceReviews = results.filter(comment => comment.is_voice_review);
-
-            res.json({ comments, voiceReviews });
-        }
-    });
-});
-
-// Upload voice reviews
-app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
-    const { id: subjectId } = req.params;
-    const username = req.body.username || 'Anonymous';
-    const audioFile = req.file;
-
-    // Check if audio file is present
-    if (!audioFile) {
-        console.error('No audio file received in the request.');
-        return res.status(400).json({ error: 'Audio file is required' });
-    }
-
-    // Log file and body details for debugging
-    console.log('File received:', {
-        fieldname: audioFile.fieldname,
-        originalname: audioFile.originalname,
-        mimetype: audioFile.mimetype,
-        size: audioFile.size
-    });
-    console.log('Body received:', req.body);
-
-    // S3 upload parameters
-    const s3Params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
-        Body: audioFile.buffer,
-        ContentType: audioFile.mimetype,
-        ACL: 'public-read'
-    };
-
-    try {
-        // Attempt to upload the file to S3
-        const s3Response = await s3.upload(s3Params).promise();
-        console.log('S3 upload successful:', s3Response);
-
-        // Save review details to the database
-        const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
-        db.query(query, [subjectId, username, s3Response.Location], (err) => {
-            if (err) {
-                console.error('Database error while saving voice review:', err);
-                return res.status(500).json({ error: 'Failed to save review in database' });
-            }
-            res.json({ success: true, url: s3Response.Location });
-        });
-    } catch (err) {
-        // Handle any errors during the S3 upload
-        console.error('Error during S3 upload:', err.message);
-        return res.status(500).json({ error: 'Failed to upload to S3' });
-    }
-});
-
-// Fetch total votes
-app.get('/api/totalVotes', (req, res) => {
-    const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching total votes:', err);
-            res.status(500).json({ error: 'Database error' });
-        } else {
-            res.json({ totalVotes: results[0]?.totalVotes || 0 });
-        }
-    });
-});
-
-const PORT = process.env.PORT || 3500;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(process.env.PORT || 3500, () => {
+    console.log(`Server running on port ${process.env.PORT || 3500}`);
 });
