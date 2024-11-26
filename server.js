@@ -115,20 +115,21 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-// Fetch categories
+
 // Fetch categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
+    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
-    const query = `
+    const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
 
-    db.query(query, (err, results) => {
+    db.query(baseQuery, (err, results) => {
         if (err) {
             console.error('Error fetching categories:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -167,22 +168,69 @@ app.get('/api/categories', (req, res) => {
             })).sort((a, b) => a.distance - b.distance);
 
             res.json(sortedCategories);
+
         } else if (type === "for-you") {
-            const sortedCategories = categories.sort((a, b) => {
-                return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+            const relatedCategoriesQuery = `
+                SELECT DISTINCT s1.category_id AS category_id_1, s2.category_id AS category_id_2
+                FROM Subjects s1
+                INNER JOIN Subjects s2 ON s1.name = s2.name AND s1.category_id != s2.category_id
+                WHERE s1.category_id IN (
+                    SELECT category_id FROM UserPreferences WHERE device_id = ?
+                )
+            `;
+
+            const similarUsersQuery = `
+                SELECT DISTINCT up2.category_id
+                FROM UserPreferences up1
+                INNER JOIN UserPreferences up2
+                ON up1.category_id = up2.category_id AND up1.device_id != up2.device_id
+                WHERE up1.device_id = ?
+            `;
+
+            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
+                if (relatedErr) {
+                    console.error('Error fetching related categories:', relatedErr);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+
+                const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
+
+                db.query(similarUsersQuery, [deviceId], (similarErr, similarResults) => {
+                    if (similarErr) {
+                        console.error('Error fetching similar user categories:', similarErr);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
+
+                    const similarCategoryIds = similarResults.map(row => row.category_id);
+
+                    // Combine preferences, related, and similar categories
+                    const forYouCategoryIds = new Set([
+                        ...Object.keys(preferences).map(Number),
+                        ...relatedCategoryIds,
+                        ...similarCategoryIds
+                    ]);
+
+                    const forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
+
+                    // Sort by user preference weight if available
+                    const sortedCategories = forYouCategories.sort((a, b) => {
+                        return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+                    });
+
+                    res.json(sortedCategories);
+                });
             });
 
-            res.json(sortedCategories);
         } else {
             res.json(categories);
         }
     });
 });
-
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
     const checkQuery = `
         SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
@@ -222,18 +270,25 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                     return res.status(500).json({ error: 'Failed to update votes' });
                 }
 
-                const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
-                db.query(query, [subjectId], (err, results) => {
+                const categoryQuery = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
+                db.query(categoryQuery, [subjectId], (err, results) => {
                     if (err) {
                         console.error('Error fetching category ID:', err);
                     }
 
                     const categoryId = results[0]?.category_id;
                     if (categoryId) {
-                        const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-                        preferences[categoryId] = (preferences[categoryId] || 0) + 1;
-
-                        res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
+                        // Update user preferences
+                        const preferenceQuery = `
+                            INSERT INTO UserPreferences (device_id, category_id, weight)
+                            VALUES (?, ?, 1)
+                            ON DUPLICATE KEY UPDATE weight = weight + 1
+                        `;
+                        db.query(preferenceQuery, [deviceId, categoryId], (err) => {
+                            if (err) {
+                                console.error('Error updating user preferences:', err);
+                            }
+                        });
                     }
 
                     res.json({ success: true });
@@ -242,6 +297,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
         });
     });
 });
+
 
 
 // Add a comment
