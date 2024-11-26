@@ -116,68 +116,73 @@ function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
 }
 
+// Updated: Fetch "For You" Categories
 function fetchForYouCategories(limit) {
     fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
 }
 
-function fetchNearMeCategories(limit) {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userLatitude = position.coords.latitude;
-                const userLongitude = position.coords.longitude;
-                fetchAndRenderCategories(
-                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
-                    limit
+// Updated: Upvote and Track Preferences
+function upvote(subjectId, categoryId) {
+    fetch(`/api/subjects/${subjectId}/vote`, {
+        method: 'POST',
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const voteCountElement = document.querySelector(
+                    `[data-subject-id="${subjectId}"] .vote-count`
                 );
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
+                if (voteCountElement) {
+                    const newVoteCount = parseInt(voteCountElement.textContent) + 1;
+                    voteCountElement.textContent = newVoteCount;
+                }
+
+                // Track user preference for the category
+                trackUserPreference(categoryId);
             }
-        );
-    } else {
-        console.log("Geolocation is not available in this browser.");
-    }
+        })
+        .catch(error => console.error('Error upvoting:', error));
 }
 
-function fetchLatestCategories(limit) {
-    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
-        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
-    });
+// New: Track User Preferences with Cookies
+function trackUserPreference(categoryId) {
+    let preferences = JSON.parse(getCookie('preferences') || '{}');
+    preferences[categoryId] = (preferences[categoryId] || 0) + 1;
+    setCookie('preferences', JSON.stringify(preferences), 365); // Persist for 1 year
 }
 
-// Function to render categories in the DOM
-function renderCategories(categories, highlightSearchTerm = "") {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear existing content
+// Updated: Render Categories with "Recommended" Label
+function renderCategories(categories, highlightSearchTerm = '') {
+    const categoriesContainer = document.getElementById('categories');
+    categoriesContainer.innerHTML = ''; // Clear existing content
 
     categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.classList.add("category");
-        categoryDiv.setAttribute("data-category-id", category.category_id);
+        const categoryDiv = document.createElement('div');
+        categoryDiv.classList.add('category');
+        categoryDiv.setAttribute('data-category-id', category.category_id);
 
         // Render the category name
         let categoryName = category.name;
         if (highlightSearchTerm) {
-            const regex = new RegExp(`(${highlightSearchTerm})`, "gi");
+            const regex = new RegExp(`(${highlightSearchTerm})`, 'gi');
             categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
         }
-        categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
+        categoryDiv.innerHTML = `<h2>${categoryName} <span class="recommended">Recommended</span></h2>`;
 
         // Render subjects sorted by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
-        const subjectsDiv = document.createElement("div");
-        subjectsDiv.classList.add("subjects", "scrollable");
+        const subjectsDiv = document.createElement('div');
+        subjectsDiv.classList.add('subjects', 'scrollable');
 
         sortedSubjects.forEach(subject => {
-            const subjectDiv = document.createElement("div");
-            subjectDiv.classList.add("subject");
-            subjectDiv.setAttribute("data-subject-id", subject.subject_id);
+            const subjectDiv = document.createElement('div');
+            subjectDiv.classList.add('subject');
+            subjectDiv.setAttribute('data-subject-id', subject.subject_id);
             subjectDiv.innerHTML = `
                 <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
                 <span class="vote-container">
                     <span class="vote-count">${subject.votes}</span>
-                    <button class="vote-button" onclick="upvote(${subject.subject_id})">&#9650;</button>
+                    <button class="vote-button" onclick="upvote(${subject.subject_id}, ${category.category_id})">&#9650;</button>
                 </span>
                 <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
@@ -192,6 +197,29 @@ function renderCategories(categories, highlightSearchTerm = "") {
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
+}
+
+// Updated: Navigation Event Listener for "For You" Button
+document.getElementById('forYouButton').addEventListener('click', () => {
+    infiniteScrollEnabled = true; // Enable infinite scroll
+    activeFilterFunction = fetchForYouCategories;
+    currentCategoriesLimit = 15; // Reset limit
+    fetchForYouCategories(currentCategoriesLimit);
+});
+
+// Updated: Utility Functions for Cookies
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // Convert days to milliseconds
+    const expires = 'expires=' + date.toUTCString();
+    document.cookie = name + '=' + encodeURIComponent(value) + ';' + expires + ';path=/';
+}
+
+function getCookie(name) {
+    const value = '; ' + document.cookie;
+    const parts = value.split('; ' + name + '=');
+    if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+    return null;
 }
 
 // Voting functionality
