@@ -118,8 +118,19 @@ function fetchAllCategories(limit) {
 }
 
 function fetchForYouCategories(limit) {
-    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
+    fetchAndRenderCategories(`/api/categories?type=for-you`, limit, (data) => {
+        // Prioritize "For You" logic, ensuring randomized fallback categories are also displayed
+        if (data.length === 0) {
+            return shuffleArray(data);
+        }
+        return data;
+    });
 }
+
+// Infinite scrolling integration
+enableInfiniteScrolling();
+setupExploreMoreButton();
+
 
 function fetchLatestCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => {
