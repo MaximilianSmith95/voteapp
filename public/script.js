@@ -117,8 +117,11 @@ function fetchAllCategories(limit) {
 }
 
 function fetchForYouCategories(limit) {
-    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
+    const deviceId = getCookie('deviceId');
+    const url = `/api/categories?type=for-you&deviceId=${encodeURIComponent(deviceId)}`;
+    fetchAndRenderCategories(url, limit);
 }
+
 
 function fetchNearMeCategories(limit) {
     if ("geolocation" in navigator) {
@@ -484,6 +487,12 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
         });
 });
 document.addEventListener("DOMContentLoaded", () => {
+    if (!getCookie("deviceId")) {
+        const deviceId = crypto.randomUUID(); // Use crypto API for secure unique ID
+        setCookie("deviceId", deviceId, 365); // Expire in 1 year
+    }
+});
+
     const cookieConsent = document.getElementById("cookieConsent");
     const acceptCookiesButton = document.getElementById("acceptCookies");
 
