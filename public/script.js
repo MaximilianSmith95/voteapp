@@ -131,9 +131,13 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchLatestCategories(currentCategoriesLimit);
     });
 document.getElementById('trendingButton').addEventListener('click', () => {
+    // Hide other containers
     document.getElementById('categories').classList.add('hidden');
     document.getElementById('trending-container').classList.remove('hidden');
-    fetchTrendingCategories(trendingType);
+
+    // Fetch trending categories
+    trendingOffset = 0; // Reset offset for infinite scroll
+    fetchTrendingCategories('most-voted', trendingOffset, trendingLimit);
 });
 
 
