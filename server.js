@@ -223,13 +223,13 @@ if (type === "for-you") {
                 return bWeight - aWeight; // Higher preference weight first
             });
 
-            res.json(sortedCategories);
+            return res.json(sortedCategories); // Fixed: Ensure this response is properly handled
         });
     });
+} else {
+    res.json(categories); // Corrected: Properly aligned `else` block
 }
- else {
-            res.json(categories);
-        }
+
     });
 });
 // Vote for a subject
