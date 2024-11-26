@@ -196,28 +196,18 @@ app.get('/api/categories/for-you', (req, res) => {
         SELECT c.category_id, c.name AS category_name, COALESCE(up.weight, 0) AS weight
         FROM Categories c
         LEFT JOIN UserPreferences up ON c.category_id = up.category_id AND up.device_id = ?
-        WHERE c.category_id IN (
-            SELECT related.category_id
-            FROM Categories related
-            INNER JOIN CategoryTags ct1 ON related.category_id = ct1.category_id
-            INNER JOIN CategoryTags ct2 ON ct1.tag = ct2.tag
-            WHERE ct2.category_id IN (
-                SELECT category_id
-                FROM UserPreferences
-                WHERE device_id = ?
-            )
-        )
         ORDER BY weight DESC, c.name ASC;
     `;
 
-    db.query(query, [deviceId, deviceId], (err, results) => {
+    db.query(query, [deviceId], (err, results) => {
         if (err) {
-            console.error('Error fetching personalized categories:', err);
+            console.error('Error fetching personalized categories:', err); // Log exact error
             return res.status(500).json({ error: 'Failed to fetch personalized categories' });
         }
         res.json(results);
     });
 });
+
 
 
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
