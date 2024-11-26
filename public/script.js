@@ -2,57 +2,6 @@ let allCategoriesData = []; // Global variable to store initial categories data
 let currentCategoriesLimit = 15; // Start with 15 categories
 let activeFilterFunction = null; // Track the currently active filter function
 let infiniteScrollEnabled = true; // Control infinite scroll behavior
-// Global variables for trending
-let trendingOffset = 0;
-const trendingLimit = 10;
-const trendingType = 'most-voted'; // Default trending type
-
-// Fetch trending categories
-async function fetchTrendingCategories(type = 'most-voted', offset = 0, limit = 10) {
-    try {
-        const response = await fetch(`/api/trending?type=${type}&offset=${offset}&limit=${limit}`);
-        if (!response.ok) throw new Error('Failed to fetch trending categories');
-        
-        const categories = await response.json();
-        displayTrendingCategories(categories, offset === 0); // Clear on initial fetch
-    } catch (error) {
-        console.error('Error fetching trending categories:', error);
-    }
-}
-
-// Display trending categories
-function displayTrendingCategories(categories, clear = false) {
-    const trendingContainer = document.getElementById('trending-container');
-
-    if (clear) {
-        trendingContainer.innerHTML = ''; // Clear existing content
-    }
-
-    categories.forEach(category => {
-        const categoryElement = document.createElement('div');
-        categoryElement.classList.add('category-card');
-        categoryElement.innerHTML = `
-            <h3>${category.name}</h3>
-            <p>Votes: ${category.votes}</p>
-            <p>Comments: ${category.comments}</p>
-        `;
-        if (category.latitude && category.longitude) {
-            categoryElement.innerHTML += `<p>Location: ${category.latitude.toFixed(2)}, ${category.longitude.toFixed(2)}</p>`;
-        }
-        trendingContainer.appendChild(categoryElement);
-    });
-}
-
-// Infinite scroll for trending categories
-window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        trendingOffset += trendingLimit;
-        fetchTrendingCategories(trendingType, trendingOffset, trendingLimit);
-    }
-});
-
-// Initial fetch on page load
-fetchTrendingCategories(trendingType);
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
@@ -110,59 +59,26 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
-// Utility function to hide all sections
-function hideAllSections() {
-    document.getElementById('categories').classList.add('hidden');
-    document.getElementById('trending-container').classList.add('hidden');
-}
+    document.getElementById("forYouButton").addEventListener("click", () => {
+        infiniteScrollEnabled = true; // Enable infinite scroll
+        activeFilterFunction = fetchForYouCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchForYouCategories(currentCategoriesLimit);
+    });
 
-// "For You" button click handler
-document.getElementById('forYouButton').addEventListener('click', () => {
-    hideAllSections(); // Hide other sections
-    document.getElementById('categories').classList.remove('hidden'); // Show categories
+    document.getElementById("allButton").addEventListener("click", () => {
+        infiniteScrollEnabled = true; // Enable infinite scroll
+        activeFilterFunction = fetchAllCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchAllCategories(currentCategoriesLimit);
+    });
 
-    // Reset limit and enable infinite scroll for "For You"
-    infiniteScrollEnabled = true;
-    activeFilterFunction = fetchForYouCategories;
-    currentCategoriesLimit = 15; // Reset limit
-    fetchForYouCategories(currentCategoriesLimit);
-});
-
-// "All" button click handler
-document.getElementById('allButton').addEventListener('click', () => {
-    hideAllSections(); // Hide other sections
-    document.getElementById('categories').classList.remove('hidden'); // Show categories
-
-    // Reset limit and enable infinite scroll for "All"
-    infiniteScrollEnabled = true;
-    activeFilterFunction = fetchAllCategories;
-    currentCategoriesLimit = 15; // Reset limit
-    fetchAllCategories(currentCategoriesLimit);
-});
-
-// "Trending" button click handler
-document.getElementById('trendingButton').addEventListener('click', () => {
-    hideAllSections(); // Hide other sections
-    document.getElementById('trending-container').classList.remove('hidden'); // Show trending container
-
-    // Fetch trending categories
-    trendingOffset = 0; // Reset offset for infinite scroll
-    fetchTrendingCategories('most-voted', trendingOffset, trendingLimit);
-});
-
-// "Latest" button click handler
-document.getElementById('latestButton').addEventListener('click', () => {
-    hideAllSections(); // Hide other sections
-    document.getElementById('categories').classList.remove('hidden'); // Show categories
-
-    // Reset limit and enable infinite scroll for "Latest"
-    infiniteScrollEnabled = true;
-    activeFilterFunction = fetchLatestCategories;
-    currentCategoriesLimit = 15; // Reset limit
-    fetchLatestCategories(currentCategoriesLimit);
-});
-
-
+    document.getElementById("latestButton").addEventListener("click", () => {
+        infiniteScrollEnabled = true; // Enable infinite scroll
+        activeFilterFunction = fetchLatestCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchLatestCategories(currentCategoriesLimit);
+    });
 
     // Default to "All Categories"
     activeFilterFunction = fetchAllCategories;
