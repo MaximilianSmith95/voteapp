@@ -130,10 +130,12 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchLatestCategories(currentCategoriesLimit);
     });
-    document.getElementById('trendingButton').addEventListener('click', () => {
-    trendingOffset = 0; // Reset offset
-    fetchTrendingCategories(trendingType, trendingOffset, trendingLimit); // Fetch trending categories
+document.getElementById('trendingButton').addEventListener('click', () => {
+    document.getElementById('categories').classList.add('hidden');
+    document.getElementById('trending-container').classList.remove('hidden');
+    fetchTrendingCategories(trendingType);
 });
+
 
 
     // Default to "All Categories"
