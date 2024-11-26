@@ -156,6 +156,20 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
+        if (type === "for-you") {
+    const deviceId = req.cookies.deviceId || null;
+    if (!deviceId) {
+        return res.json(categories); // Return unranked categories if no device ID
+    }
+
+    const sortedCategories = categories.sort((a, b) => {
+        return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+    });
+
+    res.json(sortedCategories);
+}
+
+
         if (type === "near") {
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
