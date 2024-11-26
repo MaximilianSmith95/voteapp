@@ -206,7 +206,7 @@ function renderCategories(categories, highlightSearchTerm = '') {
             const regex = new RegExp(`(${highlightSearchTerm})`, 'gi');
             categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
         }
-        categoryDiv.innerHTML = `<h2>${categoryName} <span class="recommended">Recommended</span></h2>`;
+        categoryDiv.innerHTML = `<h2>${categoryName} </h2>`;
 
         // Render subjects sorted by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
