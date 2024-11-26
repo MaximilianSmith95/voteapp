@@ -5,6 +5,10 @@ let infiniteScrollEnabled = true; // Control infinite scroll behavior
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
+    if (!Array.isArray(categories)) {
+        console.error('Categories data is not an array:', categories); // Debug log
+        return;
+    }
     const limitedCategories = categories.slice(0, limit);
     renderCategories(limitedCategories); // Reuse existing render logic
 }
@@ -116,20 +120,25 @@ function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
 }
 
+
 function fetchForYouCategories(limit = 15) {
     const deviceId = getOrSetDeviceId();
     fetch(`/api/categories/for-you?deviceId=${deviceId}&limit=${limit}`)
         .then(response => response.json())
         .then(data => {
-            if (data.length === 0) {
-                // Fallback to trending or default categories
-                fetchAllCategories(limit);
-            } else {
+            if (data && Array.isArray(data) && data.length > 0) {
                 renderLimitedCategories(data, limit);
+            } else {
+                console.warn('No personalized categories available. Falling back to default.');
+                fetchAllCategories(limit); // Fallback to default categories
             }
         })
-        .catch(error => console.error('Error fetching "For You" categories:', error));
+        .catch(error => {
+            console.error('Error fetching "For You" categories:', error);
+            fetchAllCategories(limit); // Fallback to default categories
+        });
 }
+
 
 
 function fetchNearMeCategories(limit) {
