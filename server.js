@@ -116,6 +116,7 @@ app.get('/api/search', (req, res) => {
 });
 
 // Fetch categories
+// Fetch categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
@@ -241,6 +242,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
         });
     });
 });
+
 
 // Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
