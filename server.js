@@ -185,8 +185,7 @@ app.get('/api/categories', (req, res) => {
         } else {
             res.json(categories);
         }
-    });
-});
+    })
 
 
 
