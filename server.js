@@ -168,70 +168,69 @@ app.get('/api/categories', (req, res) => {
             })).sort((a, b) => a.distance - b.distance);
 
             res.json(sortedCategories);
+        } else if (type === "for-you") {
+            const relatedCategoriesQuery = `
+                SELECT DISTINCT s1.category_id AS category_id_1, s2.category_id AS category_id_2
+                FROM Subjects s1
+                INNER JOIN Subjects s2 
+                ON (
+                    s1.name LIKE CONCAT('%', s2.name, '%') OR
+                    s2.name LIKE CONCAT('%', s1.name, '%')
+                ) AND s1.category_id != s2.category_id
+                WHERE s1.category_id IN (
+                    SELECT category_id FROM UserPreferences WHERE device_id = ?
+                )
+            `;
 
-if (type === "for-you") {
-    const relatedCategoriesQuery = `
-        SELECT DISTINCT s1.category_id AS category_id_1, s2.category_id AS category_id_2
-        FROM Subjects s1
-        INNER JOIN Subjects s2 
-        ON (
-            s1.name LIKE CONCAT('%', s2.name, '%') OR
-            s2.name LIKE CONCAT('%', s1.name, '%')
-        ) AND s1.category_id != s2.category_id
-        WHERE s1.category_id IN (
-            SELECT category_id FROM UserPreferences WHERE device_id = ?
-        )
-    `;
+            const similarUsersQuery = `
+                SELECT DISTINCT up2.category_id
+                FROM UserPreferences up1
+                INNER JOIN UserPreferences up2
+                ON up1.category_id = up2.category_id AND up1.device_id != up2.device_id
+                WHERE up1.device_id = ?
+            `;
 
-    const similarUsersQuery = `
-        SELECT DISTINCT up2.category_id
-        FROM UserPreferences up1
-        INNER JOIN UserPreferences up2
-        ON up1.category_id = up2.category_id AND up1.device_id != up2.device_id
-        WHERE up1.device_id = ?
-    `;
+            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
+                if (relatedErr) {
+                    console.error('Error fetching related categories:', relatedErr);
+                    return res.status(500).json({ error: 'Database error' });
+                }
 
-    db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
-        if (relatedErr) {
-            console.error('Error fetching related categories:', relatedErr);
-            return res.status(500).json({ error: 'Database error' });
-        }
+                const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
 
-        const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
+                db.query(similarUsersQuery, [deviceId], (similarErr, similarResults) => {
+                    if (similarErr) {
+                        console.error('Error fetching similar user categories:', similarErr);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
 
-        db.query(similarUsersQuery, [deviceId], (similarErr, similarResults) => {
-            if (similarErr) {
-                console.error('Error fetching similar user categories:', similarErr);
-                return res.status(500).json({ error: 'Database error' });
-            }
+                    const similarCategoryIds = similarResults.map(row => row.category_id);
 
-            const similarCategoryIds = similarResults.map(row => row.category_id);
+                    // Combine all categories: preferences, related, and similar users
+                    const forYouCategoryIds = new Set([
+                        ...Object.keys(preferences).map(Number), // Voted categories
+                        ...relatedCategoryIds,
+                        ...similarCategoryIds
+                    ]);
 
-            // Combine all categories: preferences, related, and similar users
-            const forYouCategoryIds = new Set([
-                ...Object.keys(preferences).map(Number), // Voted categories
-                ...relatedCategoryIds,
-                ...similarCategoryIds
-            ]);
+                    const forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
 
-            const forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
+                    // Sort categories: Voted first, then related, then collaborative
+                    const sortedCategories = forYouCategories.sort((a, b) => {
+                        const aWeight = preferences[a.category_id] || 0;
+                        const bWeight = preferences[b.category_id] || 0;
+                        return bWeight - aWeight; // Higher preference weight first
+                    });
 
-            // Sort categories: Voted first, then related, then collaborative
-            const sortedCategories = forYouCategories.sort((a, b) => {
-                const aWeight = preferences[a.category_id] || 0;
-                const bWeight = preferences[b.category_id] || 0;
-                return bWeight - aWeight; // Higher preference weight first
+                    return res.json(sortedCategories); // Fixed: Ensure this response is properly handled
+                });
             });
-
-            return res.json(sortedCategories); // Fixed: Ensure this response is properly handled
-        });
-    });
-} else {
-    res.json(categories); // Corrected: Properly aligned `else` block
-}
-
+        } else {
+            res.json(categories); // Corrected: Properly aligned `else` block
+        }
     });
 });
+
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
@@ -303,7 +302,6 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
         });
     });
 });
-
 
 
 // Add a comment
