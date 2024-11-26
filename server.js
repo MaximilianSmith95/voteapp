@@ -209,7 +209,6 @@ app.get('/api/categories', (req, res) => {
             res.json(categories);
         }
     });
-});
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
