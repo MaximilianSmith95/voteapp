@@ -110,34 +110,56 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
-    document.getElementById("forYouButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchForYouCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchForYouCategories(currentCategoriesLimit);
-    });
-
-    document.getElementById("allButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchAllCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchAllCategories(currentCategoriesLimit);
-    });
-
-    document.getElementById("latestButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchLatestCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchLatestCategories(currentCategoriesLimit);
-    });
-document.getElementById('trendingButton').addEventListener('click', () => {
-    // Hide other containers
+// Utility function to hide all sections
+function hideAllSections() {
     document.getElementById('categories').classList.add('hidden');
-    document.getElementById('trending-container').classList.remove('hidden');
+    document.getElementById('trending-container').classList.add('hidden');
+}
+
+// "For You" button click handler
+document.getElementById('forYouButton').addEventListener('click', () => {
+    hideAllSections(); // Hide other sections
+    document.getElementById('categories').classList.remove('hidden'); // Show categories
+
+    // Reset limit and enable infinite scroll for "For You"
+    infiniteScrollEnabled = true;
+    activeFilterFunction = fetchForYouCategories;
+    currentCategoriesLimit = 15; // Reset limit
+    fetchForYouCategories(currentCategoriesLimit);
+});
+
+// "All" button click handler
+document.getElementById('allButton').addEventListener('click', () => {
+    hideAllSections(); // Hide other sections
+    document.getElementById('categories').classList.remove('hidden'); // Show categories
+
+    // Reset limit and enable infinite scroll for "All"
+    infiniteScrollEnabled = true;
+    activeFilterFunction = fetchAllCategories;
+    currentCategoriesLimit = 15; // Reset limit
+    fetchAllCategories(currentCategoriesLimit);
+});
+
+// "Trending" button click handler
+document.getElementById('trendingButton').addEventListener('click', () => {
+    hideAllSections(); // Hide other sections
+    document.getElementById('trending-container').classList.remove('hidden'); // Show trending container
 
     // Fetch trending categories
     trendingOffset = 0; // Reset offset for infinite scroll
     fetchTrendingCategories('most-voted', trendingOffset, trendingLimit);
+});
+
+// "Latest" button click handler
+document.getElementById('latestButton').addEventListener('click', () => {
+    hideAllSections(); // Hide other sections
+    document.getElementById('categories').classList.remove('hidden'); // Show categories
+
+    // Reset limit and enable infinite scroll for "Latest"
+    infiniteScrollEnabled = true;
+    activeFilterFunction = fetchLatestCategories;
+    currentCategoriesLimit = 15; // Reset limit
+    fetchLatestCategories(currentCategoriesLimit);
 });
 
 
