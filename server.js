@@ -115,9 +115,10 @@ app.get('/api/search', (req, res) => {
     });
 });
 
+// Fetch categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
-    const deviceId = req.cookies.deviceId || null;
+    const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
 
     const query = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
@@ -155,40 +156,6 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        if (type === "for-you" && deviceId) {
-            const personalizedQuery = `
-                SELECT c.category_id, c.name AS category_name, 
-                       IFNULL(up.weight, 0) AS weight
-                FROM Categories c
-                LEFT JOIN UserPreferences up
-                ON c.category_id = up.category_id AND up.device_id = ?
-                ORDER BY weight DESC;
-            `;
-
-            db.query(personalizedQuery, [deviceId], (err, sortedResults) => {
-                if (err) {
-                    console.error('Error fetching personalized categories:', err);
-                    return res.status(500).json({ error: 'Database error' });
-                }
-                res.json(sortedResults);
-            });
-        } else if (type === "near" && latitude && longitude) {
-            const userLat = parseFloat(latitude);
-            const userLon = parseFloat(longitude);
-
-            const sortedCategories = categories.map(category => ({
-                ...category,
-                distance: haversine(userLat, userLon, category.latitude, category.longitude)
-            })).sort((a, b) => a.distance - b.distance);
-
-            res.json(sortedCategories);
-        } else {
-            res.json(categories);
-        }
-    })
-
-
-
         if (type === "near") {
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
@@ -209,21 +176,16 @@ app.get('/api/categories', (req, res) => {
             res.json(categories);
         }
     });
+});
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
-    const deviceId = req.cookies.deviceId || null;
-
-    if (!deviceId) {
-        return res.status(400).json({ error: 'Device ID is required for voting' });
-    }
+    const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     const checkQuery = `
         SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
     `;
-
-    const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     db.query(checkQuery, [userIp, subjectId], (err, results) => {
         if (err) {
@@ -259,32 +221,21 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                     return res.status(500).json({ error: 'Failed to update votes' });
                 }
 
-                const categoryIdQuery = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
-
-                db.query(categoryIdQuery, [subjectId], (err, results) => {
+                const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
+                db.query(query, [subjectId], (err, results) => {
                     if (err) {
                         console.error('Error fetching category ID:', err);
-                        return res.status(500).json({ error: 'Failed to fetch category ID' });
                     }
 
                     const categoryId = results[0]?.category_id;
                     if (categoryId) {
-                        const preferencesQuery = `
-                            INSERT INTO UserPreferences (device_id, category_id, weight)
-                            VALUES (?, ?, 1)
-                            ON DUPLICATE KEY UPDATE weight = weight + 1;
-                        `;
+                        const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
+                        preferences[categoryId] = (preferences[categoryId] || 0) + 1;
 
-                        db.query(preferencesQuery, [deviceId, categoryId], (err) => {
-                            if (err) {
-                                console.error('Error updating user preferences:', err);
-                                return res.status(500).json({ error: 'Failed to update preferences' });
-                            }
-                            res.json({ success: true });
-                        });
-                    } else {
-                        res.json({ success: true });
+                        res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
                     }
+
+                    res.json({ success: true });
                 });
             });
         });
