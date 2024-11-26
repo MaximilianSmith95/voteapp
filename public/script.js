@@ -112,14 +112,42 @@ window.filterContent = function () {
 };
 
 // Fetch functions for each filter
+// Fetch functions for each filter
 function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
 }
 
-// Updated: Fetch "For You" Categories
 function fetchForYouCategories(limit) {
     fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
 }
+
+function fetchLatestCategories(limit) {
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
+        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
+    });
+}
+
+function fetchNearMeCategories(limit) {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+                fetchAndRenderCategories(
+                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
+                    limit
+                );
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+            }
+        );
+    } else {
+        console.log("Geolocation is not available in this browser.");
+    }
+}
+
+
 
 // Updated: Upvote and Track Preferences
 function upvote(subjectId, categoryId) {
