@@ -368,6 +368,80 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+// Fetch trending categories
+app.get('/api/trending', (req, res) => {
+    const { latitude, longitude, type, offset = 0, limit = 10 } = req.query;
+
+    let trendingQuery = `
+        SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes,
+               COUNT(comments.comment_id) AS total_comments, c.latitude, c.longitude
+        FROM categories c
+        LEFT JOIN subjects s ON c.category_id = s.category_id
+        LEFT JOIN comments ON s.subject_id = comments.subject_id
+        GROUP BY c.category_id
+    `;
+
+    if (type === 'most-voted') {
+        // Most Voted Categories
+        trendingQuery += ` ORDER BY total_votes DESC `;
+    } else if (type === 'fastest-growing') {
+        // Fastest Growing Categories (recent vote growth)
+        trendingQuery = `
+            SELECT c.category_id, c.name AS category_name,
+                   (SUM(s.votes) - SUM(s.previous_votes)) AS vote_growth,
+                   c.latitude, c.longitude
+            FROM categories c
+            LEFT JOIN subjects s ON c.category_id = s.category_id
+            WHERE s.last_updated >= NOW() - INTERVAL 1 DAY
+            GROUP BY c.category_id
+            ORDER BY vote_growth DESC
+        `;
+    } else if (type === 'most-commented') {
+        // Most Commented Topics
+        trendingQuery += ` ORDER BY total_comments DESC `;
+    } else if (type === 'nearby') {
+        // Trending by Location
+        if (!latitude || !longitude) {
+            return res.status(400).json({ error: 'Latitude and longitude are required for nearby trends' });
+        }
+        trendingQuery = `
+            SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes,
+                   c.latitude, c.longitude
+            FROM categories c
+            LEFT JOIN subjects s ON c.category_id = s.category_id
+            WHERE c.latitude IS NOT NULL AND c.longitude IS NOT NULL
+            GROUP BY c.category_id
+            ORDER BY SQRT(POW(c.latitude - ?, 2) + POW(c.longitude - ?, 2)) ASC
+        `;
+    } else {
+        // Default: Show most voted
+        trendingQuery += ` ORDER BY total_votes DESC `;
+    }
+
+    // Pagination (infinite scroll)
+    trendingQuery += ` LIMIT ? OFFSET ?`;
+
+    const queryParams = type === 'nearby' ? [latitude, longitude, parseInt(limit), parseInt(offset)] : [parseInt(limit), parseInt(offset)];
+
+    db.query(trendingQuery, queryParams, (err, results) => {
+        if (err) {
+            console.error('Error fetching trending categories:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        const trendingCategories = results.map(row => ({
+            category_id: row.category_id,
+            name: row.category_name,
+            votes: row.total_votes || 0,
+            comments: row.total_comments || 0,
+            latitude: row.latitude,
+            longitude: row.longitude
+        }));
+
+        res.json(trendingCategories);
+    });
+});
+
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
