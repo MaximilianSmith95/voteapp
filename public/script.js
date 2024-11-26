@@ -169,8 +169,11 @@ function renderCategories(categories, highlightSearchTerm = "") {
         }
         categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
-        // Render subjects sorted by votes
-        const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
+        // Safely handle subjects and sort them if available
+        const sortedSubjects = Array.isArray(category.subjects)
+            ? category.subjects.sort((a, b) => b.votes - a.votes)
+            : []; // Fallback to an empty array if subjects are undefined
+
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
