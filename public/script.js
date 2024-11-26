@@ -551,7 +551,6 @@ function ensureDeviceId() {
         cookieConsent.classList.add("hidden"); // Hide the banner
         console.log("Cookie consent accepted and banner hidden.");
     });
-});
 
 // Utility function to set a cookie with an expiration date
 function setCookie(name, value, days) {
