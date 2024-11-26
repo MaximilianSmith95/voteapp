@@ -117,16 +117,8 @@ function fetchAllCategories(limit) {
 }
 
 function fetchForYouCategories(limit) {
-    let deviceId = getCookie('deviceId');
-    if (!deviceId) {
-        deviceId = crypto.randomUUID(); // Generate a new one if missing
-        setCookie('deviceId', deviceId, 365); // Save it for future use
-    }
-    const url = `/api/categories?type=for-you&deviceId=${encodeURIComponent(deviceId)}`;
-    fetchAndRenderCategories(url, limit);
+    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
 }
-
-
 
 function fetchNearMeCategories(limit) {
     if ("geolocation" in navigator) {
@@ -204,16 +196,8 @@ function renderCategories(categories, highlightSearchTerm = "") {
 
 // Voting functionality
 function upvote(subjectId) {
-    let deviceId = getCookie('deviceId');
-    if (!deviceId) {
-        deviceId = crypto.randomUUID();
-        setCookie('deviceId', deviceId, 365);
-    }
-
     fetch(`/api/subjects/${subjectId}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceId })
+        method: 'POST'
     })
         .then(response => response.json())
         .then(data => {
@@ -236,12 +220,10 @@ function upvote(subjectId) {
 
                     subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
                 }
-                trackUserBehavior("votes", subjectId); // Local tracking
             }
         })
         .catch(error => console.error('Error upvoting:', error));
 }
-
 
 // Add and fetch comments functionality remains as provided in the original script.
 
@@ -502,38 +484,6 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
         });
 });
 document.addEventListener("DOMContentLoaded", () => {
-    if (!getCookie("deviceId")) {
-        const deviceId = crypto.randomUUID(); // Use crypto API for secure unique ID
-        setCookie("deviceId", deviceId, 365); // Expire in 1 year
-    }
-    // Utility function to set a cookie with an expiration date
-function setCookie(name, value, days) {
-    const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // Convert days to milliseconds
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
-}
-
-// Utility function to get a cookie value by name
-function getCookie(name) {
-    const value = "; " + document.cookie;
-    const parts = value.split("; " + name + "=");
-    if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
-    return null;
-}
-
-// Utility function to ensure a device ID is set
-function ensureDeviceId() {
-    let deviceId = getCookie('deviceId');
-    if (!deviceId) {
-        deviceId = crypto.randomUUID(); // Generate a new UUID
-        setCookie('deviceId', deviceId, 365); // Save it in cookies for 1 year
-    }
-    return deviceId;
-}
-});
-
-
     const cookieConsent = document.getElementById("cookieConsent");
     const acceptCookiesButton = document.getElementById("acceptCookies");
 
@@ -551,6 +501,7 @@ function ensureDeviceId() {
         cookieConsent.classList.add("hidden"); // Hide the banner
         console.log("Cookie consent accepted and banner hidden.");
     });
+});
 
 // Utility function to set a cookie with an expiration date
 function setCookie(name, value, days) {
