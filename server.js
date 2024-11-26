@@ -250,7 +250,17 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                     }
 
                     res.json({ success: true });
-                });
+                const preferencesQuery = `
+    INSERT INTO UserPreferences (device_id, category_id, weight)
+    VALUES (?, ?, 1)
+    ON DUPLICATE KEY UPDATE weight = weight + 1;
+`;
+db.query(preferencesQuery, [deviceId, categoryId], (err) => {
+    if (err) {
+        console.error('Error updating user preferences:', err);
+    }
+});
+
             });
         });
     });
@@ -358,6 +368,21 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+const query = `
+    SELECT c.*, IFNULL(up.weight, 0) AS weight
+    FROM Categories c
+    LEFT JOIN UserPreferences up
+    ON c.category_id = up.category_id AND up.device_id = ?
+    ORDER BY weight DESC;
+`;
+db.query(query, [deviceId], (err, results) => {
+    if (err) {
+        console.error('Error fetching personalized categories:', err);
+        return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+});
+
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
