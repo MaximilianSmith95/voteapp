@@ -5,10 +5,6 @@ let infiniteScrollEnabled = true; // Control infinite scroll behavior
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
-    if (!Array.isArray(categories)) {
-        console.error('Categories data is not an array:', categories); // Debug log
-        return;
-    }
     const limitedCategories = categories.slice(0, limit);
     renderCategories(limitedCategories); // Reuse existing render logic
 }
@@ -120,26 +116,9 @@ function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
 }
 
-
-function fetchForYouCategories(limit = 15) {
-    const deviceId = getOrSetDeviceId();
-    fetch(`/api/categories/for-you?deviceId=${deviceId}&limit=${limit}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && Array.isArray(data) && data.length > 0) {
-                renderLimitedCategories(data, limit);
-            } else {
-                console.warn('No personalized categories available. Falling back to default.');
-                fetchAllCategories(limit); // Fallback to default categories
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching "For You" categories:', error);
-            fetchAllCategories(limit); // Fallback to default categories
-        });
+function fetchForYouCategories(limit) {
+    fetchAndRenderCategories(`/api/categories?type=for-you`, limit);
 }
-
-
 
 function fetchNearMeCategories(limit) {
     if ("geolocation" in navigator) {
@@ -185,11 +164,8 @@ function renderCategories(categories, highlightSearchTerm = "") {
         }
         categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
-        // Safely handle subjects and sort them if available
-        const sortedSubjects = Array.isArray(category.subjects)
-            ? category.subjects.sort((a, b) => b.votes - a.votes)
-            : []; // Fallback to an empty array if subjects are undefined
-
+        // Render subjects sorted by votes
+        const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const subjectsDiv = document.createElement("div");
         subjectsDiv.classList.add("subjects", "scrollable");
 
@@ -244,16 +220,6 @@ function upvote(subjectId) {
 
                     subjectsArray.forEach(subject => subjectsContainer.appendChild(subject));
                 }
-
-                // Trigger "For You" Recommendations Update (optional visual indication)
-                if (document.getElementById("forYouButton")) {
-                    const forYouButton = document.getElementById("forYouButton");
-                    forYouButton.classList.add('update-triggered'); // Add a visual indicator
-                    setTimeout(() => forYouButton.classList.remove('update-triggered'), 1000);
-                }
-            } else if (data.error) {
-                // Handle backend errors like "Vote limit reached"
-                alert(data.error);
             }
         })
         .catch(error => console.error('Error upvoting:', error));
@@ -642,30 +608,6 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
-function getOrSetDeviceId() {
-    let deviceId = document.cookie.split('; ').find(row => row.startsWith('deviceId='))?.split('=')[1];
-
-    if (!deviceId) {
-        deviceId = crypto.randomUUID(); // Generate a new UUID
-        document.cookie = `deviceId=${deviceId}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-    }
-
-    return deviceId;
-}
-document.querySelectorAll('.vote-button').forEach(button => {
-    button.addEventListener('click', event => {
-        const subjectId = event.target.closest('.subject').dataset.subjectId;
-        trackUserBehavior('votes', subjectId);
-    });
-});
-
-document.querySelectorAll('.category').forEach(categoryDiv => {
-    categoryDiv.addEventListener('click', () => {
-        const categoryId = categoryDiv.dataset.categoryId;
-        trackUserBehavior('clicks', categoryId);
-    });
-});
-
 // function fetchComments(subjectId) {
 //     fetch(`/api/subjects/${subjectId}/comments`)
 //         .then(response => response.json())
