@@ -120,7 +120,14 @@ function fetchForYouCategories(limit = 15) {
     const deviceId = getOrSetDeviceId();
     fetch(`/api/categories/for-you?deviceId=${deviceId}&limit=${limit}`)
         .then(response => response.json())
-        .then(data => renderLimitedCategories(data, limit))
+        .then(data => {
+            if (data.length === 0) {
+                // Fallback to trending or default categories
+                fetchAllCategories(limit);
+            } else {
+                renderLimitedCategories(data, limit);
+            }
+        })
         .catch(error => console.error('Error fetching "For You" categories:', error));
 }
 
@@ -636,6 +643,19 @@ function getOrSetDeviceId() {
 
     return deviceId;
 }
+document.querySelectorAll('.vote-button').forEach(button => {
+    button.addEventListener('click', event => {
+        const subjectId = event.target.closest('.subject').dataset.subjectId;
+        trackUserBehavior('votes', subjectId);
+    });
+});
+
+document.querySelectorAll('.category').forEach(categoryDiv => {
+    categoryDiv.addEventListener('click', () => {
+        const categoryId = categoryDiv.dataset.categoryId;
+        trackUserBehavior('clicks', categoryId);
+    });
+});
 
 // function fetchComments(subjectId) {
 //     fetch(`/api/subjects/${subjectId}/comments`)
