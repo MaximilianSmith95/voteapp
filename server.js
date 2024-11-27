@@ -119,21 +119,16 @@ app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
-    if (latitude && longitude && type === "near") {
-    const userLatitude = parseFloat(latitude);
-    const userLongitude = parseFloat(longitude);
 
-    const nearbyCategories = categories.map(category => {
-        if (category.latitude && category.longitude) {
-            const distance = haversine(userLatitude, userLongitude, category.latitude, category.longitude);
-            return { ...category, distance };
-        }
-        return { ...category, distance: Infinity }; // Set a high distance if coordinates are missing
-    }).sort((a, b) => a.distance - b.distance); // Sort by ascending distance
+    const baseQuery = `
+        SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
+               s.subject_id, s.name AS subject_name, s.votes, s.link
+        FROM Categories c
+        LEFT JOIN Subjects s ON c.category_id = s.category_id;
+    `;
 
-    return res.json(nearbyCategories.slice(0, 50)); // Return top 50 closest categories
-}
-
+app.get('/api/categories', (req, res) => {
+    const { latitude, longitude, type } = req.query;
 
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
@@ -170,6 +165,35 @@ app.get('/api/categories', (req, res) => {
             }
             return acc;
         }, []);
+
+        // Calculate distances if geolocation is provided
+        if (latitude && longitude) {
+            const userLat = parseFloat(latitude);
+            const userLon = parseFloat(longitude);
+
+            const haversine = (lat1, lon1, lat2, lon2) => {
+                const R = 6371; // Earth radius in km
+                const dLat = (lat2 - lat1) * (Math.PI / 180);
+                const dLon = (lon2 - lon1) * (Math.PI / 180);
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            };
+
+            categories.forEach(category => {
+                category.distance = haversine(userLat, userLon, category.latitude, category.longitude);
+            });
+
+            categories.sort((a, b) => a.distance - b.distance); // Sort by proximity
+        }
+
+        res.json(categories);
+    });
+});
+
 
         if (type === "for-you") {
             const relatedCategoriesQuery = `
