@@ -199,19 +199,14 @@ app.get('/api/categories', (req, res) => {
             res.json(categories);
         }
     });
-}); // End of app.get('/api/categories')
-
-// Vote for a subject
-app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
-    const subjectId = parseInt(req.params.id, 10);
-    const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    // Remaining logic for voting
 });
 
+
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
     const checkQuery = `
         SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
     `;
