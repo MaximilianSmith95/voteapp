@@ -127,16 +127,6 @@ app.get('/api/categories', (req, res) => {
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
 
-app.get('/api/categories', (req, res) => {
-    const { latitude, longitude, type } = req.query;
-
-    const baseQuery = `
-        SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
-               s.subject_id, s.name AS subject_name, s.votes, s.link
-        FROM Categories c
-        LEFT JOIN Subjects s ON c.category_id = s.category_id;
-    `;
-
     db.query(baseQuery, (err, results) => {
         if (err) {
             console.error('Error fetching categories:', err);
@@ -165,35 +155,6 @@ app.get('/api/categories', (req, res) => {
             }
             return acc;
         }, []);
-
-        // Calculate distances if geolocation is provided
-        if (latitude && longitude) {
-            const userLat = parseFloat(latitude);
-            const userLon = parseFloat(longitude);
-
-            const haversine = (lat1, lon1, lat2, lon2) => {
-                const R = 6371; // Earth radius in km
-                const dLat = (lat2 - lat1) * (Math.PI / 180);
-                const dLon = (lon2 - lon1) * (Math.PI / 180);
-                const a =
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                return R * c;
-            };
-
-            categories.forEach(category => {
-                category.distance = haversine(userLat, userLon, category.latitude, category.longitude);
-            });
-
-            categories.sort((a, b) => a.distance - b.distance); // Sort by proximity
-        }
-
-        res.json(categories);
-    });
-});
-
 
         if (type === "for-you") {
             const relatedCategoriesQuery = `
@@ -232,7 +193,6 @@ app.get('/api/categories', (req, res) => {
                     return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
                 });
 
-              
                 res.json(sortedCategories);
             });
         } else {
@@ -240,6 +200,13 @@ app.get('/api/categories', (req, res) => {
         }
     });
 }); // End of app.get('/api/categories')
+
+// Vote for a subject
+app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
+    const subjectId = parseInt(req.params.id, 10);
+    const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // Remaining logic for voting
+});
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
