@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("geolocationButton").addEventListener("click", () => {
         infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchNearMeCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 25; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
@@ -138,16 +138,19 @@ function fetchLatestCategories(limit) {
     });
 }
 
-function fetchNearMeCategories(limit) {
+function fetchNearMeCategories(limit = 25) {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const userLatitude = position.coords.latitude;
                 const userLongitude = position.coords.longitude;
-                fetchAndRenderCategories(
-                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
-                    limit
-                );
+
+                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near&limit=${limit}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderLimitedCategories(data, limit);
+                    })
+                    .catch(error => console.error('Error fetching nearby categories:', error));
             },
             (error) => {
                 console.error("Geolocation error:", error);
@@ -157,8 +160,6 @@ function fetchNearMeCategories(limit) {
         console.log("Geolocation is not available in this browser.");
     }
 }
-
-
 
 // Updated: Upvote and Track Preferences
 function upvote(subjectId, categoryId) {
