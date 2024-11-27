@@ -111,7 +111,7 @@ window.filterContent = function () {
         .catch(error => console.error('Error fetching search results:', error));
 };
 
-// Fetch functions for each filter
+
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
     fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
@@ -144,10 +144,12 @@ function fetchNearMeCategories(limit) {
             (position) => {
                 const userLatitude = position.coords.latitude;
                 const userLongitude = position.coords.longitude;
-                fetchAndRenderCategories(
-                    `/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&type=near`,
-                    limit
-                );
+ fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&limit=${limit}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderLimitedCategories(data, limit); // Render categories as received
+                    })
+                    .catch(error => console.error('Error fetching nearby categories:', error));
             },
             (error) => {
                 console.error("Geolocation error:", error);
@@ -157,7 +159,6 @@ function fetchNearMeCategories(limit) {
         console.log("Geolocation is not available in this browser.");
     }
 }
-
 
 
 // Updated: Upvote and Track Preferences
