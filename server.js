@@ -120,6 +120,7 @@ app.get('/api/categories', (req, res) => {
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
+    // Base query for all categories and their subjects
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
@@ -133,15 +134,16 @@ app.get('/api/categories', (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
+        // Reduce results into structured categories
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
                 category = {
                     category_id: row.category_id,
                     name: row.category_name,
-                    subjects: [],
                     latitude: row.latitude,
-                    longitude: row.longitude
+                    longitude: row.longitude,
+                    subjects: []
                 };
                 acc.push(category);
             }
@@ -156,6 +158,39 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
+        // Handle "near me" feature if latitude and longitude are provided
+        if (latitude && longitude) {
+            const userLat = parseFloat(latitude);
+            const userLon = parseFloat(longitude);
+
+            // Calculate distance using Haversine formula
+            const calculateDistance = (lat1, lon1, lat2, lon2) => {
+                const R = 6371; // Earth's radius in km
+                const dLat = ((lat2 - lat1) * Math.PI) / 180;
+                const dLon = ((lon2 - lon1) * Math.PI) / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            };
+
+            // Add distance to each category and sort by proximity
+            const categoriesWithDistance = categories.map(category => ({
+                ...category,
+                distance: category.latitude && category.longitude
+                    ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
+                    : Infinity // Default to a large value if no coordinates
+            }));
+
+            // Sort by distance (nearest first)
+            const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
+
+            return res.json(sortedCategories);
+        }
+
+        // Handle "For You" functionality
         if (type === "for-you") {
             const relatedCategoriesQuery = `
                 SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
@@ -196,11 +231,11 @@ app.get('/api/categories', (req, res) => {
                 res.json(sortedCategories);
             });
         } else {
+            // Default: Return all categories without sorting
             res.json(categories);
         }
     });
 });
-
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
