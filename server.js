@@ -119,6 +119,21 @@ app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
+    if (latitude && longitude && type === "near") {
+    const userLatitude = parseFloat(latitude);
+    const userLongitude = parseFloat(longitude);
+
+    const nearbyCategories = categories.map(category => {
+        if (category.latitude && category.longitude) {
+            const distance = haversine(userLatitude, userLongitude, category.latitude, category.longitude);
+            return { ...category, distance };
+        }
+        return { ...category, distance: Infinity }; // Set a high distance if coordinates are missing
+    }).sort((a, b) => a.distance - b.distance); // Sort by ascending distance
+
+    return res.json(nearbyCategories.slice(0, 50)); // Return top 50 closest categories
+}
+
 
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
