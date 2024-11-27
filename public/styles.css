@@ -1,6 +1,7 @@
+
 /* General Styling */
 body {
-    font-family: "Verdana", sans-serif;
+    font-family: "Arial", sans-serif;
     background-color: #f9f9f9;
     color: #333;
     display: flex;
@@ -8,6 +9,8 @@ body {
     align-items: center;
     margin: 0;
 }
+
+/* Header */
 header {
     width: 100%;
     padding: 20px 0;
@@ -16,22 +19,24 @@ header {
     color: white;
 }
 header h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin: 0;
     font-weight: bold;
 }
 header .slogan {
     font-size: 1.2rem;
-    color: #f3f3f3;
     font-style: italic;
+    margin-top: 10px;
 }
-header .logo-container {
+
+/* Logo */
+.logo-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 10px;
 }
-header .triangle-green {
+.triangle-green {
     width: 0;
     height: 0;
     border-left: 50px solid transparent;
@@ -39,7 +44,7 @@ header .triangle-green {
     border-bottom: 86.6px solid #28a745;
     margin-right: -25px;
 }
-header .triangle-gray {
+.triangle-gray {
     width: 0;
     height: 0;
     border-left: 50px solid transparent;
@@ -47,8 +52,10 @@ header .triangle-gray {
     border-top: 86.6px solid #6c757d;
     margin-left: -25px;
 }
-input#searchBar {
-    margin-top: 15px;
+
+/* Search Bar */
+#searchBar {
+    margin: 15px 0;
     padding: 10px;
     width: 80%;
     max-width: 500px;
@@ -56,13 +63,15 @@ input#searchBar {
     border-radius: 20px;
     font-size: 1rem;
 }
+
+/* Navigation Buttons */
 nav {
     display: flex;
     justify-content: center;
-    gap: 10px;
     margin: 20px 0;
+    gap: 10px;
 }
-nav button {
+.nav-button {
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -72,15 +81,107 @@ nav button {
     font-size: 1rem;
     transition: transform 0.3s, background-color 0.3s;
 }
-nav button:hover {
+.nav-button:hover {
     background-color: #0056b3;
     transform: scale(1.1);
 }
+#geolocationButton {
+    background-color: #28a745;
+}
+#geolocationButton:hover {
+    background-color: #218838;
+}
+
+/* Categories Section */
 main {
     width: 90%;
     max-width: 1200px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     margin-top: 20px;
 }
+.category {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.category h2 {
+    font-size: 1.3rem;
+    color: #007bff;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+.scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.subject {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.subject:last-child {
+    border-bottom: none;
+}
+.subject span {
+    font-weight: bold;
+    font-size: 1rem;
+}
+.vote-container {
+    display: flex;
+    align-items: center;
+}
+.vote-count {
+    margin-right: 5px;
+    font-weight: bold;
+}
+.vote-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #28a745;
+}
+.vote-button:hover {
+    color: #218838;
+}
+.comment-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 1.2em;
+}
+.comment-toggle:hover {
+    color: #495057;
+}
+
+/* Explore More Button */
+.explore-more {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: transform 0.3s, background-color 0.3s;
+}
+.explore-more:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+/* Footer */
 footer {
     width: 100%;
     text-align: center;
@@ -89,19 +190,10 @@ footer {
     color: white;
     margin-top: 30px;
 }
-#totalVotesDisplay, #addContentButton {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+footer a {
+    color: #ffc107;
+    text-decoration: none;
 }
-.top-right-button {
-    background-color: #007bff;
-    color: white;
-    font-size: 1rem;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-.top-right-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.1);
+footer a:hover {
+    text-decoration: underline;
 }
