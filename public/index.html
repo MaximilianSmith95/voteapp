@@ -1,58 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NerdGoo</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <!-- Total Votes Display -->
-        <div id="totalVotesDisplay" style="
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #ffcc00;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;">
-            Loading Total Votes...
-        </div>
-        <!-- Submit Your Business/Content Button -->
-        <div id="addContentWrapper" style="position: absolute; top: 10px; right: 10px;">
-            <button id="addContentButton" style="
-                background-color: #ffcc00;
-                color: black;
-                font-weight: bold;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;">
-                Submit Your Business/Content
-            </button>
-        </div>
-        <header>
-            <h1>?NerdGoo?</h1>
-            <p class="slogan">You know it all!</p>
-            <div class="logo-container">
-                <div class="triangle-green"></div>
-                <div class="triangle-gray"></div>
-            </div>
-        </header>
-        <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent()" oninput="filterContent()"/>
-        <nav>
-            <button id="forYouButton">For You</button>
-            <button id="allButton">All</button>
-            <button id="trendingButton">Trending</button>
-            <button id="latestButton">Latest</button>
-        </nav>
-        <main id="categories"></main>
-        <footer>
-            <p>&copy; 2024 NerdGoo. All rights reserved.</p>
-        </footer>
-        <script src="script.js"></script>
-    </body>
+      <div id="totalVotesDisplay" style="
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ffcc00;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;">
+    Loading Total Votes...
+</div>
+
+</div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0">
+
+    <title>NerdGoo</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+  <body>
+    <!-- Loading Animation Container -->
+    <div id="loading-animation">
+        <div class="triangle green"></div>
+        <div class="triangle gray"></div>
+    </div>
+    <header>
+        <h1>?NerdGoo?</h1>
+          <p class="slogan">You know it all!</p>
+       <style>
+        /* General Reset for Margin and Padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3; /* Light background for contrast */
+            margin: 0;
+        }
+
+        /* Header Styling */
+        header {
+            width: 100%;
+            background-color: #00a9db; /* Bold blue color for contrast */
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: white;
+            margin: 0;
+        }
+
+        /* Container for the Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Green Triangle (Upward facing) */
+        .triangle-green {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid #28a745; /* Green color */
+            margin-right: -20px; /* Adjust overlap */
+        }
+
+        /* Gray Triangle (Downward facing) */
+        .triangle-gray {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 80px solid #6c757d; /* Gray color */
+            margin-left: -20px; /* Adjust overlap */
+        }
+
+    </style>
+<div class="logo-container">
+    <!-- Green triangle (Upwards) -->
+    <div class="triangle-green"></div>
+    <!-- Gray triangle (Downwards) -->
+    <div class="triangle-gray"></div>
+</div>
+        <input type="text" id="searchBar" placeholder="Search for a category, location, or subject..." onkeyup="filterContent() "oninput="filterContent()"/>
+
+<!-- Modal for content submission -->
+<div id="submitModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Submit Your Content</h2>
+        <form id="contentForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            
+            <label for="category">Topic:</label>
+            <input type="text" id="category" name="category" placeholder="Topic to create or add to" required>
+            
+            <label for="subjects">Subjects:</label>
+            <textarea id="subjects" name="subjects" placeholder="Enter subjects (Max.40)" required></textarea>
+            
+            <button type="submit" id="submitButton">Submit</button>
+            <button type="button" id="closeModal">Close</button>
+        </form>
+    </div>
+</div>
+
+
+    </header>
+
+<button id="geolocationButton">Near Me</button>
+
+<button id="addContentButton" class="top-right-button">Submit Your Business/Content</button>
+    
+    
+<nav>
+    <button id="forYouButton">For You</button>
+    <button id="allButton">All</button>
+    <button id="trendingButton">Trending</button>
+    <button id="latestButton">Latest</button>
+</nav>
+
+        
+
+    <main id="categories"></main>
+<button id="exploreMoreButton" class="explore-more">Explore More</button>
+
+      <div id="overlay" class="overlay hidden"></div>
+      <div id="topicsContainer"></div>
+
+
+</main>
+       <script>
+        window.addEventListener("load", function() {
+            document.getElementById("loading-animation").style.display = "none";
+            
+        });
+    </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/email.min.js"></script>
+<script>
+    emailjs.init("T0TFQQo9j8d6RBLsj"); // Replace with your actual public key from EmailJS
+</script>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+<div id="cookieConsent" class="cookie-banner hidden">
+    <p>
+        We use cookies to ensure you get the best experience on our website. By using this site, you agree to our use of cookies.
+        <button id="acceptCookies" class="accept-button">Accept</button>
+    </p>
+</div>
+
+</body>
+ <footer>
+        <p>
+            By using this site, you agree to our <a href="terms-and-conditions.html" target="_blank">Terms and Conditions</a>.
+        </p>
+        <p>&copy; 2024 NerdGoo. All rights reserved.</p>
+   <p>
+        Please note: Some site links may be dead or lead to content that could be potentially unsafe. Use discretion when browsing external content. These lists are intended for informational purposes only and do not reflect an endorsement of the websites or their activities.NerdGoo completely recognizes and is thankful to the websites it is linked to.
+    </p>
+</footer>
+
+
+
 </html>
