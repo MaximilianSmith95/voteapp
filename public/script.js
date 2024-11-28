@@ -297,33 +297,33 @@ function upvote(subjectId) {
 
 
 // Variables for media recorder
-let mediaRecorder;
-let audioChunks = [];
+// let mediaRecorder;
+// let audioChunks = [];
 
 // Function to initialize voice recording controls dynamically
-function initializeVoiceRecordingControls(subjectId) {
-    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+// function initializeVoiceRecordingControls(subjectId) {
+//     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
 
     // Add voice review controls dynamically
-    const voiceReviewSection = document.createElement("div");
-    voiceReviewSection.id = `voice-review-section-${subjectId}`;
-    voiceReviewSection.classList.add("hidden"); // Initially hidden
-    voiceReviewSection.innerHTML = `
-        <button id="record-${subjectId}" onclick="startRecording(${subjectId})">Start Recording</button>
-        <button id="stop-${subjectId}" class="hidden" onclick="stopRecording(${subjectId})">Stop Recording</button>
-        <audio id="audio-preview-${subjectId}" controls class="hidden"></audio>
-        <button id="submit-voice-${subjectId}" class="hidden" onclick="submitVoiceReview(${subjectId})">Submit Voice Review</button>
-    `;
+    // const voiceReviewSection = document.createElement("div");
+    // voiceReviewSection.id = `voice-review-section-${subjectId}`;
+    // voiceReviewSection.classList.add("hidden"); // Initially hidden
+    // voiceReviewSection.innerHTML = `
+    //     <button id="record-${subjectId}" onclick="startRecording(${subjectId})">Start Recording</button>
+    //     <button id="stop-${subjectId}" class="hidden" onclick="stopRecording(${subjectId})">Stop Recording</button>
+    //     <audio id="audio-preview-${subjectId}" controls class="hidden"></audio>
+    //     <button id="submit-voice-${subjectId}" class="hidden" onclick="submitVoiceReview(${subjectId})">Submit Voice Review</button>
+    // `;
 
     // Add a button to toggle voice review visibility
-    const voiceReviewToggle = document.createElement("button");
-    voiceReviewToggle.textContent = "Record Voice Review";
-    voiceReviewToggle.onclick = () => voiceReviewSection.classList.toggle("hidden");
+    // const voiceReviewToggle = document.createElement("button");
+    // voiceReviewToggle.textContent = "Record Voice Review";
+    // voiceReviewToggle.onclick = () => voiceReviewSection.classList.toggle("hidden");
 
     // Append the new elements to the comments container
-    commentsContainer.appendChild(voiceReviewToggle);
-    commentsContainer.appendChild(voiceReviewSection);
-}
+//     commentsContainer.appendChild(voiceReviewToggle);
+//     commentsContainer.appendChild(voiceReviewSection);
+// }
 
 // Function to toggle comment visibility
 window.toggleComments = function (subjectId) {
