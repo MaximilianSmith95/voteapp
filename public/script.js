@@ -114,7 +114,22 @@ window.filterContent = function () {
 
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
-    fetchAndRenderCategories(`/api/categories`, limit, (data) => shuffleArray([...data]));
+    fetch(`/api/categories`)
+        .then(response => response.json())
+        .then(data => {
+            // Find the prioritized category
+            const prioritizedCategory = data.find(category => category.category_id === 918);
+            const remainingCategories = data.filter(category => category.category_id !== 918);
+
+            // Shuffle remaining categories and prepend the prioritized one
+            const shuffledCategories = prioritizedCategory
+                ? [prioritizedCategory, ...shuffleArray(remainingCategories)]
+                : shuffleArray(remainingCategories);
+
+            // Render the categories
+            renderLimitedCategories(shuffledCategories, limit);
+        })
+        .catch(error => console.error('Error fetching categories:', error));
 }
 
 function fetchForYouCategories(limit) {
