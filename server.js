@@ -82,7 +82,7 @@ app.get('/api/search', (req, res) => {
         )
     `;
 
-    db.query(searchQuery, [`%${query}%`, `%${query}%`], (err, results) => {
+    db.execute(searchQuery, [`%${query}%`, `%${query}%`], (err, results) => {
         if (err) {
             console.error('Error executing search query:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -128,7 +128,7 @@ app.get('/api/categories', (req, res) => {
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
 
-    db.query(baseQuery, (err, results) => {
+    db.execute(baseQuery, (err, results) => {
         if (err) {
             console.error('Error fetching categories:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -203,7 +203,7 @@ app.get('/api/categories', (req, res) => {
                 ORDER BY shared_subjects DESC;
             `;
 
-            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
+            db.execute(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
                 if (relatedErr) {
                     console.error('Error fetching related categories:', relatedErr);
                     return res.status(500).json({ error: 'Database error' });
@@ -246,7 +246,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
         SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
     `;
 
-    db.query(checkQuery, [userIp, subjectId], (err, results) => {
+    db.execute(checkQuery, [userIp, subjectId], (err, results) => {
         if (err) {
             console.error('Error checking IP votes:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -264,7 +264,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
             ON DUPLICATE KEY UPDATE votes_count = votes_count + 1
         `;
 
-        db.query(incrementQuery, [userIp, subjectId], (err) => {
+        db.execute(incrementQuery, [userIp, subjectId], (err) => {
             if (err) {
                 console.error('Error incrementing IP votes:', err);
                 return res.status(500).json({ error: 'Database error' });
@@ -274,14 +274,14 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                 UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?
             `;
 
-            db.query(updateVotesQuery, [subjectId], (err) => {
+            db.execute(updateVotesQuery, [subjectId], (err) => {
                 if (err) {
                     console.error('Error updating votes:', err);
                     return res.status(500).json({ error: 'Failed to update votes' });
                 }
 
                 const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
-                db.query(query, [subjectId], (err, results) => {
+                db.execute(query, [subjectId], (err, results) => {
                     if (err) {
                         console.error('Error fetching category ID:', err);
                     }
@@ -307,7 +307,7 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     const { username, comment_text, parent_comment_id = null } = req.body;
 
     const query = `INSERT INTO comments (subject_id, username, comment_text, parent_comment_id) VALUES (?, ?, ?, ?)`;
-    db.query(query, [subjectId, username, comment_text, parent_comment_id], (err) => {
+    db.execute(query, [subjectId, username, comment_text, parent_comment_id], (err) => {
         if (err) {
             console.error('Error inserting comment:', err);
             res.json({ success: false });
@@ -327,7 +327,7 @@ app.get('/api/subjects/:id/comments', (req, res) => {
         ORDER BY created_at ASC;
     `;
 
-    db.query(query, [subjectId], (err, results) => {
+    db.execute(query, [subjectId], (err, results) => {
         if (err) {
             console.error('Error fetching comments:', err);
             res.status(500).json({ error: 'Failed to fetch comments' });
@@ -377,7 +377,7 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
 
         // Save review details to the database
         const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
-        db.query(query, [subjectId, username, s3Response.Location], (err) => {
+        db.execute(query, [subjectId, username, s3Response.Location], (err) => {
             if (err) {
                 console.error('Database error while saving voice review:', err);
                 return res.status(500).json({ error: 'Failed to save review in database' });
@@ -394,7 +394,7 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
 // Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
     const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
-    db.query(query, (err, results) => {
+    db.execute(query, (err, results) => {
         if (err) {
             console.error('Error fetching total votes:', err);
             res.status(500).json({ error: 'Database error' });
