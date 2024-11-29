@@ -64,18 +64,6 @@ const voteLimiter = rateLimit({
 
 // Search API
 app.get('/api/search', (req, res) => {
-    try {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const { query } = req.query;
 
     if (!query) {
@@ -117,10 +105,6 @@ app.get('/api/search', (req, res) => {
                     name: row.subject_name,
                     votes: row.votes,
                     link: row.link
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
                 });
             }
 
@@ -132,42 +116,8 @@ app.get('/api/search', (req, res) => {
 });
 
 app.get('/api/categories', (req, res) => {
-    try {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const { latitude, longitude, type } = req.query;
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
     // Base query for all categories and their subjects
@@ -203,10 +153,6 @@ app.get('/api/categories', (req, res) => {
                     name: row.subject_name,
                     votes: row.votes,
                     link: row.link
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
                 });
             }
             return acc;
@@ -293,30 +239,7 @@ app.get('/api/categories', (req, res) => {
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
-    try {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const subjectId = parseInt(req.params.id, 10);
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     const checkQuery = `
@@ -365,17 +288,6 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
 
                     const categoryId = results[0]?.category_id;
                     if (categoryId) {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
                         const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
                         preferences[categoryId] = (preferences[categoryId] || 0) + 1;
 
@@ -383,10 +295,6 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                     }
 
                     res.json({ success: true });
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
                 });
             });
         });
@@ -395,30 +303,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
 
 // Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
-    try {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const { id: subjectId } = req.params;
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const { username, comment_text, parent_comment_id = null } = req.body;
 
     const query = `INSERT INTO comments (subject_id, username, comment_text, parent_comment_id) VALUES (?, ?, ?, ?)`;
@@ -429,27 +314,11 @@ app.post('/api/subjects/:id/comment', (req, res) => {
         } else {
             res.json({ success: true });
         }
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
     });
 });
 
 // Combined comments and voice reviews fetch
 app.get('/api/subjects/:id/comments', (req, res) => {
-    try {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const subjectId = req.params.id;
     const query = `
         SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
@@ -468,51 +337,13 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 
             res.json({ comments, voiceReviews });
         }
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
     });
 });
 
 // Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
-    try {
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const { id: subjectId } = req.params;
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const username = req.body.username || 'Anonymous';
-
-    // Validate and sanitize inputs
-    Object.keys(req.params || {}).forEach(key => {
-        if (!req.params[key]) req.params[key] = null;
-    });
-    Object.keys(req.query || {}).forEach(key => {
-        req.query[key] = req.query[key]?.toString().trim();
-    });
-    Object.keys(req.body || {}).forEach(key => {
-        req.body[key] = req.body[key]?.toString().trim();
-    });
     const audioFile = req.file;
 
     // Check if audio file is present
@@ -527,10 +358,6 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         originalname: audioFile.originalname,
         mimetype: audioFile.mimetype,
         size: audioFile.size
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
     });
     console.log('Body received:', req.body);
 
@@ -566,7 +393,6 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
 
 // Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
-    try {
     const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
     db.query(query, (err, results) => {
         if (err) {
@@ -575,10 +401,6 @@ app.get('/api/totalVotes', (req, res) => {
         } else {
             res.json({ totalVotes: results[0]?.totalVotes || 0 });
         }
-    } catch (err) {
-        console.error('Error occurred:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
     });
 });
 
