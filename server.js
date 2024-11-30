@@ -342,37 +342,30 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 
 // Upload voice reviews
 
+// Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
     const username = req.body.username || 'Anonymous';
     const audioFile = req.file;
 
-    // Validate file and username
+    console.log('req.file:', req.file); // Debugging log
+    console.log('req.body:', req.body); // Debugging log
+
+    // Check if audio file is present
     if (!audioFile) {
         console.error('No audio file received.');
         return res.status(400).json({ error: 'Audio file is required' });
     }
-    if (!username) {
-        console.error('No username provided.');
-        return res.status(400).json({ error: 'Username is required' });
-    }
-
-    console.log('File received:', {
-        fieldname: audioFile.fieldname,
-        originalname: audioFile.originalname,
-        mimetype: audioFile.mimetype,
-        size: audioFile.size,
-    });
 
     // Construct Cloudcube file path
     const filePath = `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`;
-    const bucketName = process.env.CLOUDCUBE_URL.split('/')[2]; // Extract bucket name
+    const bucketName = process.env.CLOUDCUBE_URL.split('/')[3]; // Extract bucket name
     const s3Params = {
         Bucket: bucketName,
         Key: filePath,
         Body: audioFile.buffer,
         ContentType: audioFile.mimetype,
-        ACL: 'public-read', // Make the file publicly accessible
+        ACL: 'public-read',
     };
 
     try {
@@ -391,9 +384,10 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
         });
     } catch (err) {
         console.error('Cloudcube upload error:', err.message);
-        return res.status(500).json({ error: 'Failed to upload to Cloudcube', details: err.message });
+        return res.status(500).json({ error: 'Failed to upload to Cloudcube' });
     }
 });
+
 
 // Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
