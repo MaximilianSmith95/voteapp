@@ -341,33 +341,34 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 });
 
 // Upload voice reviews
-// Upload voice reviews
+
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
     const username = req.body.username || 'Anonymous';
     const audioFile = req.file;
 
-    // Check if audio file is present
+    // Validate file and username
     if (!audioFile) {
-        console.error('No audio file received in the request.');
+        console.error('No audio file received.');
         return res.status(400).json({ error: 'Audio file is required' });
     }
+    if (!username) {
+        console.error('No username provided.');
+        return res.status(400).json({ error: 'Username is required' });
+    }
 
-    // Log file and body details for debugging
     console.log('File received:', {
         fieldname: audioFile.fieldname,
         originalname: audioFile.originalname,
         mimetype: audioFile.mimetype,
-        size: audioFile.size
+        size: audioFile.size,
     });
-    console.log('Body received:', req.body);
 
     // Construct Cloudcube file path
     const filePath = `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`;
-    const uploadUrl = `${process.env.CLOUDCUBE_URL}/${filePath}`;
-
+    const bucketName = process.env.CLOUDCUBE_URL.split('/')[2]; // Extract bucket name
     const s3Params = {
-        Bucket: process.env.CLOUDCUBE_URL.split('/')[2], // Extract bucket name from Cloudcube URL
+        Bucket: bucketName,
         Key: filePath,
         Body: audioFile.buffer,
         ContentType: audioFile.mimetype,
@@ -375,23 +376,22 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     };
 
     try {
-        // Attempt to upload the file to Cloudcube
+        // Upload to Cloudcube (S3)
         const s3Response = await s3.upload(s3Params).promise();
         console.log('Cloudcube upload successful:', s3Response);
 
-        // Save review details to the database
+        // Save to database
         const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
         db.query(query, [subjectId, username, s3Response.Location], (err) => {
             if (err) {
-                console.error('Database error while saving voice review:', err);
+                console.error('Database error:', err);
                 return res.status(500).json({ error: 'Failed to save review in database' });
             }
             res.json({ success: true, url: s3Response.Location });
         });
     } catch (err) {
-        // Handle any errors during the upload to Cloudcube
-        console.error('Error during Cloudcube upload:', err.message);
-        return res.status(500).json({ error: 'Failed to upload to Cloudcube' });
+        console.error('Cloudcube upload error:', err.message);
+        return res.status(500).json({ error: 'Failed to upload to Cloudcube', details: err.message });
     }
 });
 
