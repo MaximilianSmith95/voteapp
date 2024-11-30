@@ -341,6 +341,7 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 });
 
 // Upload voice reviews
+// Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
     const username = req.body.username || 'Anonymous';
@@ -361,19 +362,22 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     });
     console.log('Body received:', req.body);
 
-    // S3 upload parameters
+    // Construct Cloudcube file path
+    const filePath = `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`;
+    const uploadUrl = `${process.env.CLOUDCUBE_URL}/${filePath}`;
+
     const s3Params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`,
+        Bucket: process.env.CLOUDCUBE_URL.split('/')[2], // Extract bucket name from Cloudcube URL
+        Key: filePath,
         Body: audioFile.buffer,
         ContentType: audioFile.mimetype,
-        ACL: 'public-read'
+        ACL: 'public-read', // Make the file publicly accessible
     };
 
     try {
-        // Attempt to upload the file to S3
+        // Attempt to upload the file to Cloudcube
         const s3Response = await s3.upload(s3Params).promise();
-        console.log('S3 upload successful:', s3Response);
+        console.log('Cloudcube upload successful:', s3Response);
 
         // Save review details to the database
         const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
@@ -385,9 +389,9 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
             res.json({ success: true, url: s3Response.Location });
         });
     } catch (err) {
-        // Handle any errors during the S3 upload
-        console.error('Error during S3 upload:', err.message);
-        return res.status(500).json({ error: 'Failed to upload to S3' });
+        // Handle any errors during the upload to Cloudcube
+        console.error('Error during Cloudcube upload:', err.message);
+        return res.status(500).json({ error: 'Failed to upload to Cloudcube' });
     }
 });
 
