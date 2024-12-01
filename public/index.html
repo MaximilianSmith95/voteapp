@@ -21,43 +21,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-      
-
-      <div id="totalVotesDisplay" style="
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #ffcc00;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;">
-    Loading Total Votes...
-</div>
-
-</div>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <title>NerdGoo</title>
     <link rel="stylesheet" href="styles.css">
-
 </head>
-  <body>
-    <!-- Loading Animation Container -->
+<body>
+    <!-- Total Votes Display -->
+    <div id="totalVotesDisplay" style="
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #ffcc00;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;">
+        Loading Total Votes...
+    </div>
+
+    <!-- Loading Animation -->
     <div id="loading-animation">
         <div class="triangle green"></div>
         <div class="triangle gray"></div>
     </div>
+
+    <!-- Header -->
     <header>
-    <h1>?NerdGoo?</h1>
-    <p class="slogan">You know it all!</p>
-    <button id="darkModeToggle" class="top-right-button">Dark Mode</button>
-</header>
+        <h1>?NerdGoo?</h1>
+        <p class="slogan">You know it all!</p>
+        <button id="darkModeToggle" class="top-right-button">Dark Mode</button>
+    </header>
+</body>
+</html>
+
        
             
        <style>
