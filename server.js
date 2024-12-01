@@ -345,7 +345,7 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 // Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
     const { id: subjectId } = req.params;
-    const username = req.body.username || 'Anonymous';
+    const username = req.body.username || `User${Math.floor(100 + Math.random() * 900)}`; // Fallback username
     const audioFile = req.file;
 
     console.log('req.file:', req.file); // Debugging log
