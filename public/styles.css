@@ -1243,14 +1243,20 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+}
+
 header {
-    background-color: var(--header-background);
+    background-color: var(--header-background) !important;
 }
 
 button {
-    background-color: var(--button-background);
-    color: var(--text-color);
+    background-color: var(--button-background) !important;
+    color: var(--text-color) !important;
 }
+
 
 .category {
     background-color: var(--category-background);
