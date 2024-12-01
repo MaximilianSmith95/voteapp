@@ -1225,23 +1225,19 @@ nav {
     --text-color: #333;
     --header-background: #2e17dd;
     --button-background: #007bff;
-    --button-hover: #0056b3;
-    --category-background: #fff;
 }
 
 [data-theme="dark"] {
     --background-color: #121212;
     --text-color: #e0e0e0;
     --header-background: #1a1a1a;
-    --button-background: #333333;
-    --button-hover: #444444;
-    --category-background: #1e1e1e;
+    --button-background: #444;
 }
 
-/* Apply Variables */
 body {
     background-color: var(--background-color);
     color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header {
@@ -1250,14 +1246,5 @@ header {
 
 button {
     background-color: var(--button-background);
-    color: var(--text-color);
-}
-
-button:hover {
-    background-color: var(--button-hover);
-}
-
-.category {
-    background-color: var(--category-background);
     color: var(--text-color);
 }
