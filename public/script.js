@@ -475,10 +475,12 @@ function submitVoiceReview(subjectId) {
         alert("No audio recording found. Please record your review before submitting.");
         return;
     }
-
+    
+const username = localStorage.getItem('username') || generateRandomUsername();
+    
     const formData = new FormData();
     formData.append("audio", audioBlob); // Attach the audio file
-    formData.append("username", "User123"); // Replace with actual username logic if needed
+    formData.append("username", username); // Replace with actual username logic if needed
 
     fetch(`/api/subjects/${subjectId}/voice-review`, {
         method: "POST",
