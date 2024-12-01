@@ -1219,12 +1219,13 @@ nav {
 #exploreMoreButton:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
-/* Add CSS Variables */
 :root {
     --background-color: #f9f9f9;
     --text-color: #333;
     --header-background: #2e17dd;
     --button-background: #007bff;
+    --category-background: #fff;
+    --category-border: #ddd;
 }
 
 [data-theme="dark"] {
@@ -1232,6 +1233,8 @@ nav {
     --text-color: #e0e0e0;
     --header-background: #1a1a1a;
     --button-background: #444;
+    --category-background: #1e1e1e;
+    --category-border: #333;
 }
 
 body {
@@ -1246,5 +1249,11 @@ header {
 
 button {
     background-color: var(--button-background);
+    color: var(--text-color);
+}
+
+.category {
+    background-color: var(--category-background);
+    border: 2px solid var(--category-border);
     color: var(--text-color);
 }
