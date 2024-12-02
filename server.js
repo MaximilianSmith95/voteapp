@@ -348,11 +348,10 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     console.log('Headers:', req.headers);
     console.log('Body:', req.body);
     console.log('File:', req.file);
+
     const { id: subjectId } = req.params;
-    const username = req.body.username || `User${Math.floor(100 + Math.random() * 900)}`; // Fallback username
+    const username = req.body.username || `User${Math.floor(100 + Math.random() * 900)}`; // Generate random username
     const audioFile = req.file;
-
-
 
     // Check if audio file is present
     if (!audioFile) {
@@ -361,8 +360,8 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     }
 
     // Construct Cloudcube file path
+    const bucketName = process.env.CLOUDCUBE_URL.split('/')[3]; // Extract bucket name from Cloudcube URL
     const filePath = `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`;
-    const bucketName = process.env.CLOUDCUBE_URL.split('/')[3]; // Extract bucket name
     const s3Params = {
         Bucket: bucketName,
         Key: filePath,
@@ -391,7 +390,36 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     }
 });
 
+// GET Endpoint: Fetch Comments and Voice Reviews
+app.get('/api/subjects/:id/comments', (req, res) => {
+    const { id: subjectId } = req.params;
 
+    const query = `
+        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
+        FROM comments
+        WHERE subject_id = ?
+        ORDER BY created_at ASC;
+    `;
+
+    db.query(query, [subjectId], (err, results) => {
+        if (err) {
+            console.error('Database Fetch Error:', err);
+            return res.status(500).json({ error: 'Failed to fetch comments' });
+        }
+
+        const comments = results.map(comment => ({
+            id: comment.comment_id,
+            parentCommentId: comment.parent_comment_id,
+            username: comment.username,
+            text: comment.comment_text,
+            audioPath: comment.audio_path,
+            isVoiceReview: !!comment.is_voice_review,
+            createdAt: comment.created_at
+        }));
+
+        res.json({ comments });
+    });
+});
 // Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
     const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
