@@ -710,21 +710,20 @@ function submitVoiceReview(subjectId) {
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
 
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem("theme") || "light";
-    document.documentElement.setAttribute("data-theme", savedTheme);
-    darkModeToggle.textContent = savedTheme === "dark" ? "Light Mode" : "Dark Mode";
+// Load saved theme from localStorage
+const savedTheme = localStorage.getItem("theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+darkModeToggle.textContent = savedTheme === "dark" ? "Light Mode" : "Dark Mode";
 
-    // Toggle theme on button click
-    darkModeToggle.addEventListener("click", () => {
-        const currentTheme = document.documentElement.getAttribute("data-theme");
-        const newTheme = currentTheme === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+// Toggle theme on button click
+darkModeToggle.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
 
-        // Update button text
-        darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
-    });
+    // Update button text
+    darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
 });
 
 // function fetchComments(subjectId) {
