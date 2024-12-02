@@ -334,6 +334,8 @@ app.get('/api/subjects/:id/comments', (req, res) => {
         } else {
             const comments = results.filter(comment => !comment.is_voice_review);
             const voiceReviews = results.filter(comment => comment.is_voice_review);
+            const isVoiceReview = req.file ? 1 : 0;
+
 
             res.json({ comments, voiceReviews });
         }
