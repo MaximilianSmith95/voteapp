@@ -316,29 +316,29 @@ function upvote(subjectId) {
 // let audioChunks = [];
 
 // Function to initialize voice recording controls dynamically
-function initializeVoiceRecordingControls(subjectId) {
-    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+// function initializeVoiceRecordingControls(subjectId) {
+//     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
 
-    // Create the voice review section dynamically
-    const voiceReviewSection = document.createElement("div");
-    voiceReviewSection.id = `voice-review-section-${subjectId}`;
-    voiceReviewSection.classList.add("hidden"); // Initially hidden
-    voiceReviewSection.innerHTML = `
-        <button id="record-${subjectId}" onclick="startRecording(${subjectId})">Start Recording</button>
-        <button id="stop-${subjectId}" class="hidden" onclick="stopRecording(${subjectId})">Stop Recording</button>
-        <audio id="audio-preview-${subjectId}" controls class="hidden"></audio>
-        <button id="submit-voice-${subjectId}" class="hidden" onclick="submitVoiceReview(${subjectId})">Submit Voice Review</button>
-    `;
+//     // Create the voice review section dynamically
+//     const voiceReviewSection = document.createElement("div");
+//     voiceReviewSection.id = `voice-review-section-${subjectId}`;
+//     voiceReviewSection.classList.add("hidden"); // Initially hidden
+//     voiceReviewSection.innerHTML = `
+//         <button id="record-${subjectId}" onclick="startRecording(${subjectId})">Start Recording</button>
+//         <button id="stop-${subjectId}" class="hidden" onclick="stopRecording(${subjectId})">Stop Recording</button>
+//         <audio id="audio-preview-${subjectId}" controls class="hidden"></audio>
+//         <button id="submit-voice-${subjectId}" class="hidden" onclick="submitVoiceReview(${subjectId})">Submit Voice Review</button>
+//     `;
 
-    // Toggle visibility for voice review section
-    const voiceReviewToggle = document.createElement("button");
-    voiceReviewToggle.textContent = "Record Voice Review";
-    voiceReviewToggle.onclick = () => voiceReviewSection.classList.toggle("hidden");
+//     // Toggle visibility for voice review section
+//     const voiceReviewToggle = document.createElement("button");
+//     voiceReviewToggle.textContent = "Record Voice Review";
+//     voiceReviewToggle.onclick = () => voiceReviewSection.classList.toggle("hidden");
 
-    // Append controls to the comments container
-    commentsContainer.appendChild(voiceReviewToggle);
-    commentsContainer.appendChild(voiceReviewSection);
-}
+//     // Append controls to the comments container
+//     commentsContainer.appendChild(voiceReviewToggle);
+//     commentsContainer.appendChild(voiceReviewSection);
+// }
 
 
 // Function to toggle comment visibility
@@ -426,82 +426,82 @@ function fetchComments(subjectId) {
 }
 
 
-// Function to start recording voice reviews
-// Start recording
-function startRecording(subjectId) {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then((stream) => {
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start();
+// // Function to start recording voice reviews
+// // Start recording
+// function startRecording(subjectId) {
+//     navigator.mediaDevices.getUserMedia({ audio: true })
+//         .then((stream) => {
+//             mediaRecorder = new MediaRecorder(stream);
+//             mediaRecorder.start();
 
-            audioChunks = [];
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunks.push(event.data);
-            };
+//             audioChunks = [];
+//             mediaRecorder.ondataavailable = (event) => {
+//                 audioChunks.push(event.data);
+//             };
 
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-                const audioUrl = URL.createObjectURL(audioBlob);
+//             mediaRecorder.onstop = () => {
+//                 const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+//                 const audioUrl = URL.createObjectURL(audioBlob);
 
-                const audioPreview = document.getElementById(`audio-preview-${subjectId}`);
-                audioPreview.src = audioUrl;
-                audioPreview.classList.remove("hidden");
+//                 const audioPreview = document.getElementById(`audio-preview-${subjectId}`);
+//                 audioPreview.src = audioUrl;
+//                 audioPreview.classList.remove("hidden");
 
-                const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-                submitButton.dataset.audioBlob = audioBlob;
-                submitButton.classList.remove("hidden");
-            };
+//                 const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+//                 submitButton.dataset.audioBlob = audioBlob;
+//                 submitButton.classList.remove("hidden");
+//             };
 
-            document.getElementById(`record-${subjectId}`).classList.add("hidden");
-            document.getElementById(`stop-${subjectId}`).classList.remove("hidden");
-        })
-        .catch((error) => console.error("Error accessing microphone:", error));
-}
+//             document.getElementById(`record-${subjectId}`).classList.add("hidden");
+//             document.getElementById(`stop-${subjectId}`).classList.remove("hidden");
+//         })
+//         .catch((error) => console.error("Error accessing microphone:", error));
+// }
 
-// Stop recording
-function stopRecording(subjectId) {
-    mediaRecorder.stop();
-    document.getElementById(`stop-${subjectId}`).classList.add("hidden");
-    document.getElementById(`record-${subjectId}`).classList.remove("hidden");
-}
+// // Stop recording
+// function stopRecording(subjectId) {
+//     mediaRecorder.stop();
+//     document.getElementById(`stop-${subjectId}`).classList.add("hidden");
+//     document.getElementById(`record-${subjectId}`).classList.remove("hidden");
+// }
 
 
-// Function to submit the recorded voice review
-function submitVoiceReview(subjectId) {
-    const submitButton = document.getElementById(`submit-voice-${subjectId}`);
-    const audioBlob = submitButton.dataset.audioBlob;
+// // Function to submit the recorded voice review
+// function submitVoiceReview(subjectId) {
+//     const submitButton = document.getElementById(`submit-voice-${subjectId}`);
+//     const audioBlob = submitButton.dataset.audioBlob;
 
-    if (!audioBlob) {
-        alert("No audio recording found. Please record your review before submitting.");
-        return;
-    }
+//     if (!audioBlob) {
+//         alert("No audio recording found. Please record your review before submitting.");
+//         return;
+//     }
     
-const username = localStorage.getItem('username') || generateRandomUsername();
+// const username = localStorage.getItem('username') || generateRandomUsername();
     
-    const formData = new FormData();
-    console.log(audioBlob)
-    formData.append("audio", audioBlob); // Attach the audio file
-    formData.append("username", username); // Replace with actual username logic if needed
+//     const formData = new FormData();
+//     console.log(audioBlob)
+//     formData.append("audio", audioBlob); // Attach the audio file
+//     formData.append("username", username); // Replace with actual username logic if needed
 
-    fetch(`/api/subjects/${subjectId}/voice-review`, {
-        method: "POST",
-        body: formData,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                alert("Voice review submitted successfully!");
-                fetchComments(subjectId); // Reload comments to show the new voice review
-            } else {
-                console.error("Failed to submit voice review:", data.error);
-                alert("Failed to submit voice review. Please try again.");
-            }
-        })
-        .catch((error) => {
-            console.error("Error submitting voice review:", error);
-            alert("An error occurred while submitting your review. Please try again.");
-        });
-}
+//     fetch(`/api/subjects/${subjectId}/voice-review`, {
+//         method: "POST",
+//         body: formData,
+//     })
+//         .then((response) => response.json())
+//         .then((data) => {
+//             if (data.success) {
+//                 alert("Voice review submitted successfully!");
+//                 fetchComments(subjectId); // Reload comments to show the new voice review
+//             } else {
+//                 console.error("Failed to submit voice review:", data.error);
+//                 alert("Failed to submit voice review. Please try again.");
+//             }
+//         })
+//         .catch((error) => {
+//             console.error("Error submitting voice review:", error);
+//             alert("An error occurred while submitting your review. Please try again.");
+//         });
+// }
 
 
 // Shuffle an array
