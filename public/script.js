@@ -479,6 +479,7 @@ function submitVoiceReview(subjectId) {
 const username = localStorage.getItem('username') || generateRandomUsername();
     
     const formData = new FormData();
+    console.log(audioBlob)
     formData.append("audio", audioBlob); // Attach the audio file
     formData.append("username", username); // Replace with actual username logic if needed
 
