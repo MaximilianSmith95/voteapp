@@ -10,8 +10,6 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
 
 // AWS S3 Configuration
-const CLOUDCUBE_URL = process.env.CLOUDCUBE_URL;
-const bucketName = CLOUDCUBE_URL.split('/')[3]; // Extract bucket name
 const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
@@ -25,9 +23,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
-    next();
-});
     if (req.headers['x-forwarded-proto'] !== 'https') {
         return res.redirect(`https://${req.hostname}${req.url}`);
     }
@@ -360,14 +355,14 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
 
 
     // Check if audio file is present
-   if (!audioFile) {
+    if (!audioFile) {
         console.error('No audio file received.');
         return res.status(400).json({ error: 'Audio file is required' });
     }
 
     // Construct Cloudcube file path
-    const bucketName = process.env.CLOUDCUBE_URL.split('/')[3]; // Extract bucket name from Cloudcube URL
     const filePath = `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`;
+    const bucketName = process.env.CLOUDCUBE_URL.split('/')[3]; // Extract bucket name
     const s3Params = {
         Bucket: bucketName,
         Key: filePath,
@@ -396,38 +391,8 @@ app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, r
     }
 });
 
-// GET Endpoint: Fetch Comments and Voice Reviews
-app.get('/api/subjects/:id/comments', (req, res) => {
-    const { id: subjectId } = req.params;
 
-    const query = `
-        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
-        FROM comments
-        WHERE subject_id = ?
-        ORDER BY created_at ASC;
-    `;
-
-    db.query(query, [subjectId], (err, results) => {
-        if (err) {
-            console.error('Database Fetch Error:', err);
-            return res.status(500).json({ error: 'Failed to fetch comments' });
-        }
-
-        const comments = results.map(comment => ({
-            id: comment.comment_id,
-            parentCommentId: comment.parent_comment_id,
-            username: comment.username,
-            text: comment.comment_text,
-            audioPath: comment.audio_path,
-            isVoiceReview: !!comment.is_voice_review,
-            createdAt: comment.created_at
-        }));
-
-        res.json({ comments });
-    });
-});
-
-// GET Endpoint: Fetch Total Votes
+// Fetch total votes
 app.get('/api/totalVotes', (req, res) => {
     const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
     db.query(query, (err, results) => {
@@ -440,13 +405,6 @@ app.get('/api/totalVotes', (req, res) => {
     });
 });
 
-// Error Logging Middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
-});
-
-// Start Server
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
