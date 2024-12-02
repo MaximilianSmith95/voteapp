@@ -741,4 +741,3 @@ darkModeToggle.addEventListener("click", () => {
 //             `).join("");
 //         });
 // }
-
