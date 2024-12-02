@@ -1219,13 +1219,14 @@ nav {
 #exploreMoreButton:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
+/* Define CSS Variables */
 :root {
     --background-color: #f9f9f9;
     --text-color: #333;
     --header-background: #2e17dd;
     --button-background: #007bff;
-    --category-background: #fff;
-    --category-border: #ddd;
+    --card-background: #ffffff;
+    --border-color: #ddd;
 }
 
 [data-theme="dark"] {
@@ -1233,33 +1234,32 @@ nav {
     --text-color: #e0e0e0;
     --header-background: #1a1a1a;
     --button-background: #444;
-    --category-background: #1e1e1e;
-    --category-border: #333;
+    --card-background: #1e1e1e;
+    --border-color: #444;
 }
 
+/* Apply Variables Throughout */
 body {
     background-color: var(--background-color);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body {
-    background-color: var(--background-color) !important;
-    color: var(--text-color) !important;
-}
-
 header {
-    background-color: var(--header-background) !important;
+    background-color: var(--header-background);
 }
 
 button {
-    background-color: var(--button-background) !important;
-    color: var(--text-color) !important;
+    background-color: var(--button-background);
+    color: var(--text-color);
 }
 
-
 .category {
-    background-color: var(--category-background);
-    border: 2px solid var(--category-border);
+    background-color: var(--card-background);
+    border-color: var(--border-color);
+}
+
+.comments-section {
+    background-color: var(--card-background);
     color: var(--text-color);
 }
