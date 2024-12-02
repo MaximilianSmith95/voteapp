@@ -342,14 +342,15 @@ app.get('/api/subjects/:id/comments', (req, res) => {
 
 // Upload voice reviews
 
-// Upload voice reviews
 app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
     const { id: subjectId } = req.params;
     const username = req.body.username || `User${Math.floor(100 + Math.random() * 900)}`; // Fallback username
     const audioFile = req.file;
 
-    console.log('req.file:', req.file); // Debugging log
-    console.log('req.body:', req.body); // Debugging log
+
 
     // Check if audio file is present
     if (!audioFile) {
