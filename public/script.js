@@ -724,7 +724,9 @@ darkModeToggle.addEventListener("click", () => {
 
     // Update button text
     darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
-});
+     }
+    });
+}
 
 // function fetchComments(subjectId) {
 //     fetch(`/api/subjects/${subjectId}/comments`)
@@ -741,4 +743,4 @@ darkModeToggle.addEventListener("click", () => {
 //             `).join("");
 //         });
 // }
-}
+
