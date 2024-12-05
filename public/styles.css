@@ -1,246 +1,199 @@
-/* Define CSS Variables */
+/* CSS Variables */
 :root {
-    --background-color: #f9f9f9;
-    --text-color: #333;
-    --header-background: #2e17dd;
-    --button-background: #007bff;
-    --card-background: #ffffff;
-    --border-color: #ddd;
+    --primary-color: #007bff;
+    --secondary-color: #28a745;
+    --background-light: #f9f9f9;
+    --background-dark: #121212;
+    --text-light: #333;
+    --text-dark: #e0e0e0;
+    --header-light: #2e17dd;
+    --header-dark: #1a1a1a;
+    --button-light: #007bff;
+    --button-dark: #444;
+    --card-light: #ffffff;
+    --card-dark: #1e1e1e;
+    --border-light: #ddd;
+    --border-dark: #444;
 }
 
 [data-theme="dark"] {
-    --background-color: #121212;
-    --text-color: #e0e0e0;
-    --header-background: #1a1a1a;
-    --button-background: #444;
-    --card-background: #1e1e1e;
-    --border-color: #444;
+    --background-color: var(--background-dark);
+    --text-color: var(--text-dark);
+    --header-background: var(--header-dark);
+    --button-background: var(--button-dark);
+    --card-background: var(--card-dark);
+    --border-color: var(--border-dark);
 }
 
-/* Apply Variables Throughout */
+[data-theme="light"] {
+    --background-color: var(--background-light);
+    --text-color: var(--text-light);
+    --header-background: var(--header-light);
+    --button-background: var(--button-light);
+    --card-background: var(--card-light);
+    --border-color: var(--border-light);
+}
+
 body {
     background-color: var(--background-color);
     color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-header {
-    background-color: var(--header-background);
-}
-
-button {
-    background-color: var(--button-background);
-    color: var(--text-color);
-}
-
-.category {
-    background-color: var(--card-background);
-    border-color: var(--border-color);
-}
-
-.comments-section {
-    background-color: var(--card-background);
-    color: var(--text-color);
-}
-/* General Styling */
-body {
     font-family: "Arial", sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: darken(var(--primary-color), 10%);
+}
+/* Header Styles */
+/* Header Styling */
+header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0;
+    justify-content: center;
+    padding: 30px;
+    background-color: var(--header-background);
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Header Styling */
-header {
-    width: 100%;
-    background-color: #2e17dd; /* Darker blue color for header */
-    padding: 20px 0;
-    text-align: center;
-}
 header h1 {
-    font-size: 2.5rem;
+    font-size: 3rem; /* Larger for better prominence */
     margin: 0;
     font-weight: bold;
+    color: var(--text-color);
 }
+
 header .slogan {
     font-size: 1.2rem;
     font-style: italic;
     margin-top: 10px;
 }
 
-/* Logo */
+
 .logo-container {
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin-top: 10px;
+    justify-content: center;
+    margin: 20px 0;
 }
+
 .triangle-green {
     width: 0;
     height: 0;
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
-    border-bottom: 86.6px solid #28a745;
-    margin-right: -25px;
+    border-bottom: 100px solid var(--secondary-color);
+    margin-right: -20px;
 }
+
 .triangle-gray {
     width: 0;
     height: 0;
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
-    border-top: 86.6px solid #6c757d;
-    margin-left: -25px;
+    border-top: 100px solid #6c757d;
+    margin-left: -20px;
 }
-
-/* Search Bar */
-#searchBar {
-    margin: 15px 0;
-    padding: 10px;
-    width: 80%;
-    max-width: 500px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
+/* Button Styles */
+button {
+    background-color: var(--button-background);
+    color: var(--text-color);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
     font-size: 1rem;
+    transition: transform 0.3s, background-color 0.3s;
 }
 
-/* Navigation Buttons */
+button:hover {
+    background-color: darken(var(--button-background), 10%);
+    transform: scale(1.05);
 }
+
+button:focus {
+    outline: 2px solid var(--primary-color);
+}
+
+.top-right-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.top-right-button:hover {
+    background-color: darken(var(--primary-color), 10%);
+    transform: scale(1.1);
+}
+
+/* Navigation Bar */
 nav {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin: 20px 0;
 }
+
 nav button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    background-color: var(--button-background);
     border-radius: 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: transform 0.3s, background-color 0.3s;
-}
-nav button:hover {
-    background-color: #0056b3;
-    transform: scale(1.1);
-}
-#geolocationButton {
-    background-color: #28a745;
-}
-#geolocationButton:hover {
-    background-color: #218838;
-}
-
-/* Top-right button for Submit Your Business/Content */
-.top-right-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ffcc00;
-    color: black;
-    font-size: 1rem;
     padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
 }
-.top-right-button:hover {
-    background-color: #ffd700;
-    transform: scale(1.1);
-}
-
-/* Categories Section */
+/* Category Container */
 main {
-    width: 90%;
-    max-width: 1200px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px; /* Adjusted for tighter alignment */
+    padding: 20px;
     margin-top: 20px;
 }
 
-/* Footer */
-footer {
-    width: 100%;
-    text-align: center;
-    padding: 20px;
-    background-color: #003f8a;
-    color: white;
-    margin-top: 30px;
-}
-footer a {
-    color: #ffc107;
-    text-decoration: none;
-}
-footer a:hover {
-    text-decoration: underline;
-}
-
-#totalVotesDisplay, #addContentButton {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.top-right-button {
-    background-color: #007bff;
-    color: white;
-    font-size: 1rem;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-.top-right-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.1);
-}
-
-/* Category section */
-main {
-    width: 90%;
-    max-width: 1200px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
+/* Individual Category Cards */
 .category {
-    background-color: #fff;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-background);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Default blue scheme */
+.category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
 .category h2 {
-    font-size: 1.3rem;
-    color: #00a8cc;
-    margin: 0 0 10px;
-    border-bottom: 2px solid #00a8cc;
+    font-size: 1.2rem; /* Slightly smaller to match original */
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
     padding-bottom: 5px;
 }
 
-/* Green scheme for positive categories */
-.category-green h2 {
-    color: green;
-    border-bottom-color: green;
-}
-
-/* Red scheme for negative categories */
-.category-red h2 {
-    color: red;
-    border-bottom-color: red;
-}
-
-/* Subjects */
+/* Subject List within Categories */
 .subject {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .subject:last-child {
@@ -248,7 +201,7 @@ main {
 }
 
 .subject a {
-    color: black;
+    color: var(--text-color);
     font-weight: bold;
     text-decoration: none;
 }
@@ -257,1017 +210,323 @@ main {
     text-decoration: underline;
 }
 
-/* Vote button */
-/* Default blue vote button */
+/* Arrow Buttons */
 .vote-button {
-    background-color: #00a8cc;
+    width: 25px;
+    height: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    font-size: 1rem;
     color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.9rem;
+    margin-left: 5px; /* Space between arrow and text */
 }
 
 .vote-button:hover {
-    background-color: #0097b8;
+    background-color: darken(var(--secondary-color), 10%);
+    transform: scale(1.1); /* Subtle enlargement */
 }
 
-/* Green vote button for positive categories */
-.category-green .vote-button {
-    background-color: green;
-}
-
-.category-green .vote-button:hover {
-    background-color: darkgreen;
-}
-
-/* Red vote button for negative categories */
-.category-red .vote-button {
-    background-color: red;
-}
-
-.category-red .vote-button:hover {
-    background-color: darkred;
-}
-
-.scrollable {
-    max-height: 400px;
-    overflow-y: auto;
-}
-/* Comment Section Styling */
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    position: relative; /* Ensure it stays below the subject */
-    transition: max-height 0.3s ease;
-}
-
-.hidden {
-    display: none;
-}
-
-.comments-container {
-    max-height: 200px; /* Limit height for comment list */
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-.hidden {
-    display: none;
-}
-
-.comments-section {
-    border-top: 1px solid #ddd;
-    padding-top: 10px;
-    margin-top: 10px;
-}
-
-.comments-container .comment {
-    padding: 5px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.comments-section textarea {
-    width: 100%;
-    margin-top: 5px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: none;
-}
-
-.comments-section button {
-    margin-top: 5px;
-    padding: 5px 10px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.comment-toggle {
-    background: transparent;
-    border: none;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
-}
-
-.comment-toggle:hover {
-    color: #00a8cc;
-}
-/* Full-width, spacious comment section styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Optional: limits height */
-    overflow-y: auto;  /* Enables scrolling if content exceeds height */
-    transition: max-height 0.3s ease;
-}
-
-/* Hidden by default; revealed when expanded */
-.hidden {
-    display: none;
-}
-
-/* Comment text and spacing */
-.comments-container .comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-container .comment:last-child {
-    border-bottom: none;
-}
-
-.comments-section textarea {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-/* Optional: Makes the transition smoother */
-.comments-section.expanded {
-    max-height: 300px; /* Adjust height if needed */
-}
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    transition: max-height 0.3s ease;
-    position: relative; /* Ensure it stays below the subject */
-}
-
-.hidden {
-    display: none;
-}
-
-.comments-container {
-    max-height: 200px; /* Height limit for comment list */
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-/* General styling */
-body {
-    font-family: "Verdana", sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-header {
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-    background-color: #00a8cc;
-    color: white;
-}
-
-#searchBar {
-    margin-top: 15px;
-    padding: 10px;
-    width: 80%;
-    max-width: 500px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    font-size: 1rem;
-}
-
-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-.category {
-    background-color: #fff;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-}
-
-.category h2 {
-    font-size: 1.3rem;
-    color: #00a8cc;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 2px solid #00a8cc;
-}
-
-.subject {
-    display: block;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.subject-info {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.vote-controls {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.vote-button {
-    background-color: transparent;
-    color: green;
-    padding: 5px;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-.vote-button:hover {
-    color: darkgreen;
-}
-
-
-.comment-toggle {
-    background: transparent;
-    border: none;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
-}
-
-.comment-toggle:hover {
-    color: #00a8cc;
-}
-
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-    transition: max-height 0.3s ease;
-}
-
-.comments-container {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.hidden {
-    display: none;
-}
-.subject.highlighted {
-    background-color: #ADD8E6; /* Light blue background */
-}
-.subject {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #ccc;
-}
-
-.subject p {
-    margin: 0;
-    flex: 1;
-}
-
-.vote-container {
-    display: flex;
-    align-items: center;
-}
-
-.vote-count {
-    margin-right: 5px;
-    font-weight: bold;
-}
-
-.vote-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    color: green; /* Green arrow */
-    padding: 0;
-}
-
-.vote-button:hover {
-    color: darkgreen;
-}
-
-.comments-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #555;
-    margin-left: 10px;
-}
-
-.comments-toggle:hover {
-    color: #333;
-}
-.comments-container {
-    max-width: 400px; /* Set a consistent width */
-    max-height: 200px; /* Limit height to a certain size */
-    overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: hidden; /* Disable horizontal scrolling */
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    margin-top: 10px;
-}
-#geolocationButton {
-    background-color: #0073e6; /* Primary color of the website */
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-top: 15px; /* Adjust spacing as needed */
-    display: block;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
-}
-
-#geolocationButton:hover {
-    background-color: #005bb5; /* Darker shade for hover effect */
-    transform: scale(1.05); /* Slightly enlarges on hover */
-}
-
-#geolocationButton:active {
-    background-color: #004494; /* Even darker shade for active state */
-    transform: scale(0.98); /* Slightly shrinks on click for feedback */
-}
-/* Loading Animation Container */
-#loading-animation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: #f9f9f9;
-    z-index: 9999;
-}
-
-/* Triangle Styling for Animation */
-.triangle {
-    width: 0;
-    height: 0;
-    position: relative;
-    animation: bounce 1s ease-in-out infinite;
-}
-
-/* Green Triangle */
-.triangle.green {
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-bottom: 86.6px solid #28a745;
-    animation-delay: 0.2s;
-}
-
-/* Gray Triangle */
-.triangle.gray {
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-top: 86.6px solid #808080;
-    margin-left: 20px;
-    animation-delay: 0.5s;
-}
-
-/* Bounce Animation */
-@keyframes bounce {
-    0% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(20px);
-    }
-    100% {
-        transform: translateY(0);
-}
-#logo {
-    width: 150px; /* Adjust the size as needed */
-    height: auto;
-    margin: 20px auto;
-    display: block;
-}
-@media (max-width: 768px) {
-    /* Adjust header font size and padding */
-    header h1 {
-        font-size: 1.8rem; /* Slightly smaller on mobile */
-        padding: 10px;
-    }
-
-    /* Search bar: reduce width and font size */
-    #searchBar {
-        width: 90%;
-        font-size: 0.9rem; /* Slightly smaller font */
-        padding: 8px;
-    }
-
-    /* Navigation buttons: stack vertically with reduced padding */
-    nav {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    nav button {
-        width: 100%; /* Full-width buttons on mobile */
-        font-size: 0.9rem;
-        padding: 8px 0;
-    }
-
-    /* Adjust main grid for categories */
-    main {
-        grid-template-columns: 1fr; /* Single-column layout */
-        gap: 10px;
-    }
-
-    /* Loading animation container */
-    #loading-animation {
-        padding: 20px;
-        font-size: 0.8rem; /* Slightly smaller */
-    }
-
-    /* Triangle size adjustments */
-    .triangle.green {
-        border-left: 30px solid transparent;
-        border-right: 30px solid transparent;
-        border-bottom: 50px solid #28a745; /* Smaller triangle */
-    }
-
-    .triangle.gray {
-        border-left: 25px solid transparent;
-        border-right: 25px solid transparent;
-        border-top: 40px solid #808080; /* Smaller triangle */
-    }
-
-    /* Geolocation button centered and reduced in size */
-    #geolocationButton {
-        width: 90%; /* Full-width button on mobile */
-        font-size: 1rem;
-    }
-
-    /* Adjust comments section width */
-    .comments-section {
-        max-width: 100%; /* Full-width on mobile */
-        padding: 10px;
-    }
-}
-/* Adjusted Header Styling */
-header h1 {
-    font-size: 3rem; /* Increased font size */
-    color: #28a745; /* Green color */
-    margin: 0;
-    font-weight: bold;
-}
-
-/* Smaller Triangle Sizes */
-.triangle-green {
-    width: 0;
-    height: 0;
-    border-left: 30px solid transparent; /* Smaller width */
-    border-right: 30px solid transparent;
-    border-bottom: 60px solid #28a745; /* Smaller height */
-    margin-right: -15px; /* Adjust overlap */
-}
-
-.triangle-gray {
-    width: 0;
-    height: 0;
-    border-left: 25px solid transparent; /* Smaller width */
-    border-right: 25px solid transparent;
-    border-top: 50px solid #6c757d; /* Smaller height */
-    margin-left: -15px; /* Adjust overlap */
-}
-#categories, #topicsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjusts columns based on screen width */
-    gap: 20px;
-    padding: 20px;
-}
-.category, .topic {
-    background: #fff;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-.scrollable {
-    max-height: calc(15 * 2.5em); /* Approximate height to display 15 items */
-    overflow-y: auto; /* Enable vertical scrolling for overflow */
-    padding-right: 10px; /* Optional: add padding to prevent text clipping */
-}
-
-main {
-    width: 100%; /* Use full width on small screens */
-    max-width: 100%; /* Avoids max-width constraints on small screens */
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px; /* Adjust padding */
-}
-
-/* Medium screen: two columns */
-@media (max-width: 1024px) {
-    main {
-        grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
-    }
-}
-
-/* Small screens: one column */
-@media (max-width: 768px) {
-    main {
-        grid-template-columns: 1fr; /* Single column on mobile */
-    }
-/* General Styling for Hidden Elements */
-.hidden {
-    display: none;
-}
-
-/* Styling for Replies Container */
-.replies {
-    margin-left: 20px;  /* Indent replies */
-    border-left: 1px solid #ddd;
-    padding-left: 10px;
-/* Style for Reply, Show Replies, and Hide Replies links */
-.reply-button, .toggle-replies-button, .submit-reply-link {
-    background: none;
-    border: none;
-    color: #0073e6;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 3px;
-    margin-left: 5px;
-    display: inline-block;
-}
-
-.reply-button:hover, .toggle-replies-button:hover, .submit-reply-link:hover {
-    color: #005bb5;  /* Darker shade on hover */
-    text-decoration: underline;
-}
-/* Style for Comment Input Box */
-.comment-input {
-    height: 80px;  /* Adjust this value as desired */
-    width: 100%;   /* Keep the width the same */
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    resize: vertical;  /* Allow vertical resizing if desired */
-    margin-top: 10px;
-}
-/* Submit Content Button */
-#submitContentButton {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin: 15px auto;
-    display: block;
-}
-
-#submitContentButton:hover {
-    background-color: #218838;
-/* Modal Background */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Slightly darker for a stronger overlay effect */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    visibility: hidden;
-    opacity: 0;
-}
-
-.modal.show {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Modal Content */
-.modal-content {
-    background: linear-gradient(135deg, #ffffff, #f9f9f9); /* Subtle gradient for a modern look */
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    padding: 30px;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
-    animation: slideDown 0.4s ease;
-    transform: translateY(-20px);
-}
-
-.modal-content h2 {
-    font-size: 2rem;
-    margin-bottom: 15px;
-    color: #444;
-    text-align: center;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.modal-content label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600;
-    color: #666;
-    font-size: 1rem;
-}
-
-.modal-content input,
-.modal-content textarea {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    color: #444;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: border 0.3s ease, box-shadow 0.3s ease;
-}
-
-.modal-content input:focus,
-.modal-content textarea:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-    outline: none;
-}
-
-.modal-content textarea {
-    resize: none;
-    height: 120px;
-}
-
-/* Buttons */
-.form-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-    gap: 10px;
-}
-
-#submit-content-button {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
-}
-
-#submit-content-button:hover {
-    background: linear-gradient(135deg, #0056b3, #003f7f);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.5);
-}
-
-#closeModal {
-    background: linear-gradient(135deg, #ff6b6b, #e63939);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
-}
-
-#closeModal:hover {
-    background: linear-gradient(135deg, #e63939, #b31f1f);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(255, 107, 107, 0.5);
-}
-
-/* Modal Animation */
-@keyframes slideDown {
-    0% {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-}
-/* Top-right button styling */
-.top-right-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #007bff; /* Blue button */
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow */
-}
-
-.top-right-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-    transform: scale(1.05); /* Slightly enlarges on hover */
-}
-
-.top-right-button:active {
-    background-color: #003f8a; /* Even darker blue on click */
-    transform: scale(0.95); /* Slightly shrinks on click */
-}
-
-/* Hide button when modal is active */
-.modal-active #addContentButton {
-    display: none;
-}
-/* Common styles for navigation buttons */
-.nav-button {
-    background-color: #007bff; /* Blue color */
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 10px; /* Add space between buttons */
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow */
-}
-
-.nav-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-    transform: scale(1.05); /* Slightly enlarges on hover */
-}
-
-.nav-button:active {
-    background-color: #003f8a; /* Even darker blue on click */
-    transform: scale(0.95); /* Slightly shrinks on click */
-}
-
-.nav-button.blue {
-    background-color: #007bff;
-}
-
-/* Ensure buttons align horizontally */
+/* Center Align Buttons */
 nav {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px; /* Add spacing between buttons */
-    margin-top: 20px; /* Adjust spacing from the search bar */
+    margin: 20px 0;
 }
+
+nav button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 20px;
+    background-color: var(--button-background);
+    color: var(--text-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+nav button:hover {
+    background-color: darken(var(--button-background), 10%);
+}
+
+/* Position the Top-Right Button Correctly */
 .top-right-button {
-    background-color: #007bff; /* Bright blue color */
-    color: white; /* Text color */
-    font-size: 1.2rem; /* Slightly larger text size */
-    padding: 12px 20px; /* Larger padding for a more prominent button */
-    border: none; /* Remove default border */
-    border-radius: 10px; /* Curved edges */
-    cursor: pointer; /* Pointer cursor on hover */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    transition: transform 0.2s ease, background-color 0.3s ease; /* Smooth hover effects */
-    margin: 10px; /* Add some spacing around the button */
+    position: fixed; /* Keep it fixed for visibility */
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+/* Add Whitespace Around Sections */
+body {
+    padding: 0 20px; /* Add padding for better alignment */
 }
 
-/* Hover and focus styles */
-.top-right-button:hover {
-    background-color: #0056b3; /* Darker blue for hover effect */
-    transform: translateY(-2px); /* Slight lift on hover */
+header {
+    margin-bottom: 20px; /* Space below header */
 }
 
-/* Active state */
-.top-right-button:active {
-    background-color: #004494; /* Even darker blue */
-    transform: translateY(0); /* Reset transform */
+main {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1200px;
 }
 
-/* Optional: Make button adapt to screens */
-@media (max-width: 768px) {
-    .top-right-button {
-        font-size: 1rem; /* Slightly smaller on smaller screens */
-        padding: 10px 16px; /* Adjust padding */
-    }
-}
-/* Cookie Banner Styles */
-.cookie-banner {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #333; /* Dark background */
-    color: white; /* White text */
+/* Add Spacing Around Footer */
+footer {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: var(--header-background);
+    color: var(--text-color);
     text-align: center;
+}
+/* Style the Search Bar */
+#searchBar {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    width: 80%;
+    max-width: 500px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#searchBar:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+/* Cookie Consent Banner */
+#cookieConsent {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
     padding: 15px;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Ensure it stays on top */
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-.cookie-banner.hidden {
-    display: none; /* Hide banner when accepted */
-}
-
-.cookie-banner p {
-    margin: 0;
-    font-size: 14px;
-}
-
-.accept-button {
-    background-color: #4CAF50; /* Green button */
+#cookieConsent button {
+    margin-left: 10px;
+    padding: 5px 15px;
+    background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-left: 10px;
     border-radius: 5px;
-    transition: background-color 0.3s ease;
+    cursor: pointer;
 }
 
-.accept-button:hover {
-    background-color: #45a049; /* Slightly darker green on hover */
+#cookieConsent button:hover {
+    background-color: darken(var(--primary-color), 10%);
+}
+/* Footer Styling */
+footer {
+    padding: 20px;
+    background-color: var(--header-background);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: darken(var(--primary-color), 10%);
+}
+/* General Spacing */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+}
+
+header, nav, footer {
+    margin: 20px auto;
+    padding: 10px 20px;
+    max-width: 1200px;
+}
+
+button, input, textarea {
+    margin: 10px;
+}
+/* Header Alignment */
+header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: var(--header-background);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+header .slogan {
+    font-size: 1rem;
+    font-style: italic;
+    margin: 5px 0;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    transform: scale(1.05);
+    background-color: lighten(var(--button-background), 10%);
+}
+/* Center Modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.modal input, .modal textarea {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.modal button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+/* Footer Alignment */
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: var(--header-background);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Cookie Banner */
+
+#cookieConsent {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 500px;
+    padding: 15px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Dark Mode Toggle */
+#darkModeToggle {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    background-color: var(--button-background);
+    color: var(--text-color);
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#darkModeToggle:hover {
+    background-color: lighten(var(--button-background), 10%);
+    transform: scale(1.05);
+}
+
+/* Navigation Buttons */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Consistent spacing between buttons */
+    margin: 20px 0;
+}
+
+nav button {
+    padding: 15px 25px;
+    font-size: 1.1rem; /* Larger for better readability */
+    background-color: var(--button-background);
+    color: var(--text-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+nav button:hover {
+    background-color: lighten(var(--button-background), 10%);
+    transform: scale(1.05);
 }
 
 
-        header .slogan {
-            font-size: 1.2rem;
-            color: #f3f3f3;
-            margin-top: 10px;
-            font-style: italic;
-        }
-#exploreMoreButton {
-    font-size: 18px; /* Increase font size */
-    font-weight: bold; /* Make text bold */
-    padding: 12px 20px; /* Add padding */
-    background-color: #007bff; /* Set background color */
-    color: white; /* Set text color */
-    border: none; /* Remove border */
-    border-radius: 8px; /* Add rounded corners */
-    cursor: pointer; /* Change cursor to pointer */
-    transition: background-color 0.3s ease; /* Add hover effect */
+/* Footer Styling */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background-color: var(--header-background);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
-#exploreMoreButton:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: darken(var(--primary-color), 10%);
 }
