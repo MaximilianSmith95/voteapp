@@ -320,7 +320,7 @@ main .category:hover {
     padding-bottom: 5px;
 }
 .vote-button, .comments-toggle {
-    font-size: 1.2rem;
+    font-size: 2rem;
     color: #28a745;
     background: none;
     border: none;
