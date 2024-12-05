@@ -57,7 +57,7 @@ footer a:hover {
     --primary-color: #000000;
     --accent-color: #28a745;
     --button-background: #7b22e7;
-    --card-background: #7b22e7;
+    --card-background: #1e1e1e;
     --border-color: #ddd;
 }
 
@@ -461,7 +461,7 @@ Define CSS Variables
     --text-color: #333;
     --header-background: #2e17dd;
     --button-background: #007bff;
-    --card-background: #ffffff;
+    --card-background: #1e1e1e;
     --border-color: #ddd;
 }
 
