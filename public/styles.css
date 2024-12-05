@@ -54,7 +54,7 @@ footer a:hover {
 :root {
     --background-color: #7b22e7;
     --text-color: #333;
-    --primary-color: #0a090b;
+    --primary-color: #000000;
     --accent-color: #28a745;
     --button-background: #7b22e7;
     --card-background: #7b22e7;
@@ -193,9 +193,9 @@ main {
 
 .category h2 {
     font-size: 1.5rem;
-    color: var(--primary-color);
+    color: #000000; /* Explicitly set to black */
     margin-bottom: 10px;
-    border-bottom: 2px solid var(--primary-color);
+    border-bottom: 2px solid #000000; /* Black border for consistency */
     padding-bottom: 5px;
 }
 .vote-button {
