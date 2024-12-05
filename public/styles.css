@@ -19,30 +19,35 @@ button {
 }
 main {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Default: 3 columns for larger screens */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns by default for desktops */
     gap: 20px;
     padding: 20px;
 }
 
-/* Media query for devices smaller than 768px (tablets, mobiles) */
+/* Media query for tablets/mobiles */
 @media (max-width: 768px) {
     main {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns for medium/small screens */
+        grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns for medium screens */
     }
 }
 
-/* Media query for very small devices (e.g., smaller than 480px) */
+/* Media query for very small devices */
 @media (max-width: 480px) {
     main {
-        grid-template-columns: 1fr; /* 1 column for very small screens */
+        grid-template-columns: 1fr; /* Switch to 1 column for small screens */
     }
 }
 
-@media (max-width: 768px) {
-    main {
-        grid-template-columns: 1fr; /* Change to a single column layout */
-        padding: 10px; /* Adjust padding */
-    }
+.category {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 100%; /* Ensure it adapts to grid */
+    box-sizing: border-box; /* Prevent layout overflow */
+}
 
     nav {
         flex-direction: column; /* Stack navigation buttons vertically */
