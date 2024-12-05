@@ -17,6 +17,27 @@ button {
     overflow: hidden; /* Hides any overflowing text */
     text-overflow: ellipsis; /* Adds "..." if text overflows */
 }
+main {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Default: 3 columns for larger screens */
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Media query for devices smaller than 768px (tablets, mobiles) */
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for medium/small screens */
+    }
+}
+
+/* Media query for very small devices (e.g., smaller than 480px) */
+@media (max-width: 480px) {
+    main {
+        grid-template-columns: 1fr; /* 1 column for very small screens */
+    }
+}
+
 @media (max-width: 768px) {
     main {
         grid-template-columns: 1fr; /* Change to a single column layout */
@@ -219,6 +240,9 @@ main {
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 100%; /* Prevents categories from overflowing */
+    box-sizing: border-box; /* Includes padding/border in width calculation */
+}
 }
 
 .category:hover {
