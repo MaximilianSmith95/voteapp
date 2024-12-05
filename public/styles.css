@@ -318,11 +318,11 @@ main .category:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-main .category h2 {
+.category h2 {
     font-size: 1.5rem;
-    color: #7b22e7;
+    color: #000000; /* Explicitly set to black */
     margin-bottom: 10px;
-    border-bottom: 2px solid #7b22e7;
+    border-bottom: 2px solid #000000; /* Black border for consistency */
     padding-bottom: 5px;
 }
 .vote-button, .comments-toggle {
@@ -673,10 +673,10 @@ main {
 
 /* Default blue scheme */
 .category h2 {
-    font-size: 1.3rem;
-    color: #00a8cc;
-    margin: 0 0 10px;
-    border-bottom: 2px solid #00a8cc;
+    font-size: 1.5rem;
+    color: #000000; /* Explicitly set to black */
+    margin-bottom: 10px;
+    border-bottom: 2px solid #000000; /* Black border for consistency */
     padding-bottom: 5px;
 }
 
