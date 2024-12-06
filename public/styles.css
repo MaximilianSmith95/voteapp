@@ -5,7 +5,7 @@ body {
 }
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
-}
+/* Comment Section */
 .comments-section {
     width: 100%;
     background: linear-gradient(135deg, #7b22e7, #9c67de);
@@ -15,17 +15,33 @@ body {
     padding: 15px;
     margin-top: 10px;
     max-height: 300px;
-    overflow-y: auto;
+    overflow-y: auto; /* Enable scrolling */
     z-index: 1000;
     transition: all 0.3s ease;
 }
+
+/* Scrollbar Styling */
+.comments-section::-webkit-scrollbar {
+    width: 10px; /* Adjust scrollbar width */
+}
+
+.comments-section::-webkit-scrollbar-thumb {
+    background: #9c67de; /* Matches gradient color scheme */
+    border-radius: 8px;
+}
+
+.comments-section::-webkit-scrollbar-thumb:hover {
+    background: #7b22e7; /* Darker gradient color on hover */
+}
+
+/* Comments Container */
 .comments-container {
     background-color: rgba(255, 255, 255, 0.1);
     padding: 10px;
     border-radius: 5px;
 }
 
-/* Individual comment */
+/* Individual Comment */
 .comments-container .comment {
     padding: 10px;
     margin-bottom: 10px;
@@ -64,42 +80,14 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     background: linear-gradient(135deg, #1e7e34, #155d24);
 }
-.scrollable {
-    max-height: 300px;
-    overflow-y: auto;
-}
-.comments-section::-webkit-scrollbar {
-    width: 10px; /* Adjust scrollbar width */
-}
 
-.comments-section::-webkit-scrollbar-thumb {
-    background: #9c67de; /* Matches gradient color scheme */
-    border-radius: 8px;
-}
-
-.comments-section::-webkit-scrollbar-thumb:hover {
-    background: #7b22e7; /* Darker gradient color on hover */
-}
-
-
-/* Full-width, spacious comment section styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Optional: limits height */
-    overflow-y: auto;  /* Enables scrolling if content exceeds height */
-    transition: max-height 0.3s ease;
-}
+/* Subject Hyperlink as White Title */
 .subject a {
-    color: white; /* Match the title color */
+    color: white; /* Match title color */
     text-decoration: none; /* Remove underline */
-    font-weight: bold; /* Optional: Emphasize as a title */
+    font-weight: bold; /* Optional: Emphasize as title */
     cursor: default; /* Change cursor to default instead of pointer */
-    transition: none; /* Remove hover effects if desired */
+    transition: none; /* Remove hover effects */
 }
 
 .subject a:hover {
@@ -107,11 +95,7 @@ body {
     color: white; /* Ensure hover color remains the same */
 }
 
-
-/* Hidden by default; revealed when expanded */
-.hidden {
-    display: none;
-}
+/* Hyperlink Styling in Comment Section */
 .comments-section a {
     color: white; /* Hyperlink as white */
     text-decoration: none; /* Remove underline */
@@ -123,8 +107,10 @@ body {
     color: #ddd; /* Light gray on hover */
     text-decoration: underline; /* Optional: Show underline on hover */
 }
+
+/* Arrow to Reveal Comments */
 .comments-toggle {
-    font-size: 1.5rem; /* Keep the same size */
+    font-size: 1.5rem; /* Same size */
     color: #808080; /* Gray color */
     background: none;
     border: none;
@@ -136,8 +122,27 @@ body {
     color: #666666; /* Darker gray on hover */
 }
 
+/* Hidden by Default */
+.hidden {
+    display: none;
+}
 
-form input, form textarea {
+/* Full-width, Spacious Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Optional: limits height */
+    overflow-y: auto; /* Enables scrolling if content exceeds height */
+    transition: max-height 0.3s ease;
+}
+
+/* Form Fields */
+form input,
+form textarea {
     width: calc(100% - 20px);
     margin: 10px 0;
     padding: 10px;
@@ -147,11 +152,14 @@ form input, form textarea {
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-form input:focus, form textarea:focus {
+form input:focus,
+form textarea:focus {
     border-color: #007bff;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
     outline: none;
 }
+
+/* Modal */
 .modal {
     position: fixed;
     top: 50%;
@@ -171,6 +179,7 @@ form input:focus, form textarea:focus {
     opacity: 1;
     pointer-events: auto;
 }
+
 .modal button {
     padding: 10px 20px;
     background: linear-gradient(135deg, #0056b3, #007bff);
