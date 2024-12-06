@@ -74,11 +74,11 @@ main .category:hover {
 
 main .category h2 {
     font-size: 1.5rem;
-    color: teal;
+    color: gold;
     margin-bottom: 10px;
     border-bottom: 2px solid #7b22e7;
     padding-bottom: 5px;
-    color: teal; /* Ensure headings inside category are white */
+    color: gold; /* Ensure headings inside category are white */
 }
 
 .category p, .category span {
