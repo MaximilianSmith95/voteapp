@@ -18,210 +18,120 @@ body {
 /* Comment Section Styling */
 .comments-section {
     width: 100%;
-    background-color: #f1f1f1;
+    background-color: #ffffff; /* Pure white background for contrast */
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     padding: 15px;
     margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    position: relative; /* Ensure it stays below the subject */
+    max-height: 300px; /* Set height limit */
+    overflow-y: auto; /* Enable scrolling */
+    position: relative;
     transition: max-height 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
 }
 
-.hidden {
-    display: none;
+/* Scrollbar Styling */
+.comments-section::-webkit-scrollbar {
+    width: 8px;
 }
 
+.comments-section::-webkit-scrollbar-thumb {
+    background-color: #7b22e7; /* Matches the purple theme */
+    border-radius: 4px;
+}
+
+.comments-section::-webkit-scrollbar-thumb:hover {
+    background-color: #9c67de; /* Lighter purple on hover */
+}
+
+/* Comments Container */
 .comments-container {
-    max-height: 200px; /* Limit height for comment list */
+    max-height: 200px; /* Limit comment list height */
     overflow-y: auto;
     margin-bottom: 10px;
-}
-
-.comment {
+    background-color: #f9f9f9; /* Light background for comments */
     padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
     border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
 }
 
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-.hidden {
-    display: none;
-}
-
-.comments-section {
-    border-top: 1px solid #ddd;
-    padding-top: 10px;
-    margin-top: 10px;
-}
-
-.comments-container .comment {
-    padding: 5px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.comments-section textarea {
-    width: 100%;
-    margin-top: 5px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: none;
-}
-
-.comments-section button {
-    margin-top: 5px;
-    padding: 5px 10px;
-    background-color: #00a8cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.comment-toggle {
-    background: transparent;
-    border: none;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
-}
-
-.comment-toggle:hover {
-    color: #00a8cc;
-}
-/* Full-width, spacious comment section styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Optional: limits height */
-    overflow-y: auto;  /* Enables scrolling if content exceeds height */
-    transition: max-height 0.3s ease;
-}
-
-/* Hidden by default; revealed when expanded */
-.hidden {
-    display: none;
-}
-
-/* Comment text and spacing */
+/* Individual Comment Styling */
 .comments-container .comment {
     padding: 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ddd;
     font-size: 0.9rem;
-    color: #333;
+    color: #333333; /* Dark gray text for visibility */
+    background-color: #ffffff; /* Pure white background */
+    border-radius: 4px;
     margin-bottom: 5px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
 }
 
+/* Last Comment: Remove Border */
 .comments-container .comment:last-child {
     border-bottom: none;
 }
 
+/* Textarea Styling */
 .comments-section textarea {
-    width: 100%;
+    width: calc(100% - 20px);
     margin-top: 10px;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #7b22e7;
     border-radius: 5px;
+    background-color: #ffffff; /* Pure white background */
+    color: #333333; /* Dark gray text for readability */
     resize: vertical;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-family: Arial, sans-serif; /* Ensure consistent font */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+/* Textarea Focus Styling */
+.comments-section textarea:focus {
+    outline: none;
+    border-color: #9c67de; /* Purple border on focus */
+    box-shadow: 0 0 5px rgba(123, 34, 231, 0.3);
+}
+
+/* Button Styling */
 .comments-section button {
     margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
+    padding: 10px 15px;
+    background-color: #7b22e7; /* Purple button */
+    color: #ffffff; /* White text for contrast */
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
 }
 
-/* Optional: Makes the transition smoother */
-.comments-section.expanded {
-    max-height: 300px; /* Adjust height if needed */
-}
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    transition: max-height 0.3s ease;
-    position: relative; /* Ensure it stays below the subject */
+/* Button Hover Effect */
+.comments-section button:hover {
+    background-color: #9c67de; /* Lighter purple */
+    transform: translateY(-2px); /* Lift effect */
 }
 
-.hidden {
-    display: none;
-}
-
-.comments-container {
-    max-height: 200px; /* Height limit for comment list */
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.comment {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.comments-section textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    font-size: 0.9rem;
-}
-
-.comments-section button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
+/* Comment Toggle Arrow */
+.comment-toggle {
+    font-size: 1.5rem;
+    color: #666666; /* Neutral gray */
+    background: none;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9rem;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
+
+.comment-toggle:hover {
+    color: #333333; /* Darker gray on hover */
+}
+
+/* General Reset for Nested Elements */
+.comments-section * {
+    color: inherit !important; /* Prevent unwanted overrides */
+}
+
 /* Category Section */
 .category {
     background: linear-gradient(135deg, #7b22e7, #9c67de);
