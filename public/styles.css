@@ -7,7 +7,7 @@ body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
 .subjects {
-    max-height: 300px; /* Set the desired height */
+    max-height: 400px; /* Set the desired height */
     overflow-y: auto;  /* Enable vertical scrolling */
     overflow-x: hidden; /* Disable horizontal scrolling */
     padding: 10px;
