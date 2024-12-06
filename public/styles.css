@@ -6,7 +6,7 @@ body {
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
-.category .comments-section {
+.comments-section {
     width: 100%;
     background: linear-gradient(135deg, #7b22e7, #9c67de);
     color: white;
@@ -16,17 +16,13 @@ body {
     margin-top: 10px;
     max-height: 300px;
     overflow-y: auto;
+    z-index: 1000;
     transition: all 0.3s ease;
 }
-
-/* Comments container */
 .comments-container {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
     padding: 10px;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.1); /* Transparent for contrast */
 }
 
 /* Individual comment */
