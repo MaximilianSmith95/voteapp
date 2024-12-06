@@ -478,6 +478,23 @@ main {
     overflow-y: auto;
 }
 /* Comment Section Styling */
+/* Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Set a height limit */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    position: relative; /* Ensure it stays below the subject */
+    transition: max-height 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
 
 .comments-container {
     max-height: 200px; /* Limit height for comment list */
@@ -560,6 +577,18 @@ main {
 .comment-toggle:hover {
     color: #00a8cc;
 }
+/* Full-width, spacious comment section styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Optional: limits height */
+    overflow-y: auto;  /* Enables scrolling if content exceeds height */
+    transition: max-height 0.3s ease;
+}
 
 /* Hidden by default; revealed when expanded */
 .hidden {
@@ -600,7 +629,23 @@ main {
     font-size: 0.9rem;
 }
 
-
+/* Optional: Makes the transition smoother */
+.comments-section.expanded {
+    max-height: 300px; /* Adjust height if needed */
+}
+/* Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px; /* Set a height limit */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    transition: max-height 0.3s ease;
+    position: relative; /* Ensure it stays below the subject */
+}
 
 .hidden {
     display: none;
@@ -737,6 +782,18 @@ nav {
 }
 
 /* Comment Section Styling */
+.comments-section {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease;
+}
+
 .comments-container {
     max-height: 200px;
     overflow-y: auto;
@@ -825,7 +882,17 @@ nav {
 .comments-toggle:hover {
     color: #333;
 }
-
+.comments-container {
+    max-width: 400px; /* Set a consistent width */
+    max-height: 200px; /* Limit height to a certain size */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Disable horizontal scrolling */
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #070707;
+    border-radius: 5px;
+    margin-top: 10px;
+}
 #geolocationButton {
     background-color: #0073e6; /* Primary color of the website */
     color: #ffffff;
@@ -910,5 +977,3 @@ nav {
         grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
     }
 } /* <-- Ensure this closing brace is present */
-
-
