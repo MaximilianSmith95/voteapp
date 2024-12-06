@@ -6,412 +6,6 @@ body {
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
-
-body {
-    background: linear-gradient(135deg, #e8e8e8, #f1f1f1);
-    color: #333;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-}
-
-main {
-    flex: 1; /* Push the footer to the bottom */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    background-color: #f3f3f3; /* Neutral background for content */
-}
-
-footer {
-    background: linear-gradient(90deg, #222831, #393e46);
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin-top: 20px;
-    font-size: 0.9rem;
-    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
-}
-
-footer a {
-    color: #00adb5;
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-    color: #80ced6;
-}
-
-:root {
-    --background-color: #7b22e7;
-    --text-color: #333;
-    --primary-color: #0a090b;
-    --accent-color: #28a745;
-    --button-background: #7b22e7;
-    --card-background: #7b22e7;
-    --border-color: #ddd;
-}
-
-[data-theme="dark"] {
-    --background-color: #121212;
-    --text-color: #e0e0e0;
-    --primary-color: #1a1a1a;
-    --accent-color: #444;
-    --button-background: #555;
-    --card-background: #1e1e1e;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    font-family: Arial, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
-
-nav {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    padding: 10px;
-    background: linear-gradient(135deg, #7b22e7, #9659e1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-nav button {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #0056b3, #007bff);
-    color: white;
-    font-size: 1rem;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-nav button:hover {
-    background: linear-gradient(135deg, #003f8a, #0056b3);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-}
-
-
-main {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
-}
-header {
-    background: linear-gradient(90deg, #7b22e7, #7b22e7);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-bottom: 3px solid #7b22e7;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-    font-size: 2.8rem;
-    font-weight: bold;
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-header .slogan {
-    font-size: 1.4rem;
-    font-style: italic;
-    color: #ffcc00;
-    margin-top: 5px;
-}
-
-nav {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px 0;
-}
-
-nav button {
-    padding: 10px 25px;
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    font-size: 1rem;
-    border: none;
-    border-radius: 20px;
-    margin: 10px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-nav button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-    background: linear-gradient(135deg, #0056b3, #003f8a);
-}
-
-main {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.category {
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.category:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.category h2 {
-    font-size: 1.5rem;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 5px;
-}
-.vote-button {
-    background-color: transparent;
-    color: var(--accent-color);
-    font-size: 1.5rem;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.3s ease;
-}
-
-.vote-button:hover {
-    color: #32cd32; /* Bright green */
-    transform: scale(1.2);
-}
-
-.comments-toggle {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    color: var(--text-color);
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.comments-toggle:hover {
-    color: var(--primary-color);
-}
-footer {
-    background: linear-gradient(90deg, #003f8a, #0056b3);
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin-top: 20px;
-    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
-    font-size: 0.9rem;
-}
-
-footer a {
-    color: #ffd700;
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-    color: #ffcc00;
-}
-
-[data-theme="dark"] {
-    --background-color: #121212;
-    --text-color: #e0e0e0;
-    --primary-color: #1a1a1a;
-    --accent-color: #444;
-    --button-background: #555;
-    --card-background: #1e1e1e;
-    --border-color: #444;
-}
-
-body[data-theme="dark"] {
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.category[data-theme="dark"] {
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-}
-#loading-animation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: var(--background-color);
-    z-index: 9999;
-    animation: fadeIn 1s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.triangle {
-    animation: bounce 1.5s infinite;
-}
-input, textarea {
-    width: calc(100% - 20px);
-    max-width: 400px;
-    margin: 10px auto;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-input:focus, textarea:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-    outline: none;
-}
-main .category {
-    background: linear-gradient(135deg, #7b22e7, #9c67de);
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-main .category:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-main .category h2 {
-    font-size: 1.5rem;
-    color: #7b22e7;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #7b22e7;
-    padding-bottom: 5px;
-}
-.vote-button, .comments-toggle {
-    font-size: 1.2rem;
-    color: #28a745;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.vote-button:hover, .comments-toggle:hover {
-    color: #1e7e34;
-    transform: scale(1.1);
-}
-[data-theme="dark"] {
-    --background-color: #121212;
-    --text-color: #e0e0e0;
-    --primary-color: #4A148C; /* Deep purple */
-    --accent-color: #FF6E40; /* Coral orange */
-    --button-background: #6A1B9A; /* Vibrant purple */
-    --card-background: #1F1F1F; /* Almost black */
-    --border-color: #333;
-}
-
-body[data-theme="dark"] {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
-}
-
-button[data-theme="dark"] {
-    background: var(--button-background);
-    color: var(--text-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-header[data-theme="dark"], footer[data-theme="dark"] {
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-}
-
-button {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #1b6ca8, #35a0cb);
-    color: white;
-    font-size: 1rem;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(135deg, #1b6ca8, #1d4f91);
-}
-#darkModeToggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px 15px;
-    background: linear-gradient(135deg, #44484e, #222831);
-    color: #f5f5f5;
-    font-size: 0.9rem;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-#darkModeToggle:hover {
-    background: linear-gradient(135deg, #1e2023, #16181b);
-    color: #c4c4c4;
-    transform: scale(1.1);
-}
-form {
-    background: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    margin: 20px auto;
-}
-
 form input, form textarea {
     width: calc(100% - 20px);
     margin: 10px 0;
@@ -446,6 +40,140 @@ form input:focus, form textarea:focus {
     opacity: 1;
     pointer-events: auto;
 }
+.modal button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal button:hover {
+    background: linear-gradient(135deg, #003f8a, #0056b3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+main .category {
+    background: linear-gradient(135deg, #7b22e7, #9c67de);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+main .category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+main .category h2 {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #7b22e7;
+    padding-bottom: 5px;
+    color: white; /* Ensure headings inside category are white */
+}
+
+.category p, .category span {
+    color: white; /* Ensure all other text is white */
+}
+.vote-button, .comments-toggle {
+    font-size: 1.5rem;
+    color: #28a745;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.vote-button:hover, .comments-toggle:hover {
+    color: #1e7e34;
+    transform: scale(1.1);
+    }
+
+/* Optional: Make button adapt to screens */
+@media (max-width: 768px) {
+    .top-right-button {
+        font-size: 1rem; /* Slightly smaller on smaller screens */
+        padding: 10px 16px; /* Adjust padding */
+    }
+}
+/* Cookie Banner Styles */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333; /* Dark background */
+    color: white; /* White text */
+    text-align: center;
+    padding: 15px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+.cookie-banner.hidden {
+    display: none; /* Hide banner when accepted */
+}
+
+.cookie-banner p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.accept-button {
+    background-color: #4CAF50; /* Green button */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.accept-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
+
+
+        header .slogan {
+            font-size: 1.2rem;
+            color: #f3f3f3;
+            margin-top: 10px;
+            font-style: italic;
+        }
+#exploreMoreButton {
+    font-size: 18px; /* Increase font size */
+    font-weight: bold; /* Make text bold */
+    padding: 12px 20px; /* Add padding */
+    background-color: #007bff; /* Set background color */
+    color: white; /* Set text color */
+    border: none; /* Remove border */
+    border-radius: 8px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s ease; /* Add hover effect */
+}
+
+#exploreMoreButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+
+
+
+
+
+
 
 
 Define CSS Variables
@@ -454,7 +182,7 @@ Define CSS Variables
     --text-color: #333;
     --header-background: #2e17dd;
     --button-background: #007bff;
-    --card-background: #1e1e1e;
+    --card-background: #ffffff;
     --border-color: #ddd;
 }
 
@@ -666,10 +394,10 @@ main {
 
 /* Default blue scheme */
 .category h2 {
-    font-size: 1.5rem;
-    color: #000000; /* Explicitly set to black */
-    margin-bottom: 10px;
-    border-bottom: 2px solid #000000; /* Black border for consistency */
+    font-size: 1.3rem;
+    color: #00a8cc;
+    margin: 0 0 10px;
+    border-bottom: 2px solid #00a8cc;
     padding-bottom: 5px;
 }
 
@@ -1028,7 +756,7 @@ nav {
     color: green;
     padding: 5px;
     border: none;
-    font-size: 1.2rem;
+    font-size: 3rem;
     cursor: pointer;
 }
 
@@ -1130,7 +858,7 @@ nav {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-size: 1.2em;
+    font-size: 3em;
     color: green; /* Green arrow */
     padding: 0;
 }
