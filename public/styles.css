@@ -966,3 +966,512 @@ nav {
     100% {
         transform: translateY(0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+@media (max-width: 768px) {
+    /* Adjust header font size and padding */
+    header h1 {
+        font-size: 1.8rem; /* Slightly smaller on mobile */
+        padding: 10px;
+    }
+
+    /* Search bar: reduce width and font size */
+    #searchBar {
+        width: 90%;
+        font-size: 0.9rem; /* Slightly smaller font */
+        padding: 8px;
+    }
+
+    /* Navigation buttons: stack vertically with reduced padding */
+    nav {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    nav button {
+        width: 100%; /* Full-width buttons on mobile */
+        font-size: 0.9rem;
+        padding: 8px 0;
+    }
+
+    /* Adjust main grid for categories */
+    main {
+        grid-template-columns: 1fr; /* Single-column layout */
+        gap: 10px;
+    }
+
+    /* Loading animation container */
+    #loading-animation {
+        padding: 20px;
+        font-size: 0.8rem; /* Slightly smaller */
+    }
+
+    /* Triangle size adjustments */
+    .triangle.green {
+        border-left: 30px solid transparent;
+        border-right: 30px solid transparent;
+        border-bottom: 50px solid #28a745; /* Smaller triangle */
+    }
+
+    .triangle.gray {
+        border-left: 25px solid transparent;
+        border-right: 25px solid transparent;
+        border-top: 40px solid #808080; /* Smaller triangle */
+    }
+
+    /* Geolocation button centered and reduced in size */
+    #geolocationButton {
+        width: 90%; /* Full-width button on mobile */
+        font-size: 1rem;
+    }
+
+    /* Adjust comments section width */
+    .comments-section {
+        max-width: 100%; /* Full-width on mobile */
+        padding: 10px;
+    }
+}
+/* Adjusted Header Styling */
+header h1 {
+    font-size: 3rem; /* Increased font size */
+    color: #28a745; /* Green color */
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Smaller Triangle Sizes */
+.triangle-green {
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent; /* Smaller width */
+    border-right: 30px solid transparent;
+    border-bottom: 60px solid #28a745; /* Smaller height */
+    margin-right: -15px; /* Adjust overlap */
+}
+
+.triangle-gray {
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent; /* Smaller width */
+    border-right: 25px solid transparent;
+    border-top: 50px solid #6c757d; /* Smaller height */
+    margin-left: -15px; /* Adjust overlap */
+}
+#categories, #topicsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjusts columns based on screen width */
+    gap: 20px;
+    padding: 20px;
+}
+.category, .topic {
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.scrollable {
+    max-height: calc(15 * 2.5em); /* Approximate height to display 15 items */
+    overflow-y: auto; /* Enable vertical scrolling for overflow */
+    padding-right: 10px; /* Optional: add padding to prevent text clipping */
+}
+
+main {
+    width: 100%; /* Use full width on small screens */
+    max-width: 100%; /* Avoids max-width constraints on small screens */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 10px; /* Adjust padding */
+}
+
+/* Medium screen: two columns */
+@media (max-width: 1024px) {
+    main {
+        grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
+    }
+}
+
+/* Small screens: one column */
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr; /* Single column on mobile */
+    }
+/* General Styling for Hidden Elements */
+.hidden {
+    display: none;
+}
+
+/* Styling for Replies Container */
+.replies {
+    margin-left: 20px;  /* Indent replies */
+    border-left: 1px solid #ddd;
+    padding-left: 10px;
+/* Style for Reply, Show Replies, and Hide Replies links */
+.reply-button, .toggle-replies-button, .submit-reply-link {
+    background: none;
+    border: none;
+    color: #0073e6;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 3px;
+    margin-left: 5px;
+    display: inline-block;
+}
+
+.reply-button:hover, .toggle-replies-button:hover, .submit-reply-link:hover {
+    color: #005bb5;  /* Darker shade on hover */
+    text-decoration: underline;
+}
+/* Style for Comment Input Box */
+.comment-input {
+    height: 80px;  /* Adjust this value as desired */
+    width: 100%;   /* Keep the width the same */
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    resize: vertical;  /* Allow vertical resizing if desired */
+    margin-top: 10px;
+}
+/* Submit Content Button */
+#submitContentButton {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 15px auto;
+    display: block;
+}
+
+#submitContentButton:hover {
+    background-color: #218838;
+/* Modal Background */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Slightly darker for a stronger overlay effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.modal.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Modal Content */
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #f9f9f9); /* Subtle gradient for a modern look */
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.4s ease;
+    transform: translateY(-20px);
+}
+
+.modal-content h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #444;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.modal-content label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #666;
+    font-size: 1rem;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #444;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.modal-content textarea {
+    resize: none;
+    height: 120px;
+}
+
+/* Buttons */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 10px;
+}
+
+#submit-content-button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+#submit-content-button:hover {
+    background: linear-gradient(135deg, #0056b3, #003f7f);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.5);
+}
+
+#closeModal {
+    background: linear-gradient(135deg, #ff6b6b, #e63939);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+}
+
+#closeModal:hover {
+    background: linear-gradient(135deg, #e63939, #b31f1f);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 107, 107, 0.5);
+}
+
+/* Modal Animation */
+@keyframes slideDown {
+    0% {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+}
+/* Top-right button styling */
+.top-right-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #007bff; /* Blue button */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow */
+}
+
+.top-right-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarges on hover */
+}
+
+.top-right-button:active {
+    background-color: #003f8a; /* Even darker blue on click */
+    transform: scale(0.95); /* Slightly shrinks on click */
+}
+
+/* Hide button when modal is active */
+.modal-active #addContentButton {
+    display: none;
+}
+/* Common styles for navigation buttons */
+.nav-button {
+    background-color: #007bff; /* Blue color */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px; /* Add space between buttons */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow */
+}
+
+.nav-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarges on hover */
+}
+
+.nav-button:active {
+    background-color: #003f8a; /* Even darker blue on click */
+    transform: scale(0.95); /* Slightly shrinks on click */
+}
+
+.nav-button.blue {
+    background-color: #007bff;
+}
+
+/* Ensure buttons align horizontally */
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Add spacing between buttons */
+    margin-top: 20px; /* Adjust spacing from the search bar */
+}
+.top-right-button {
+    background-color: #007bff; /* Bright blue color */
+    color: white; /* Text color */
+    font-size: 1.2rem; /* Slightly larger text size */
+    padding: 12px 20px; /* Larger padding for a more prominent button */
+    border: none; /* Remove default border */
+    border-radius: 10px; /* Curved edges */
+    cursor: pointer; /* Pointer cursor on hover */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: transform 0.2s ease, background-color 0.3s ease; /* Smooth hover effects */
+    margin: 10px; /* Add some spacing around the button */
+}
+
+/* Hover and focus styles */
+.top-right-button:hover {
+    background-color: #0056b3; /* Darker blue for hover effect */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+/* Active state */
+.top-right-button:active {
+    background-color: #004494; /* Even darker blue */
+    transform: translateY(0); /* Reset transform */
+}
+
+/* Optional: Make button adapt to screens */
+@media (max-width: 768px) {
+    .top-right-button {
+        font-size: 1rem; /* Slightly smaller on smaller screens */
+        padding: 10px 16px; /* Adjust padding */
+    }
+}
+/* Cookie Banner Styles */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333; /* Dark background */
+    color: white; /* White text */
+    text-align: center;
+    padding: 15px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+.cookie-banner.hidden {
+    display: none; /* Hide banner when accepted */
+}
+
+.cookie-banner p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.accept-button {
+    background-color: #4CAF50; /* Green button */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.accept-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
+
+
+        header .slogan {
+            font-size: 1.2rem;
+            color: #f3f3f3;
+            margin-top: 10px;
+            font-style: italic;
+        }
+#exploreMoreButton {
+    font-size: 18px; /* Increase font size */
+    font-weight: bold; /* Make text bold */
+    padding: 12px 20px; /* Add padding */
+    background-color: #007bff; /* Set background color */
+    color: white; /* Set text color */
+    border: none; /* Remove border */
+    border-radius: 8px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s ease; /* Add hover effect */
+}
+
+#exploreMoreButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
