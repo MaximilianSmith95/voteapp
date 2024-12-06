@@ -302,45 +302,84 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
 });
 
 // Add a comment
+// Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
 
-    const query = `INSERT INTO comments (subject_id, username, comment_text, parent_comment_id) VALUES (?, ?, ?, ?)`;
-    db.query(query, [subjectId, username, comment_text, parent_comment_id], (err) => {
+    const query = `
+        INSERT INTO comments (subject_id, username, comment_text, parent_comment_id, created_at)
+        VALUES (?, ?, ?, ?, NOW())
+    `;
+
+    db.query(query, [subjectId, username, comment_text, parent_comment_id], (err, results) => {
         if (err) {
             console.error('Error inserting comment:', err);
-            res.json({ success: false });
-        } else {
-            res.json({ success: true });
+            return res.status(500).json({ success: false, error: 'Failed to add comment' });
         }
+
+        res.json({
+            success: true,
+            comment: {
+                id: results.insertId,
+                username,
+                text: comment_text,
+                parentCommentId: parent_comment_id,
+                createdAt: new Date() // Current server time
+            }
+        });
     });
 });
 
+
 // Combined comments and voice reviews fetch
+// Fetch comments with pagination
 app.get('/api/subjects/:id/comments', (req, res) => {
-    const subjectId = req.params.id;
+    const { id: subjectId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    const offset = (page - 1) * limit; // Calculate offset for pagination
+
     const query = `
         SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
         FROM comments
         WHERE subject_id = ?
-        ORDER BY created_at ASC;
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
     `;
 
-    db.query(query, [subjectId], (err, results) => {
+    db.query(query, [subjectId, parseInt(limit), offset], (err, results) => {
         if (err) {
-            console.error('Error fetching comments:', err);
-            res.status(500).json({ error: 'Failed to fetch comments' });
-        } else {
-            const comments = results.filter(comment => !comment.is_voice_review);
-            const voiceReviews = results.filter(comment => comment.is_voice_review);
-            const isVoiceReview = req.file ? 1 : 0;
-
-
-            res.json({ comments, voiceReviews });
+            console.error('Database Fetch Error:', err);
+            return res.status(500).json({ error: 'Failed to fetch comments' });
         }
+
+        const comments = results.map(comment => ({
+            id: comment.comment_id,
+            parentCommentId: comment.parent_comment_id,
+            username: comment.username,
+            text: comment.comment_text,
+            audioPath: comment.audio_path,
+            isVoiceReview: !!comment.is_voice_review,
+            createdAt: comment.created_at
+        }));
+
+        // Check if there are more comments
+        const countQuery = `SELECT COUNT(*) AS total FROM comments WHERE subject_id = ?`;
+        db.query(countQuery, [subjectId], (countErr, countResults) => {
+            if (countErr) {
+                console.error('Error counting comments:', countErr);
+                return res.status(500).json({ error: 'Failed to fetch comment count' });
+            }
+
+            const totalComments = countResults[0]?.total || 0;
+            const hasMore = offset + comments.length < totalComments;
+
+            res.json({ comments, hasMore });
+        });
     });
 });
+
 
 // Upload voice reviews
 
