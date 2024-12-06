@@ -261,8 +261,15 @@ function toggleComments(subjectId) {
 
     // Toggle visibility of comments
     commentsContainer.classList.toggle('hidden');
-    toggleButton.textContent = commentsContainer.classList.contains('hidden') ? '▼' : '▲';
+
+    // Update button text or icon based on visibility
+    if (commentsContainer.classList.contains('hidden')) {
+        toggleButton.textContent = '▼'; // Triangle pointing down (closed state)
+    } else {
+        toggleButton.textContent = '▲'; // Triangle pointing up (open state)
+    }
 }
+
 
 // Updated: Navigation Event Listener for "For You" Button
 document.getElementById('forYouButton').addEventListener('click', () => {
