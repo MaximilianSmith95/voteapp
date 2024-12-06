@@ -240,13 +240,14 @@ function renderCategories(categories, highlightSearchTerm = '') {
                     <button class="vote-button" onclick="upvote(${subject.subject_id}, ${category.category_id})">&#9650;</button>
                 </span>
                 <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-            `;
-            subjectsDiv.appendChild(subjectDiv);
-            <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
+                <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
+            `;
+            subjectsDiv.appendChild(subjectDiv);
+            
         });
 
         categoryDiv.appendChild(subjectsDiv);
