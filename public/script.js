@@ -206,7 +206,7 @@ function trackUserPreference(categoryId) {
     setCookie('preferences', JSON.stringify(preferences), 365); // Persist for 1 year
 }
 
-// Updated: Render Categories with Comment Section Below Each Subject
+// Updated: Render Categories with "Recommended" Label
 function renderCategories(categories, highlightSearchTerm = '') {
     const categoriesContainer = document.getElementById('categories');
     categoriesContainer.innerHTML = ''; // Clear existing content
@@ -222,43 +222,38 @@ function renderCategories(categories, highlightSearchTerm = '') {
             const regex = new RegExp(`(${highlightSearchTerm})`, 'gi');
             categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
         }
-        categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
+        categoryDiv.innerHTML = `<h2>${categoryName} </h2>`;
 
         // Render subjects sorted by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
         const subjectsDiv = document.createElement('div');
-        subjectsDiv.classList.add('subjects');
+        subjectsDiv.classList.add('subjects', 'scrollable');
 
         sortedSubjects.forEach(subject => {
             const subjectDiv = document.createElement('div');
             subjectDiv.classList.add('subject');
             subjectDiv.setAttribute('data-subject-id', subject.subject_id);
-
-            // Subject content with toggle button
             subjectDiv.innerHTML = `
-                <div class="subject-header">
-                    <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
-                    <span class="vote-container">
-                        <span class="vote-count">${subject.votes}</span>
-                        <button class="vote-button" onclick="upvote(${subject.subject_id}, ${category.category_id})">&#9650;</button>
-                    </span>
-                    <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
-                </div>
+                <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
+                <span class="vote-container">
+                    <span class="vote-count">${subject.votes}</span>
+                    <button class="vote-button" onclick="upvote(${subject.subject_id}, ${category.category_id})">&#9650;</button>
+                </span>
+                <button onclick="toggleComments(${subject.subject_id})" class="comments-toggle">▼</button>
                 <div id="comments-container-${subject.subject_id}" class="comments-container hidden">
                     <input type="text" id="comment-input-${subject.subject_id}" placeholder="Leave a Review..." />
                     <button onclick="addComment(${subject.subject_id})">Add Comment</button>
                     <div class="comments" id="comment-section-${subject.subject_id}"></div>
                 </div>
             `;
-
             subjectsDiv.appendChild(subjectDiv);
+            
         });
 
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
 }
-
 // Toggle Comments Function: Show/Hide Comments Below the Relevant Subject
 function toggleComments(subjectId) {
     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
