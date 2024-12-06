@@ -86,7 +86,7 @@ main .category h2 {
 }
 .vote-button, .comments-toggle {
     font-size: 1.5rem;
-    color: #28a745;
+    color: teal;
     background: none;
     border: none;
     cursor: pointer;
@@ -230,21 +230,6 @@ button {
     z-index: 1000;
     transition: all 0.3s ease;
 }
-
-/* Scrollbar Styling */
-.comments-section::-webkit-scrollbar {
-    width: 10px; /* Adjust scrollbar width */
-}
-
-.comments-section::-webkit-scrollbar-thumb {
-    background: #9c67de; /* Matches gradient color scheme */
-    border-radius: 8px;
-}
-
-.comments-section::-webkit-scrollbar-thumb:hover {
-    background: #7b22e7; /* Darker gradient color on hover */
-}
-
 /* Comments Container */
 .comments-container {
     background-color: rgba(255, 255, 255, 0.1);
@@ -257,7 +242,7 @@ button {
     padding: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    color: teal;
     font-size: 0.9rem;
 }
 
@@ -269,7 +254,7 @@ button {
     border: 1px solid #9c67de;
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: teal;
     resize: vertical;
 }
 
@@ -278,7 +263,7 @@ button {
     margin-top: 10px;
     padding: 8px 12px;
     background: linear-gradient(135deg, #28a745, #1e7e34);
-    color: white;
+    color: teal;
     border: none;
     border-radius: 5px;
     cursor: pointer;
