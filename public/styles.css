@@ -29,7 +29,7 @@ main .category h2 {
     padding-bottom: 5px;
 }
 .vote-button, .comments-toggle {
-    font-size: 1.2rem;
+    font-size: 3rem;
     color: #28a745;
     background: none;
     border: none;
