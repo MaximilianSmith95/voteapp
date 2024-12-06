@@ -11,6 +11,53 @@ body {
     flex-direction: column;
 }
 
+.subject {
+    margin-bottom: 20px; /* Space between subjects */
+    border-bottom: 1px solid #ddd; /* Divider for clarity */
+    padding-bottom: 10px;
+}
+
+.subject-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.comments-container {
+    margin-top: 10px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.comments-container.hidden {
+    display: none; /* Hide by default */
+}
+
+.comments input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.comments button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comments button:hover {
+    background-color: #0056b3;
+}
+
+
 .comments-section {
     margin-top: 20px; /* Create spacing below other elements */
     padding: 20px; /* More padding for readability */
