@@ -206,7 +206,7 @@ function trackUserPreference(categoryId) {
     setCookie('preferences', JSON.stringify(preferences), 365); // Persist for 1 year
 }
 
-// Updated: Render Categories with Neat Comment Section
+// Updated: Render Categories with Comment Section Below Each Subject
 function renderCategories(categories, highlightSearchTerm = '') {
     const categoriesContainer = document.getElementById('categories');
     categoriesContainer.innerHTML = ''; // Clear existing content
@@ -234,6 +234,7 @@ function renderCategories(categories, highlightSearchTerm = '') {
             subjectDiv.classList.add('subject');
             subjectDiv.setAttribute('data-subject-id', subject.subject_id);
 
+            // Subject content with toggle button
             subjectDiv.innerHTML = `
                 <div class="subject-header">
                     <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
@@ -258,12 +259,13 @@ function renderCategories(categories, highlightSearchTerm = '') {
     });
 }
 
-// Toggle Comments Function
+// Toggle Comments Function: Show/Hide Comments Below the Relevant Subject
 function toggleComments(subjectId) {
     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
-    commentsContainer.classList.toggle('hidden');
+    const toggleButton = document.querySelector(`[data-subject-id="${subjectId}"] .comments-toggle`);
 
-    const toggleButton = commentsContainer.previousElementSibling.querySelector('.comments-toggle');
+    // Toggle visibility of comments
+    commentsContainer.classList.toggle('hidden');
     toggleButton.textContent = commentsContainer.classList.contains('hidden') ? '▼' : '▲';
 }
 
