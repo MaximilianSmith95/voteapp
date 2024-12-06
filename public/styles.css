@@ -6,6 +6,57 @@ body {
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
+.comments-container {
+    background-color: #ffffff; /* White background */
+    color: #333333; /* Dark text */
+}
+.comments-container .comment {
+    color: #444444; /* Slightly darker gray for individual comments */
+}
+.comments-section {
+    margin-top: 20px; /* Adds more space from the subject */
+    width: 100%; /* Full width below the subject */
+}
+.comments-container {
+    max-height: 400px; /* Allows enough space for comments */
+    overflow-y: auto; /* Enables scrolling */
+    padding: 10px;
+}
+.comments-section textarea {
+    margin-top: 15px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.comments-section button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+@media (max-width: 768px) {
+    .comments-section {
+        max-width: 100%; /* Ensures it spans the width of the screen */
+        padding: 15px;
+    }
+
+    .comments-container {
+        max-height: 300px; /* Adjust height for smaller screens */
+    }
+}
+.comments-container .comment {
+    padding: 15px;
+    border-bottom: 1px solid #ddd; /* Divider between comments */
+}
+
+.comments-container .comment:last-child {
+    border-bottom: none; /* Remove border for the last comment */
+}
+
 form input, form textarea {
     width: calc(100% - 20px);
     margin: 10px 0;
