@@ -63,6 +63,7 @@ main .category {
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
