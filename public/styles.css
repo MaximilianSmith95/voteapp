@@ -6,40 +6,6 @@ body {
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
-}
-main .category {
-    background: linear-gradient(135deg, #7b22e7, #9c67de);
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-main .category:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-main .category h2 {
-    font-size: 1.5rem;
-    color: #7b22e7;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #7b22e7;
-    padding-bottom: 5px;
-}
-.vote-button, .comments-toggle {
-    font-size: 1.5rem;
-    color: #28a745;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.vote-button:hover, .comments-toggle:hover {
-    color: #1e7e34;
-    transform: scale(1.1);
 form input, form textarea {
     width: calc(100% - 20px);
     margin: 10px 0;
@@ -91,7 +57,39 @@ form input:focus, form textarea:focus {
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
+main .category {
+    background: linear-gradient(135deg, #7b22e7, #9c67de);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
+main .category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+main .category h2 {
+    font-size: 1.5rem;
+    color: #7b22e7;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #7b22e7;
+    padding-bottom: 5px;
+}
+.vote-button, .comments-toggle {
+    font-size: 1.5rem;
+    color: #28a745;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.vote-button:hover, .comments-toggle:hover {
+    color: #1e7e34;
+    transform: scale(1.1);
 
 Define CSS Variables
 :root {
