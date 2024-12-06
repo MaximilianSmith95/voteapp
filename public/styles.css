@@ -216,10 +216,82 @@ button {
     border-color: var(--border-color);
 }
 
+/* Comment Section */
 .comments-section {
-    background-color: var(--card-background);
-    color: var(--text-color);
+    width: 100%;
+    background: linear-gradient(135deg, #7b22e7, #9c67de);
+    color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto; /* Enable scrolling */
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
+
+/* Scrollbar Styling */
+.comments-section::-webkit-scrollbar {
+    width: 10px; /* Adjust scrollbar width */
+}
+
+.comments-section::-webkit-scrollbar-thumb {
+    background: #9c67de; /* Matches gradient color scheme */
+    border-radius: 8px;
+}
+
+.comments-section::-webkit-scrollbar-thumb:hover {
+    background: #7b22e7; /* Darker gradient color on hover */
+}
+
+/* Comments Container */
+.comments-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Individual Comment */
+.comments-container .comment {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* Textarea */
+.comments-section textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #9c67de;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    resize: vertical;
+}
+
+/* Buttons */
+.comments-section button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.comments-section button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #1e7e34, #155d24);
+}
+
 /* General Styling */
 body {
     font-family: "Arial", sans-serif;
