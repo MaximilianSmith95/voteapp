@@ -94,6 +94,19 @@ body {
     overflow-y: auto;  /* Enables scrolling if content exceeds height */
     transition: max-height 0.3s ease;
 }
+.subject a {
+    color: white; /* Match the title color */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Optional: Emphasize as a title */
+    cursor: default; /* Change cursor to default instead of pointer */
+    transition: none; /* Remove hover effects if desired */
+}
+
+.subject a:hover {
+    text-decoration: none; /* Prevent underline from appearing */
+    color: white; /* Ensure hover color remains the same */
+}
+
 
 /* Hidden by default; revealed when expanded */
 .hidden {
