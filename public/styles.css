@@ -808,7 +808,7 @@ nav {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid white;
     border-radius: 5px;
     resize: vertical;
     font-size: 0.9rem;
@@ -817,8 +817,8 @@ nav {
 .comments-section button {
     margin-top: 10px;
     padding: 8px 12px;
-    background-color: #00a8cc;
-    color: white;
+    background-color: purple;
+    color: purple;
     border: none;
     border-radius: 5px;
     cursor: pointer;
