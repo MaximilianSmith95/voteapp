@@ -359,16 +359,15 @@ window.toggleComments = function (subjectId) {
     const toggleButton = commentsContainer.previousElementSibling;
     toggleButton.textContent = commentsContainer.classList.contains("hidden") ? "▼" : "▲";
 
-    // Dynamically load comments and voice recording controls only when expanded
     if (!commentsContainer.classList.contains("hidden")) {
-        // Fetch comments if not already loaded
         if (!commentsContainer.dataset.loaded) {
             fetchComments(subjectId);
-            initializeVoiceRecordingControls(subjectId);
+            enableCommentInfiniteScroll(subjectId);
             commentsContainer.dataset.loaded = true; // Mark as loaded
         }
     }
 };
+
 
 // Function to add a comment to a subject
 function addComment(subjectId) {
@@ -385,54 +384,80 @@ function addComment(subjectId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                fetchComments(subjectId);
-                commentInput.value = "";
+                // Prepend the new comment to the top of the list
+                const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+                const newCommentElement = createCommentElement(data.comment);
+                commentContainer.prepend(newCommentElement);
+
+                commentInput.value = ""; // Clear input field
             }
         })
         .catch(error => console.error('Error posting comment:', error));
     }
 }
+function enableCommentInfiniteScroll(subjectId) {
+    const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
+    let currentPage = 1;
+    let isLoading = false;
+
+    commentsContainer.addEventListener('scroll', () => {
+        if (
+            commentsContainer.scrollTop + commentsContainer.clientHeight >= commentsContainer.scrollHeight - 10 &&
+            !isLoading
+        ) {
+            isLoading = true;
+            currentPage++;
+            fetchComments(subjectId, currentPage).then(() => {
+                isLoading = false;
+            });
+        }
+    });
+}
+
 
 
 // Function to fetch comments and voice reviews together
-function fetchComments(subjectId) {
-    fetch(`/api/subjects/${subjectId}/comments`)
+function fetchComments(subjectId, page = 1, limit = 10) {
+    fetch(`/api/subjects/${subjectId}/comments?page=${page}&limit=${limit}`)
         .then(response => response.json())
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-
-            // Clear existing content
-            commentContainer.innerHTML = "";
-
-            // Render text comments and voice reviews
+            
+            // Append fetched comments to the container
             data.comments.forEach(comment => {
-                const commentElement = document.createElement("div");
-                commentElement.classList.add("comment");
-
-                // Add username
-                const usernameElement = document.createElement("strong");
-                usernameElement.textContent = `${comment.username}: `;
-                commentElement.appendChild(usernameElement);
-
-                // Add text comment
-                if (!comment.is_voice_review) {
-                    const textElement = document.createElement("p");
-                    textElement.textContent = comment.comment_text;
-                    commentElement.appendChild(textElement);
-                }
-
-                // Add voice review
-                if (comment.is_voice_review) {
-                    const audioElement = document.createElement("audio");
-                    audioElement.controls = true;
-                    audioElement.src = comment.audio_path;
-                    commentElement.appendChild(audioElement);
-                }
-
+                const commentElement = createCommentElement(comment);
                 commentContainer.appendChild(commentElement);
             });
+
+            // Mark if more comments are available
+            if (data.hasMore) {
+                const loadMoreButton = document.createElement('button');
+                loadMoreButton.textContent = 'Load More';
+                loadMoreButton.className = 'load-more';
+                loadMoreButton.onclick = () => {
+                    fetchComments(subjectId, page + 1, limit);
+                    loadMoreButton.remove();
+                };
+                commentContainer.appendChild(loadMoreButton);
+            }
         })
         .catch(error => console.error("Error fetching comments:", error));
+}
+
+// Helper to create a comment element
+function createCommentElement(comment) {
+    const commentElement = document.createElement("div");
+    commentElement.classList.add("comment");
+    
+    const usernameElement = document.createElement("strong");
+    usernameElement.textContent = `${comment.username}: `;
+    commentElement.appendChild(usernameElement);
+    
+    const textElement = document.createElement("p");
+    textElement.textContent = comment.comment_text;
+    commentElement.appendChild(textElement);
+    
+    return commentElement;
 }
 
 
