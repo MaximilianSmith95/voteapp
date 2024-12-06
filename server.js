@@ -338,7 +338,7 @@ app.get('/api/subjects/:id/comments', (req, res) => {
     const { id: subjectId } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
-    const offset = (page - 1) * limit; // Calculate offset for pagination
+    const offset = (page - 1) * limit;
 
     const query = `
         SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
@@ -364,7 +364,6 @@ app.get('/api/subjects/:id/comments', (req, res) => {
             createdAt: comment.created_at
         }));
 
-        // Check if there are more comments
         const countQuery = `SELECT COUNT(*) AS total FROM comments WHERE subject_id = ?`;
         db.query(countQuery, [subjectId], (countErr, countResults) => {
             if (countErr) {
