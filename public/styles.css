@@ -974,10 +974,4 @@ nav {
     }
 } /* <-- Ensure this closing brace is present */
 
-/* Small screens: one column */
-@media (max-width: 768px) {
-    main {
-        grid-template-columns: 1fr; /* Single column on mobile */
-    }
-}
 
