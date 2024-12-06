@@ -167,6 +167,10 @@ main .category h2 {
     background-color: #0056b3; /* Darker blue on hover */
 }
 
+.comments {
+    max-height: 300px; /* Set the height */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
 
 
 
