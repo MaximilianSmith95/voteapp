@@ -423,20 +423,23 @@ function fetchComments(subjectId, page = 1, limit = 10) {
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
             
+            // Append new comments
             data.comments.forEach(comment => {
                 const commentElement = createCommentElement(comment);
                 commentContainer.appendChild(commentElement);
             });
 
             if (data.hasMore) {
-                // Attach an event listener for infinite scroll if more comments are available
+                console.log("Setting up infinite scroll for page", page + 1); // Debug
                 setupInfiniteScroll(subjectId, page + 1, limit);
+            } else {
+                console.log("No more comments to load"); // Debug
             }
         })
         .catch(error => console.error("Error fetching comments:", error));
 }
 
-function setupInfiniteScroll(subjectId, nextPage, limit) {
+function setupInfiniteScroll(subjectId, nextPage, limit = 10) {
     const commentContainer = document.getElementById(`comment-section-${subjectId}`);
     const onScroll = () => {
         if (commentContainer.scrollTop + commentContainer.clientHeight >= commentContainer.scrollHeight - 10) {
