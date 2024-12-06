@@ -29,7 +29,7 @@ main .category h2 {
     padding-bottom: 5px;
 }
 .vote-button, .comments-toggle {
-    font-size: 3rem;
+    font-size: 1.5rem;
     color: #28a745;
     background: none;
     border: none;
@@ -673,7 +673,7 @@ nav {
     color: green;
     padding: 5px;
     border: none;
-    font-size: 1.2rem;
+    font-size: 3rem;
     cursor: pointer;
 }
 
