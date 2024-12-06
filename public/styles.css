@@ -1,33 +1,48 @@
-body {
-    background: linear-gradient(135deg, #e8e8e8, #f1f1f1), url('https://www.transparenttextures.com/patterns/white-diamond.png');
-    color: var(--text-color);
-    font-family: Arial, sans-serif;
-}
-[data-theme="dark"] body {
-    background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
-}
 /* General Styling */
 body {
-    font-family: "Arial", sans-serif;
     background: linear-gradient(135deg, #e8e8e8, #f1f1f1), url('https://www.transparenttextures.com/patterns/white-diamond.png');
     color: var(--text-color);
     font-family: Arial, sans-serif;
     margin: 0;
 }
 
+:root {
+    --background-color: #f9f9f9;
+    --text-color: #333;
+    --header-background: #2e17dd;
+    --button-background: #007bff;
+    --card-background: #ffffff;
+    --border-color: #ddd;
+}
+
+[data-theme="dark"] {
+    --background-color: #121212;
+    --text-color: #e0e0e0;
+    --header-background: #1a1a1a;
+    --button-background: #444;
+    --card-background: #1e1e1e;
+    --border-color: #444;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 /* Comment Section Styling */
 .comments-section {
     width: 100%;
-    background-color: #ffffff; /* Pure white background for contrast */
+    background-color: #f9f9f9; /* Light gray background for contrast */
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
     margin-top: 10px;
-    max-height: 300px; /* Set height limit */
+    max-height: 300px; /* Limit height */
     overflow-y: auto; /* Enable scrolling */
     position: relative;
     transition: max-height 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 /* Scrollbar Styling */
@@ -36,7 +51,7 @@ body {
 }
 
 .comments-section::-webkit-scrollbar-thumb {
-    background-color: #7b22e7; /* Matches the purple theme */
+    background-color: #7b22e7; /* Purple scrollbar */
     border-radius: 4px;
 }
 
@@ -46,29 +61,29 @@ body {
 
 /* Comments Container */
 .comments-container {
-    max-height: 200px; /* Limit comment list height */
+    max-height: 200px;
     overflow-y: auto;
     margin-bottom: 10px;
-    background-color: #f9f9f9; /* Light background for comments */
+    background-color: #ffffff; /* White background for visibility */
     padding: 10px;
     border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-/* Individual Comment Styling */
+/* Individual Comment */
 .comments-container .comment {
     padding: 10px;
+    margin-bottom: 10px;
     border-bottom: 1px solid #ddd;
     font-size: 0.9rem;
-    color: #333333; /* Dark gray text for visibility */
-    background-color: #ffffff; /* Pure white background */
+    color: #333; /* Dark text for readability */
+    background-color: #f9f9f9; /* Slightly lighter than the container */
     border-radius: 4px;
-    margin-bottom: 5px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
 }
 
-/* Last Comment: Remove Border */
 .comments-container .comment:last-child {
-    border-bottom: none;
+    border-bottom: none; /* Remove border for the last comment */
 }
 
 /* Textarea Styling */
@@ -78,18 +93,18 @@ body {
     padding: 10px;
     border: 1px solid #7b22e7;
     border-radius: 5px;
-    background-color: #ffffff; /* Pure white background */
-    color: #333333; /* Dark gray text for readability */
-    resize: vertical;
+    background-color: #ffffff;
+    color: #333;
     font-size: 1rem;
-    font-family: Arial, sans-serif; /* Ensure consistent font */
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    font-family: Arial, sans-serif;
+    resize: vertical;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Textarea Focus Styling */
+/* Textarea Focus */
 .comments-section textarea:focus {
     outline: none;
-    border-color: #9c67de; /* Purple border on focus */
+    border-color: #9c67de;
     box-shadow: 0 0 5px rgba(123, 34, 231, 0.3);
 }
 
@@ -97,39 +112,38 @@ body {
 .comments-section button {
     margin-top: 10px;
     padding: 10px 15px;
-    background-color: #7b22e7; /* Purple button */
-    color: #ffffff; /* White text for contrast */
+    background-color: #7b22e7;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Button Hover Effect */
 .comments-section button:hover {
-    background-color: #9c67de; /* Lighter purple */
-    transform: translateY(-2px); /* Lift effect */
+    background-color: #9c67de;
+    transform: translateY(-2px);
 }
 
-/* Comment Toggle Arrow */
-.comment-toggle {
+/* Toggle Button for Comments */
+.comments-toggle {
     font-size: 1.5rem;
-    color: #666666; /* Neutral gray */
+    color: #666; /* Neutral gray */
     background: none;
     border: none;
     cursor: pointer;
     transition: color 0.3s ease, transform 0.2s ease;
 }
 
-.comment-toggle:hover {
-    color: #333333; /* Darker gray on hover */
+.comments-toggle:hover {
+    color: #333;
 }
 
-/* General Reset for Nested Elements */
+/* Resetting Nested Elements */
 .comments-section * {
-    color: inherit !important; /* Prevent unwanted overrides */
+    color: inherit !important;
 }
 
 /* Category Section */
