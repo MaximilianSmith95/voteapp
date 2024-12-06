@@ -15,7 +15,7 @@ body {
     margin: 0;
 }
 
-/* Comment Section */
+/* Comment Section Styling */
 .comment-section {
     width: 100%;
     background: linear-gradient(135deg, #7b22e7, #9c67de);
@@ -24,7 +24,8 @@ body {
     margin-top: 15px;
     max-height: 300px;
     overflow-y: auto;
-    color: #fff; /* Ensures contrast on the background */
+    color: #f9f9f9; /* Ensures visible text */
+    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -47,8 +48,8 @@ body {
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff; /* Makes the text readable */
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent for contrast */
+    color: #ffffff; /* Forces white text to be readable */
     font-size: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -60,7 +61,7 @@ body {
     border: 1px solid #9c67de;
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    color: #ffffff; /* Ensures visible input text */
     resize: vertical;
     margin-top: 15px;
     font-size: 1rem;
@@ -78,7 +79,7 @@ body {
     display: block;
     width: 100%;
     background: linear-gradient(135deg, #0056b3, #007bff);
-    color: #fff;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     padding: 10px;
@@ -107,6 +108,11 @@ body {
 
 .comment-toggle:hover {
     color: #555; /* Darker gray on hover */
+}
+
+/* Overriding any inherited text styles */
+.comment-section * {
+    color: #ffffff !important; /* Ensures all nested elements use white text */
 }
 
 /* Category Section */
