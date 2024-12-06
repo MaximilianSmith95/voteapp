@@ -78,6 +78,11 @@ main .category h2 {
     margin-bottom: 10px;
     border-bottom: 2px solid #7b22e7;
     padding-bottom: 5px;
+    color: white; /* Ensure headings inside category are white */
+}
+
+.category p, .category span {
+    color: white; /* Ensure all other text is white */
 }
 .vote-button, .comments-toggle {
     font-size: 1.5rem;
