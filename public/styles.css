@@ -242,7 +242,7 @@ button {
     padding: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    color: teal;
+    color: black;
     font-size: 0.9rem;
 }
 
@@ -254,7 +254,7 @@ button {
     border: 1px solid #9c67de;
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.2);
-    color: teal;
+    color: white;
     resize: vertical;
 }
 
@@ -448,28 +448,6 @@ main {
     padding: 1rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-/* Default blue scheme */
-.category h2 {
-    font-size: 1.3rem;
-    color: #00a8cc;
-    margin: 0 0 10px;
-    border-bottom: 2px solid #00a8cc;
-    padding-bottom: 5px;
-}
-
-/* Green scheme for positive categories */
-.category-green h2 {
-    color: green;
-    border-bottom-color: green;
-}
-
-/* Red scheme for negative categories */
-.category-red h2 {
-    color: red;
-    border-bottom-color: red;
-}
-
 /* Subjects */
 .subject {
     display: flex;
