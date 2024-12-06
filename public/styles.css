@@ -478,23 +478,6 @@ main {
     overflow-y: auto;
 }
 /* Comment Section Styling */
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    position: relative; /* Ensure it stays below the subject */
-    transition: max-height 0.3s ease;
-}
-
-.hidden {
-    display: none;
-}
 
 .comments-container {
     max-height: 200px; /* Limit height for comment list */
