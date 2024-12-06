@@ -6,56 +6,82 @@ body {
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
-.comments-container {
-    background-color: #ffffff; /* White background */
-    color: #333333; /* Dark text */
-}
-.comments-container .comment {
-    color: #444444; /* Slightly darker gray for individual comments */
-}
-.comments-section {
-    margin-top: 20px; /* Adds more space from the subject */
-    width: 100%; /* Full width below the subject */
-}
-.comments-container {
-    max-height: 400px; /* Allows enough space for comments */
-    overflow-y: auto; /* Enables scrolling */
-    padding: 10px;
-}
-.comments-section textarea {
-    margin-top: 15px;
-    padding: 12px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+.category {
+    display: flex;
+    flex-direction: column;
 }
 
-.comments-section button {
-    margin-top: 10px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #ffffff;
+.comments-section {
+    margin-top: 20px; /* Create spacing below other elements */
+    padding: 20px; /* More padding for readability */
+    background-color: #ffffff; /* Ensure contrast */
+    color: #333333;
+    border-radius: 10px; /* Rounded corners for better UI */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for distinction */
+}
+.comments-container {
+    padding: 15px; /* More padding for content */
+    border: 1px solid #ddd; /* Visible boundary */
     border-radius: 8px;
-    font-size: 0.9rem;
+    background-color: #f9f9f9; /* Light background for contrast */
+    overflow-y: auto; /* Enable scrolling */
+    max-height: 300px; /* Limit height to avoid taking up too much space */
+}
+
+.comment {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background-color: #ffffff; /* Different from the container */
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    color: #333333; /* Ensure readability */
 }
 @media (max-width: 768px) {
     .comments-section {
-        max-width: 100%; /* Ensures it spans the width of the screen */
-        padding: 15px;
+        margin-top: 15px;
+        padding: 10px;
+        max-width: 100%;
     }
 
     .comments-container {
-        max-height: 300px; /* Adjust height for smaller screens */
+        max-height: 250px; /* Reduced for smaller screens */
     }
 }
-.comments-container .comment {
-    padding: 15px;
-    border-bottom: 1px solid #ddd; /* Divider between comments */
+.comments-section textarea,
+.comments-section input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.comments-container .comment:last-child {
-    border-bottom: none; /* Remove border for the last comment */
+.comments-section textarea:focus,
+.comments-section input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
+
+.comments-section button {
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #28a745;
+    color: #ffffff;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+.comments-container {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f9f9f9;
+}
+
 
 form input, form textarea {
     width: calc(100% - 20px);
