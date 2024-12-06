@@ -423,42 +423,61 @@ function fetchComments(subjectId, page = 1, limit = 10) {
         .then(data => {
             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
             
-            // Append fetched comments to the container
             data.comments.forEach(comment => {
                 const commentElement = createCommentElement(comment);
                 commentContainer.appendChild(commentElement);
             });
 
-            // Mark if more comments are available
             if (data.hasMore) {
-                const loadMoreButton = document.createElement('button');
-                loadMoreButton.textContent = 'Load More';
-                loadMoreButton.className = 'load-more';
-                loadMoreButton.onclick = () => {
-                    fetchComments(subjectId, page + 1, limit);
-                    loadMoreButton.remove();
-                };
-                commentContainer.appendChild(loadMoreButton);
+                // Attach an event listener for infinite scroll if more comments are available
+                setupInfiniteScroll(subjectId, page + 1, limit);
             }
         })
         .catch(error => console.error("Error fetching comments:", error));
 }
 
+function setupInfiniteScroll(subjectId, nextPage, limit) {
+    const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+    const onScroll = () => {
+        if (commentContainer.scrollTop + commentContainer.clientHeight >= commentContainer.scrollHeight - 10) {
+            fetchComments(subjectId, nextPage, limit);
+            commentContainer.removeEventListener('scroll', onScroll); // Remove listener once triggered
+        }
+    };
+
+    commentContainer.addEventListener('scroll', onScroll);
+}
+
+// Call setupInfiniteScroll in toggleComments when the section is expanded
+window.toggleComments = function (subjectId) {
+    const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
+    commentsContainer.classList.toggle("hidden");
+
+    if (!commentsContainer.classList.contains("hidden") && !commentsContainer.dataset.loaded) {
+        fetchComments(subjectId);
+        setupInfiniteScroll(subjectId, 2); // Initialize infinite scroll starting at page 2
+        commentsContainer.dataset.loaded = true; // Mark as loaded
+    }
+};
+
 // Helper to create a comment element
 function createCommentElement(comment) {
     const commentElement = document.createElement("div");
     commentElement.classList.add("comment");
-    
+
     const usernameElement = document.createElement("strong");
     usernameElement.textContent = `${comment.username}: `;
     commentElement.appendChild(usernameElement);
-    
-    const textElement = document.createElement("p");
-    textElement.textContent = comment.comment_text;
-    commentElement.appendChild(textElement);
-    
+
+    if (comment.text) {
+        const textElement = document.createElement("p");
+        textElement.textContent = comment.text; // Ensure comment text is rendered
+        commentElement.appendChild(textElement);
+    }
+
     return commentElement;
 }
+
 
 
 // // Function to start recording voice reviews
