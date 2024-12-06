@@ -955,7 +955,6 @@ nav {
     animation-delay: 0.5s;
 }
 
-/* Bounce Animation */
 @keyframes bounce {
     0% {
         transform: translateY(0);
@@ -965,13 +964,15 @@ nav {
     }
     100% {
         transform: translateY(0);
-        
+    }
+} /* <-- Add this closing brace */
+
 /* Medium screen: two columns */
 @media (max-width: 1024px) {
     main {
         grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
     }
-} /* <-- Add this closing brace */
+} /* <-- Ensure this closing brace is present */
 
 /* Small screens: one column */
 @media (max-width: 768px) {
@@ -979,3 +980,4 @@ nav {
         grid-template-columns: 1fr; /* Single column on mobile */
     }
 }
+
