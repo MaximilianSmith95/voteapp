@@ -6,6 +6,147 @@ body {
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #121212, #1F1F1F), url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }
+/* General Styling */
+body {
+    font-family: "Arial", sans-serif;
+    background: linear-gradient(135deg, #e8e8e8, #f1f1f1), url('https://www.transparenttextures.com/patterns/white-diamond.png');
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+/* Comment Section */
+.comment-section {
+    width: 100%;
+    background: linear-gradient(135deg, #7b22e7, #9c67de);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    color: #fff; /* Ensures contrast on the background */
+    transition: all 0.3s ease;
+}
+
+/* Scrollbar Styling */
+.comment-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.comment-section::-webkit-scrollbar-thumb {
+    background: #9c67de;
+    border-radius: 4px;
+}
+
+.comment-section::-webkit-scrollbar-thumb:hover {
+    background: #7b22e7;
+}
+
+/* Individual Comment Styling */
+.comment-section .comment {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff; /* Makes the text readable */
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Comment Input Styling */
+.comment-section textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #9c67de;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    resize: vertical;
+    margin-top: 15px;
+    font-size: 1rem;
+}
+
+/* Textarea Focus */
+.comment-section textarea:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+/* Button Styling */
+.comment-section button {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Button Hover */
+.comment-section button:hover {
+    background: linear-gradient(135deg, #003f8a, #0056b3);
+    transform: translateY(-2px);
+}
+
+/* Collapsible Arrow for Comment Section */
+.comment-toggle {
+    font-size: 1.5rem;
+    color: #808080; /* Neutral gray */
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+}
+
+.comment-toggle:hover {
+    color: #555; /* Darker gray on hover */
+}
+
+/* Category Section */
+.category {
+    background: linear-gradient(135deg, #7b22e7, #9c67de);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category h2 {
+    font-size: 1.5rem;
+    color: gold;
+    border-bottom: 2px solid #7b22e7;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.category p {
+    color: white;
+}
+
+/* Improved Vote Button */
+.vote-button {
+    font-size: 1.5rem;
+    background: transparent;
+    color: teal;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vote-button:hover {
+    color: #1e7e34;
+    transform: scale(1.1);
+}
+
 form input, form textarea {
     width: calc(100% - 20px);
     margin: 10px 0;
