@@ -473,10 +473,6 @@ main {
     background-color: darkred;
 }
 
-.scrollable {
-    max-height: 400px;
-    overflow-y: auto;
-}
 /* Comment Section Styling */
 /* Comment Section Styling */
 .comments-section {
