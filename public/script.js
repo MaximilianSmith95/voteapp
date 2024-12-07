@@ -177,6 +177,7 @@ function fetchNearMeCategories(limit) {
 
 
 // Updated: Upvote and Track Preferences
+// Updated: Upvote and Track Preferences
 function upvote(subjectId, categoryId) {
     fetch(`/api/subjects/${subjectId}/vote`, {
         method: 'POST',
@@ -222,7 +223,7 @@ function renderCategories(categories, highlightSearchTerm = '') {
             const regex = new RegExp(`(${highlightSearchTerm})`, 'gi');
             categoryName = categoryName.replace(regex, `<span class="highlighted">$1</span>`);
         }
-        categoryDiv.innerHTML = `<h2>${categoryName} </h2>`;
+        categoryDiv.innerHTML = `<h2>${categoryName}</h2>`;
 
         // Render subjects sorted by votes
         const sortedSubjects = category.subjects.sort((a, b) => b.votes - a.votes);
@@ -234,7 +235,7 @@ function renderCategories(categories, highlightSearchTerm = '') {
             subjectDiv.classList.add('subject');
             subjectDiv.setAttribute('data-subject-id', subject.subject_id);
             subjectDiv.innerHTML = `
-                <p><a href="${subject.link}" target="_blank">${subject.name}</a></p>
+                <p><a href="${escapeHTML(subject.link)}" target="_blank">${escapeHTML(subject.name)}</a></p>
                 <span class="vote-container">
                     <span class="vote-count">${subject.votes}</span>
                     <button class="vote-button" onclick="upvote(${subject.subject_id}, ${category.category_id})">&#9650;</button>
@@ -247,13 +248,13 @@ function renderCategories(categories, highlightSearchTerm = '') {
                 </div>
             `;
             subjectsDiv.appendChild(subjectDiv);
-            
         });
 
         categoryDiv.appendChild(subjectsDiv);
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
 // Toggle Comments Function: Show/Hide Comments Below the Relevant Subject
 function toggleComments(subjectId) {
     const commentsContainer = document.getElementById(`comments-container-${subjectId}`);
@@ -263,12 +264,77 @@ function toggleComments(subjectId) {
     commentsContainer.classList.toggle('hidden');
 
     // Update button text or icon based on visibility
-    if (commentsContainer.classList.contains('hidden')) {
-        toggleButton.textContent = '▼'; // Triangle pointing down (closed state)
-    } else {
-        toggleButton.textContent = '▲'; // Triangle pointing up (open state)
-    }
+    toggleButton.textContent = commentsContainer.classList.contains('hidden') ? '▼' : '▲';
 }
+
+// Sanitize Input
+function sanitizeInput(input) {
+    return input.replace(/https?:\/\/[^\s]+/g, ''); // Remove URLs
+}
+
+// Validate Comment Content
+function isValidComment(input) {
+    const validPattern = /^[a-zA-Z0-9\s.,!?]+$/; // Adjust as necessary
+    return validPattern.test(input);
+}
+
+// Escape HTML for Safe Rendering
+function escapeHTML(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
+// Validate and Add Comment
+function addComment(subjectId) {
+    const commentInput = document.getElementById(`comment-input-${subjectId}`);
+    let commentText = commentInput.value.trim();
+
+    // Sanitize and validate input
+    commentText = sanitizeInput(commentText);
+    if (!isValidComment(commentText)) {
+        alert("Your comment contains invalid content.");
+        return;
+    }
+
+    // Check comment length
+    const maxLength = 200;
+    if (commentText.length > maxLength) {
+        alert("Your comment is too long.");
+        return;
+    }
+
+    // Flag prohibited content
+    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
+    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
+        alert("Your comment contains prohibited content.");
+        return;
+    }
+
+    // Sanitize for safe rendering and proceed to submit
+    const sanitizedText = escapeHTML(commentText);
+    fetch(`/api/subjects/${subjectId}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment_text: sanitizedText })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Prepend the new comment
+                const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+                const newComment = document.createElement('div');
+                newComment.classList.add('comment');
+                newComment.innerHTML = `
+                    <strong>User:</strong> ${sanitizedText}
+                `;
+                commentContainer.prepend(newComment);
+                commentInput.value = ''; // Clear input
+            }
+        })
+        .catch(error => console.error('Error adding comment:', error));
+}
+
 // Updated: Navigation Event Listener for "For You" Button
 document.getElementById('forYouButton').addEventListener('click', () => {
     infiniteScrollEnabled = true; // Enable infinite scroll
