@@ -269,54 +269,6 @@ function toggleComments(subjectId) {
         toggleButton.textContent = '▲'; // Triangle pointing up (open state)
     }
 }
-function sanitizeInput(input) {
-    return input.replace(/https?:\/\/[^\s]+/g, ''); // Remove URLs
-}
-function isValidComment(input) {
-    const validPattern = /^[a-zA-Z0-9\s.,!?]+$/; // Adjust as necessary
-    return validPattern.test(input);
-}
-const sanitizedComment = sanitizeInput(commentText);
-if (!isValidComment(sanitizedComment)) {
-    alert("Your comment contains invalid characters.");
-}
-function escapeHTML(input) {
-    const div = document.createElement('div');
-    div.textContent = input;
-    return div.innerHTML;
-}
-commentElement.innerHTML = escapeHTML(commentText);
-const maxLength = 200;
-if (commentText.length > maxLength) {
-    alert("Your comment is too long.");
-    return;
-}
-const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
-if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
-    alert("Your comment contains prohibited content.");
-    return;
-}
-function addComment(subjectId) {
-    const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    let commentText = commentInput.value.trim();
-
-    // Sanitize and validate input
-    commentText = sanitizeInput(commentText);
-    if (!isValidComment(commentText)) {
-        alert("Your comment contains invalid content.");
-        return;
-    }
-
-    const sanitizedText = escapeHTML(commentText);
-    // Proceed to submit sanitizedText to the server
-    fetch(`/api/subjects/${subjectId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, comment_text: sanitizedText })
-    });
-}
-
-
 // Updated: Navigation Event Listener for "For You" Button
 document.getElementById('forYouButton').addEventListener('click', () => {
     infiniteScrollEnabled = true; // Enable infinite scroll
