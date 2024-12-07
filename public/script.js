@@ -279,7 +279,6 @@ function isValidComment(input) {
 const sanitizedComment = sanitizeInput(commentText);
 if (!isValidComment(sanitizedComment)) {
     alert("Your comment contains invalid characters.");
-    return;
 }
 function escapeHTML(input) {
     const div = document.createElement('div');
