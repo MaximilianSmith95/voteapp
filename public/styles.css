@@ -603,18 +603,7 @@ main {
 .comment-toggle:hover {
     color: #00a8cc;
 }
-/* Full-width, spacious comment section styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Optional: limits height */
-    overflow-y: auto;  /* Enables scrolling if content exceeds height */
-    transition: max-height 0.3s ease;
-}
+
 
 /* Hidden by default; revealed when expanded */
 .hidden {
