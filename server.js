@@ -4,17 +4,17 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
-const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
+const rateLimit = require('express-rate-limit');
 const AWS = require('aws-sdk');
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
-const validator = require('validator'); // To validate and sanitize inputs
+const upload = multer({ storage: multer.memoryStorage() });
+const validator = require('validator');
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    region: 'eu-north-1' // Correct region configuration
+    region: 'eu-north-1'
 });
 
 const app = express();
@@ -43,11 +43,24 @@ db.connect(err => {
     console.log('Connected to MySQL Database');
 });
 
-// Define a rate limiter for the voting endpoint
+// Haversine formula for distance calculation
+const haversine = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+};
+
+// Rate Limiter
 const voteLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute window
-    max: 100, // Limit each IP to 100 requests per minute
-    message: { error: 'Too many requests. Please try again later.' } // Custom message
+    windowMs: 60 * 1000,
+    max: 100,
+    message: { error: 'Too many requests. Please try again later.' }
 });
 
 // Search API
@@ -103,11 +116,11 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-// Fetch categories with "near me" and "for you" support
+// Fetch Categories
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
+    const deviceId = req.cookies.device_id;
 
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
@@ -149,22 +162,10 @@ app.get('/api/categories', (req, res) => {
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
 
-            const calculateDistance = (lat1, lon1, lat2, lon2) => {
-                const R = 6371;
-                const dLat = ((lat2 - lat1) * Math.PI) / 180;
-                const dLon = ((lon2 - lon1) * Math.PI) / 180;
-                const a =
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                return R * c;
-            };
-
             const categoriesWithDistance = categories.map(category => ({
                 ...category,
                 distance: category.latitude && category.longitude
-                    ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
+                    ? haversine(userLat, userLon, category.latitude, category.longitude)
                     : Infinity
             }));
 
@@ -213,7 +214,7 @@ app.get('/api/categories', (req, res) => {
     });
 });
 
-// Voting endpoint
+// Voting Endpoint
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -277,7 +278,7 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     });
 });
 
-// Add a comment
+// Add a Comment
 app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
@@ -307,6 +308,108 @@ app.post('/api/subjects/:id/comment', (req, res) => {
                 createdAt: new Date()
             }
         });
+    });
+});
+
+// Fetch Comments
+app.get('/api/subjects/:id/comments', (req, res) => {
+    const { id: subjectId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    const offset = (page - 1) * limit;
+
+    const query = `
+        SELECT comment_id, parent_comment_id, username, comment_text, audio_path, is_voice_review, created_at
+        FROM comments
+        WHERE subject_id = ?
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+    `;
+
+    db.query(query, [subjectId, parseInt(limit), offset], (err, results) => {
+        if (err) {
+            console.error('Database Fetch Error:', err);
+            return res.status(500).json({ error: 'Failed to fetch comments' });
+        }
+
+        const comments = results.map(comment => ({
+            id: comment.comment_id,
+            parentCommentId: comment.parent_comment_id,
+            username: comment.username,
+            text: comment.comment_text,
+            audioPath: comment.audio_path,
+            isVoiceReview: !!comment.is_voice_review,
+            createdAt: comment.created_at
+        }));
+
+        const countQuery = `SELECT COUNT(*) AS total FROM comments WHERE subject_id = ?`;
+        db.query(countQuery, [subjectId], (countErr, countResults) => {
+            if (countErr) {
+                console.error('Error counting comments:', countErr);
+                return res.status(500).json({ error: 'Failed to fetch comment count' });
+            }
+
+            const totalComments = countResults[0]?.total || 0;
+            const hasMore = offset + comments.length < totalComments;
+
+            res.json({ comments, hasMore });
+        });
+    });
+});
+
+// Voice Review Upload
+app.post('/api/subjects/:id/voice-review', upload.single('audio'), async (req, res) => {
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
+
+    const { id: subjectId } = req.params;
+    const username = req.body.username || `User${Math.floor(100 + Math.random() * 900)}`;
+    const audioFile = req.file;
+
+    if (!audioFile) {
+        console.error('No audio file received.');
+        return res.status(400).json({ error: 'Audio file is required' });
+    }
+
+    const bucketName = process.env.CLOUDCUBE_URL.split('/')[3];
+    const filePath = `voice-reviews/${subjectId}/${Date.now()}_${audioFile.originalname}`;
+    const s3Params = {
+        Bucket: bucketName,
+        Key: filePath,
+        Body: audioFile.buffer,
+        ContentType: audioFile.mimetype,
+        ACL: 'public-read',
+    };
+
+    try {
+        const s3Response = await s3.upload(s3Params).promise();
+        console.log('Cloudcube upload successful:', s3Response);
+
+        const query = 'INSERT INTO comments (subject_id, username, audio_path, is_voice_review) VALUES (?, ?, ?, TRUE)';
+        db.query(query, [subjectId, username, s3Response.Location], (err) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Failed to save review in database' });
+            }
+            res.json({ success: true, url: s3Response.Location });
+        });
+    } catch (err) {
+        console.error('Cloudcube upload error:', err.message);
+        return res.status(500).json({ error: 'Failed to upload to Cloudcube' });
+    }
+});
+
+// Fetch Total Votes
+app.get('/api/totalVotes', (req, res) => {
+    const query = 'SELECT SUM(votes) AS totalVotes FROM subjects';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching total votes:', err);
+            res.status(500).json({ error: 'Database error' });
+        } else {
+            res.json({ totalVotes: results[0]?.totalVotes || 0 });
+        }
     });
 });
 
