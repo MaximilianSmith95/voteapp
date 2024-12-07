@@ -644,32 +644,13 @@ main {
     font-size: 0.9rem;
 }
 
-/* Optional: Makes the transition smoother */
-.comments-section.expanded {
-    max-height: 300px; /* Adjust height if needed */
-}
-/* Comment Section Styling */
-.comments-section {
-    width: 100%;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 10px;
-    max-height: 300px; /* Set a height limit */
-    overflow-y: auto; /* Enable scrolling for overflow */
-    transition: max-height 0.3s ease;
-    position: relative; /* Ensure it stays below the subject */
-}
+
 
 .hidden {
     display: none;
 }
 
-.comments-container {
-    max-height: 200px; /* Height limit for comment list */
-    overflow-y: auto;
-    margin-bottom: 10px;
+
 }
 
 .comment {
