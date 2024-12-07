@@ -4,17 +4,17 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require("cookie-parser");
-const rateLimit = require('express-rate-limit');
+const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
 const AWS = require('aws-sdk');
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
-const validator = require('validator');
+const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
+const validator = require('validator'); // To validate and sanitize inputs
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    region: 'eu-north-1'
+    region: 'eu-north-1' // Correct region configuration
 });
 
 const app = express();
@@ -56,11 +56,11 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     return R * c;
 };
 
-// Rate Limiter
+// Define a rate limiter for the voting endpoint
 const voteLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 100,
-    message: { error: 'Too many requests. Please try again later.' }
+    windowMs: 60 * 1000, // 1 minute window
+    max: 100, // Limit each IP to 100 requests per minute
+    message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
 
 // Search API
