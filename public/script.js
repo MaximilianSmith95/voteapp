@@ -87,54 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
 
-document.getElementById('hotButton').addEventListener('click', () => {
-    fetch('/api/categories/hot')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Hot Topics Data:', data); // Log the response data
-            if (Array.isArray(data)) {
-                renderCategories(data);
-            } else {
-                console.error('Unexpected data format for hot topics:', data);
-                document.getElementById('categories').innerHTML = '<p>No hot topics found.</p>';
-            }
-        })
-        .catch(error => console.error('Error fetching hot topics:', error));
-});
-
-document.getElementById('coldButton').addEventListener('click', () => {
-    fetch('/api/categories/cold')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (Array.isArray(data)) {
-                renderCategories(data);
-            } else {
-                console.error('Unexpected data format for cold topics:', data);
-                document.getElementById('categories').innerHTML = '<p>No cold topics found.</p>';
-            }
-        })
-        .catch(error => console.error('Error fetching cold topics:', error));
-});
-
-
-// Increase limit and fetch more categories for "Explore More"
-document.getElementById("exploreMoreButton").addEventListener("click", () => {
-    currentCategoriesLimit += 15; // Load 15 more
-    if (activeFilterFunction) {
-        activeFilterFunction(); // Re-trigger the fetch with the updated limit
-    }
-});
-
 // Search functionality with infinite scroll disabled
 window.filterContent = function () {
     const searchTerm = document.getElementById("searchBar").value.toLowerCase();
