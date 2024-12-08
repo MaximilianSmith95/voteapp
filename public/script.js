@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById('hotButton').addEventListener('click', () => {
-    fetch(`/api/categories/hot?limit=${currentCategoriesLimit}`)
+    fetch(`/api/categories/hot`)
         .then(response => response.json())
         .then(data => {
             renderCategories(data);
@@ -97,7 +97,7 @@ document.getElementById('hotButton').addEventListener('click', () => {
 });
 
 document.getElementById('coldButton').addEventListener('click', () => {
-    fetch(`/api/categories/cold?limit=${currentCategoriesLimit}`)
+    fetch(`/api/categories/cold`)
         .then(response => response.json())
         .then(data => {
             renderCategories(data);
