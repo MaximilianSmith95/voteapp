@@ -86,6 +86,23 @@ document.addEventListener("DOMContentLoaded", () => {
     setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
+document.getElementById('hotButton').addEventListener('click', () => {
+    fetch('/api/categories/hot')
+        .then(response => response.json())
+        .then(data => {
+            renderCategories(data);
+        })
+        .catch(error => console.error('Error fetching hot topics:', error));
+});
+
+document.getElementById('coldButton').addEventListener('click', () => {
+    fetch('/api/categories/cold')
+        .then(response => response.json())
+        .then(data => {
+            renderCategories(data);
+        })
+        .catch(error => console.error('Error fetching cold topics:', error));
+});
 
 // Search functionality with infinite scroll disabled
 window.filterContent = function () {
