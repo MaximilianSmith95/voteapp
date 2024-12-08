@@ -237,42 +237,112 @@ app.get('/api/categories', (req, res) => {
     });
 });
 app.get('/api/categories/hot', (req, res) => {
-    const limit = parseInt(req.query.limit) || 15; // Default limit to 15 if not provided
     const query = `
-        SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes
-        FROM categories c
-        LEFT JOIN subjects s ON c.category_id = s.category_id
-        GROUP BY c.category_id
-        ORDER BY total_votes DESC
-        LIMIT ?;
+        SELECT 
+            c.category_id, 
+            c.name AS category_name, 
+            c.latitude, 
+            c.longitude, 
+            s.subject_id, 
+            s.name AS subject_name, 
+            s.votes, 
+            s.link,
+            COALESCE(SUM(s.votes), 0) OVER (PARTITION BY c.category_id) AS total_votes
+        FROM 
+            categories c
+        LEFT JOIN 
+            subjects s ON c.category_id = s.category_id
+        ORDER BY 
+            total_votes DESC, c.name ASC;
     `;
-    db.query(query, [limit], (err, results) => {
+    db.query(query, (err, results) => {
         if (err) {
             console.error('Error fetching hot topics:', err);
             return res.status(500).json({ error: 'Database error' });
         }
-        res.json(results);
+
+        const categories = results.reduce((acc, row) => {
+            let category = acc.find(cat => cat.category_id === row.category_id);
+            if (!category) {
+                category = {
+                    category_id: row.category_id,
+                    name: row.category_name,
+                    latitude: row.latitude,
+                    longitude: row.longitude,
+                    total_votes: row.total_votes,
+                    subjects: []
+                };
+                acc.push(category);
+            }
+            if (row.subject_id) {
+                category.subjects.push({
+                    subject_id: row.subject_id,
+                    name: row.subject_name,
+                    votes: row.votes,
+                    link: row.link
+                });
+            }
+            return acc;
+        }, []);
+
+        res.json(categories);
     });
 });
 
+
 app.get('/api/categories/cold', (req, res) => {
-    const limit = parseInt(req.query.limit) || 15; // Default limit to 15 if not provided
     const query = `
-        SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes
-        FROM categories c
-        LEFT JOIN subjects s ON c.category_id = s.category_id
-        GROUP BY c.category_id
-        ORDER BY total_votes ASC
-        LIMIT ?;
+        SELECT 
+            c.category_id, 
+            c.name AS category_name, 
+            c.latitude, 
+            c.longitude, 
+            s.subject_id, 
+            s.name AS subject_name, 
+            s.votes, 
+            s.link,
+            COALESCE(SUM(s.votes), 0) OVER (PARTITION BY c.category_id) AS total_votes
+        FROM 
+            categories c
+        LEFT JOIN 
+            subjects s ON c.category_id = s.category_id
+        ORDER BY 
+            total_votes ASC, c.name ASC;
     `;
-    db.query(query, [limit], (err, results) => {
+    db.query(query, (err, results) => {
         if (err) {
             console.error('Error fetching cold topics:', err);
             return res.status(500).json({ error: 'Database error' });
         }
-        res.json(results);
+
+        const categories = results.reduce((acc, row) => {
+            let category = acc.find(cat => cat.category_id === row.category_id);
+            if (!category) {
+                category = {
+                    category_id: row.category_id,
+                    name: row.category_name,
+                    latitude: row.latitude,
+                    longitude: row.longitude,
+                    total_votes: row.total_votes,
+                    subjects: []
+                };
+                acc.push(category);
+            }
+            if (row.subject_id) {
+                category.subjects.push({
+                    subject_id: row.subject_id,
+                    name: row.subject_name,
+                    votes: row.votes,
+                    link: row.link
+                });
+            }
+            return acc;
+        }, []);
+
+        res.json(categories);
     });
 });
+
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
