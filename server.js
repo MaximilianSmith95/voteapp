@@ -236,6 +236,39 @@ app.get('/api/categories', (req, res) => {
         }
     });
 });
+app.get('/api/categories/hot', (req, res) => {
+    const query = `
+        SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes
+        FROM categories c
+        LEFT JOIN subjects s ON c.category_id = s.category_id
+        GROUP BY c.category_id
+        ORDER BY total_votes DESC;
+    `;
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching hot topics:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
+
+app.get('/api/categories/cold', (req, res) => {
+    const query = `
+        SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes
+        FROM categories c
+        LEFT JOIN subjects s ON c.category_id = s.category_id
+        GROUP BY c.category_id
+        ORDER BY total_votes ASC;
+    `;
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching cold topics:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
