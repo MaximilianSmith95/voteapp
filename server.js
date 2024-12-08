@@ -257,10 +257,12 @@ app.get('/api/categories/hot', (req, res) => {
     `;
     db.query(query, (err, results) => {
         if (err) {
-            console.error('Error fetching hot topics:', err);
-            return res.status(500).json({ error: 'Database error' });
+            console.error('Error executing query for hot topics:', err);
+            console.error('Query:', query);
+            return res.status(500).json({ error: 'Database error', details: err.message });
         }
 
+        // Transform data into structured categories
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
