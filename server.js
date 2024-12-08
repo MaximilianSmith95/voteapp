@@ -237,14 +237,16 @@ app.get('/api/categories', (req, res) => {
     });
 });
 app.get('/api/categories/hot', (req, res) => {
+    const limit = parseInt(req.query.limit) || 15; // Default limit to 15 if not provided
     const query = `
         SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes
         FROM categories c
         LEFT JOIN subjects s ON c.category_id = s.category_id
         GROUP BY c.category_id
-        ORDER BY total_votes DESC;
+        ORDER BY total_votes DESC
+        LIMIT ?;
     `;
-    db.query(query, (err, results) => {
+    db.query(query, [limit], (err, results) => {
         if (err) {
             console.error('Error fetching hot topics:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -254,14 +256,16 @@ app.get('/api/categories/hot', (req, res) => {
 });
 
 app.get('/api/categories/cold', (req, res) => {
+    const limit = parseInt(req.query.limit) || 15; // Default limit to 15 if not provided
     const query = `
         SELECT c.category_id, c.name AS category_name, SUM(s.votes) AS total_votes
         FROM categories c
         LEFT JOIN subjects s ON c.category_id = s.category_id
         GROUP BY c.category_id
-        ORDER BY total_votes ASC;
+        ORDER BY total_votes ASC
+        LIMIT ?;
     `;
-    db.query(query, (err, results) => {
+    db.query(query, [limit], (err, results) => {
         if (err) {
             console.error('Error fetching cold topics:', err);
             return res.status(500).json({ error: 'Database error' });
