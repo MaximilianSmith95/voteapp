@@ -86,8 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
     setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
+let currentCategoriesLimit = 15; // Start with 15
+
 document.getElementById('hotButton').addEventListener('click', () => {
-    fetch('/api/categories/hot')
+    fetch(`/api/categories/hot?limit=${currentCategoriesLimit}`)
         .then(response => response.json())
         .then(data => {
             renderCategories(data);
@@ -96,12 +98,20 @@ document.getElementById('hotButton').addEventListener('click', () => {
 });
 
 document.getElementById('coldButton').addEventListener('click', () => {
-    fetch('/api/categories/cold')
+    fetch(`/api/categories/cold?limit=${currentCategoriesLimit}`)
         .then(response => response.json())
         .then(data => {
             renderCategories(data);
         })
         .catch(error => console.error('Error fetching cold topics:', error));
+});
+
+// Increase limit and fetch more categories for "Explore More"
+document.getElementById("exploreMoreButton").addEventListener("click", () => {
+    currentCategoriesLimit += 15; // Load 15 more
+    if (activeFilterFunction) {
+        activeFilterFunction(); // Re-trigger the fetch with the updated limit
+    }
 });
 
 // Search functionality with infinite scroll disabled
