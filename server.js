@@ -259,15 +259,22 @@ app.get('/api/categories/hot', (req, res) => {
             return res.status(500).json({ error: 'Database error', details: err.message });
         }
 
-        res.json(results.map(row => ({
+        console.log('Database Results (Hot Topics):', results); // Log raw database results
+
+        const processedResults = results.map(row => ({
             category_id: row.category_id,
             name: row.category_name,
             latitude: row.latitude,
             longitude: row.longitude,
             total_votes: row.total_votes
-        })));
+        }));
+
+        console.log('Processed Results (Hot Topics):', processedResults); // Log processed results
+
+        res.json(processedResults); // Send response
     });
 });
+
 
 
 app.get('/api/categories/cold', (req, res) => {
