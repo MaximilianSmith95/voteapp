@@ -254,6 +254,32 @@ function trackUserPreference(categoryId) {
     preferences[categoryId] = (preferences[categoryId] || 0) + 1;
     setCookie('preferences', JSON.stringify(preferences), 365); // Persist for 1 year
 }
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById('categories');
+    categoriesContainer.innerHTML = ''; // Clear existing content
+
+    if (!Array.isArray(categories) || categories.length === 0) {
+        categoriesContainer.innerHTML = '<p>No categories available.</p>';
+        console.error('Invalid categories data:', categories); // Log the invalid data
+        return;
+    }
+
+    categories.forEach(category => {
+        if (!category || typeof category.name !== 'string') {
+            console.error('Invalid category object:', category); // Log unexpected objects
+            return;
+        }
+
+        const categoryDiv = document.createElement('div');
+        categoryDiv.classList.add('category');
+        categoryDiv.innerHTML = `
+            <h2>${category.name}</h2>
+            <p>Total Votes: ${category.total_votes || 0}</p>
+        `;
+        categoriesContainer.appendChild(categoryDiv);
+    });
+}
+
 
 // Updated: Render Categories with "Recommended" Label
 function renderCategories(categories, highlightSearchTerm = '') {
