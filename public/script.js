@@ -96,6 +96,7 @@ document.getElementById('hotButton').addEventListener('click', () => {
             return response.json();
         })
         .then(data => {
+            console.log('Hot Topics Data:', data); // Log the response data
             if (Array.isArray(data)) {
                 renderCategories(data);
             } else {
