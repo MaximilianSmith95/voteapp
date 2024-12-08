@@ -88,22 +88,43 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById('hotButton').addEventListener('click', () => {
-    fetch(`/api/categories/hot`)
-        .then(response => response.json())
+    fetch('/api/categories/hot')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            renderCategories(data);
+            if (Array.isArray(data)) {
+                renderCategories(data);
+            } else {
+                console.error('Unexpected data format for hot topics:', data);
+                document.getElementById('categories').innerHTML = '<p>No hot topics found.</p>';
+            }
         })
         .catch(error => console.error('Error fetching hot topics:', error));
 });
 
 document.getElementById('coldButton').addEventListener('click', () => {
-    fetch(`/api/categories/cold`)
-        .then(response => response.json())
+    fetch('/api/categories/cold')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            renderCategories(data);
+            if (Array.isArray(data)) {
+                renderCategories(data);
+            } else {
+                console.error('Unexpected data format for cold topics:', data);
+                document.getElementById('categories').innerHTML = '<p>No cold topics found.</p>';
+            }
         })
         .catch(error => console.error('Error fetching cold topics:', error));
 });
+
 
 // Increase limit and fetch more categories for "Explore More"
 document.getElementById("exploreMoreButton").addEventListener("click", () => {
