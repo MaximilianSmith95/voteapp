@@ -86,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupExploreMoreButton(); // Set up the Explore More button
     enableInfiniteScrolling(); // Enable infinite scrolling
 });
-let currentCategoriesLimit = 15; // Start with 15
 
 document.getElementById('hotButton').addEventListener('click', () => {
     fetch(`/api/categories/hot?limit=${currentCategoriesLimit}`)
