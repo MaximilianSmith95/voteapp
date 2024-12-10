@@ -49,19 +49,19 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
-document.getElementById('personalizedButton').addEventListener('click', () => {
-    const keywords = "Disney,BBC,Internet";  // Replace this with dynamic logic if needed
+// document.getElementById('personalizedButton').addEventListener('click', () => {
+//     const keywords = "Disney,BBC,Internet";  // Replace this with dynamic logic if needed
 
-    fetch(`/api/category-keywords?keywords=${keywords}`)
-        .then(response => response.json())
-        .then(categories => {
-            console.log(categories);
-            // Logic to display categories on the frontend
-        })
-        .catch(err => {
-            console.error('Error fetching categories:', err);
-        });
-});
+//     fetch(`/api/category-keywords?keywords=${keywords}`)
+//         .then(response => response.json())
+//         .then(categories => {
+//             console.log(categories);
+//             // Logic to display categories on the frontend
+//         })
+//         .catch(err => {
+//             console.error('Error fetching categories:', err);
+//         });
+// });
 
 // Function to render categories
 function renderCategories(categories) {
