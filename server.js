@@ -61,6 +61,44 @@ const voteLimiter = rateLimit({
     max: 100, // Limit each IP to 100 requests per minute
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
+// Endpoint to get personalized categories based on user preferences
+app.get('/api/personalized-categories', (req, res) => {
+    const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
+
+    if (Object.keys(preferences).length === 0) {
+        return res.json({ message: 'No preferences found' });
+    }
+
+    const preferredCategoryIds = Object.keys(preferences);
+
+    // SQL query to fetch categories that match the user's preferences
+    const query = `
+        SELECT c.category_id, c.name AS category_name, s.subject_id, s.name AS subject_name, s.votes
+        FROM Categories c
+        LEFT JOIN Subjects s ON c.category_id = s.category_id
+        WHERE c.category_id IN (${preferredCategoryIds.join(',')})
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching personalized categories:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        const categories = results.reduce((acc, row) => {
+            let category = acc.find(cat => cat.category_id === row.category_id);
+            if (!category) {
+                category = { category_id: row.category_id, name: row.category_name, subjects: [] };
+                acc.push(category);
+            }
+            category.subjects.push({ subject_id: row.subject_id, name: row.subject_name, votes: row.votes });
+            return acc;
+        }, []);
+
+        res.json(categories);
+    });
+});
+
 
 // Search API
 app.get('/api/search', (req, res) => {
