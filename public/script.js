@@ -201,11 +201,27 @@ function upvote(subjectId, categoryId) {
 }
 
 // New: Track User Preferences with Cookies
+// Function to track user preferences (voted categories)
 function trackUserPreference(categoryId) {
     let preferences = JSON.parse(getCookie('preferences') || '{}');
     preferences[categoryId] = (preferences[categoryId] || 0) + 1;
     setCookie('preferences', JSON.stringify(preferences), 365); // Persist for 1 year
 }
+
+// Example function for upvoting and tracking preference
+function upvote(subjectId, categoryId) {
+    fetch(`/api/subjects/${subjectId}/vote`, {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            trackUserPreference(categoryId); // Track the category the user voted for
+        }
+    })
+    .catch(error => console.error('Error upvoting:', error));
+}
+
 
 // Updated: Render Categories with "Recommended" Label
 function renderCategories(categories, highlightSearchTerm = '') {
