@@ -114,28 +114,28 @@ app.get('/api/search', (req, res) => {
         res.json(categories);
     });
 });
-app.get('/api/category-keywords', (req, res) => {
-    const { keywords } = req.query; // Expecting a comma-separated list of keywords
+app.get('/api/category-suggestions', (req, res) => {
+    const { votedCategory } = req.query; // Keyword or category name user interacted with
 
-    if (!keywords) {
-        return res.status(400).json({ error: 'Keywords are required' });
+    if (!votedCategory) {
+        return res.status(400).json({ error: 'Voted category is required' });
     }
 
-    const keywordsArray = keywords.split(',').map(keyword => `%${keyword.trim()}%`);
-
+    // Prepare the query to find categories that match the voted category
     const query = `
         SELECT c.category_id, c.name AS category_name
         FROM Categories c
-        WHERE ${keywordsArray.map((_, idx) => `c.name LIKE ?`).join(' OR ')}
+        WHERE c.name LIKE ?;
     `;
 
-    db.query(query, keywordsArray, (err, results) => {
+    // Use the voted category name to fetch related categories
+    db.query(query, [`%${votedCategory}%`], (err, results) => {
         if (err) {
-            console.error('Error executing category keyword query:', err);
+            console.error('Error fetching related categories:', err);
             return res.status(500).json({ error: 'Database error' });
         }
 
-        res.json(results);  // Return the matched categories
+        res.json(results);  // Return the related categories based on the voted category
     });
 });
 
