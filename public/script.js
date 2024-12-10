@@ -49,6 +49,46 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
+// Add event listener for the "Show Personalized Categories" button
+document.getElementById("personalizedButton").addEventListener("click", function() {
+    fetch('/api/personalized-categories')
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message); // In case no preferences are found
+            } else {
+                renderCategories(data); // Render personalized categories
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching personalized categories:', error);
+            alert('Error loading personalized categories.');
+        });
+});
+
+// Function to render categories
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById('categories');
+    categoriesContainer.innerHTML = ''; // Clear existing categories
+
+    categories.forEach(category => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.classList.add('category');
+        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
+
+        category.subjects.forEach(subject => {
+            const subjectDiv = document.createElement('div');
+            subjectDiv.classList.add('subject');
+            subjectDiv.innerHTML = `
+                <p>${subject.name}</p>
+                <span class="vote-count">Votes: ${subject.votes}</span>
+            `;
+            categoryDiv.appendChild(subjectDiv);
+        });
+
+        categoriesContainer.appendChild(categoryDiv);
+    });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners for navigation buttons
