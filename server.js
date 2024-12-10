@@ -114,30 +114,6 @@ app.get('/api/search', (req, res) => {
         res.json(categories);
     });
 });
-app.get('/api/category-suggestions', (req, res) => {
-    const { votedCategory } = req.query; // Keyword or category name user interacted with
-
-    if (!votedCategory) {
-        return res.status(400).json({ error: 'Voted category is required' });
-    }
-
-    // Prepare the query to find categories that match the voted category
-    const query = `
-        SELECT c.category_id, c.name AS category_name
-        FROM Categories c
-        WHERE c.name LIKE ?;
-    `;
-
-    // Use the voted category name to fetch related categories
-    db.query(query, [`%${votedCategory}%`], (err, results) => {
-        if (err) {
-            console.error('Error fetching related categories:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        res.json(results);  // Return the related categories based on the voted category
-    });
-});
 
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
