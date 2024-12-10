@@ -114,6 +114,30 @@ app.get('/api/search', (req, res) => {
         res.json(categories);
     });
 });
+app.get('/api/category-keywords', (req, res) => {
+    const { keywords } = req.query; // Expecting a comma-separated list of keywords
+
+    if (!keywords) {
+        return res.status(400).json({ error: 'Keywords are required' });
+    }
+
+    const keywordsArray = keywords.split(',').map(keyword => `%${keyword.trim()}%`);
+
+    const query = `
+        SELECT c.category_id, c.name AS category_name
+        FROM Categories c
+        WHERE ${keywordsArray.map((_, idx) => `c.name LIKE ?`).join(' OR ')}
+    `;
+
+    db.query(query, keywordsArray, (err, results) => {
+        if (err) {
+            console.error('Error executing category keyword query:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        res.json(results);  // Return the matched categories
+    });
+});
 
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
