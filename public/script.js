@@ -49,19 +49,32 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
-// document.getElementById('personalizedButton').addEventListener('click', () => {
-//     const keywords = "Disney,BBC,Internet";  // Replace this with dynamic logic if needed
+document.getElementById('personalizedButton').addEventListener('click', () => {
+    const keywords = "Disney,BBC,Internet";  // Replace this with dynamic logic if needed
 
-//     fetch(`/api/category-keywords?keywords=${keywords}`)
-//         .then(response => response.json())
-//         .then(categories => {
-//             console.log(categories);
-//             // Logic to display categories on the frontend
-//         })
-//         .catch(err => {
-//             console.error('Error fetching categories:', err);
-//         });
-// });
+    fetch(`/api/category-keywords?keywords=${keywords}`)
+        .then(response => response.json())
+        .then(categories => {
+            console.log(categories);
+            // Logic to display categories on the frontend
+        })
+        .catch(err => {
+            console.error('Error fetching categories:', err);
+        });
+});
+// Assuming you have a function to handle voting
+function handleVote(subjectId, votedCategory) {
+    // Send the voted category to the backend to get related categories
+    fetch(`/api/category-suggestions?votedCategory=${votedCategory}`)
+        .then(response => response.json())
+        .then(categories => {
+            console.log('Suggested categories:', categories);
+            // Logic to display the fetched categories to the user
+        })
+        .catch(error => {
+            console.error('Error fetching related categories:', error);
+        });
+}
 
 // Function to render categories
 function renderCategories(categories) {
