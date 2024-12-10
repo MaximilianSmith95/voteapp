@@ -49,22 +49,19 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
-// Add event listener for the "Show Personalized Categories" button
-// document.getElementById("personalizedButton").addEventListener("click", function() {
-//     fetch('/api/personalized-categories')
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.message) {
-//                 alert(data.message); // In case no preferences are found
-//             } else {
-//                 renderCategories(data); // Render personalized categories
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Error fetching personalized categories:', error);
-//             alert('Error loading personalized categories.');
-//         });
-// });
+document.getElementById('personalizedButton').addEventListener('click', () => {
+    const keywords = "Disney,BBC,Internet";  // Replace this with dynamic logic if needed
+
+    fetch(`/api/category-keywords?keywords=${keywords}`)
+        .then(response => response.json())
+        .then(categories => {
+            console.log(categories);
+            // Logic to display categories on the frontend
+        })
+        .catch(err => {
+            console.error('Error fetching categories:', err);
+        });
+});
 
 // Function to render categories
 function renderCategories(categories) {
