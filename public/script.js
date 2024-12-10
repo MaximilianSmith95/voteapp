@@ -49,56 +49,6 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
-document.getElementById('personalizedButton').addEventListener('click', () => {
-    const keywords = "Disney,BBC,Internet";  // Replace this with dynamic logic if needed
-
-    fetch(`/api/category-keywords?keywords=${keywords}`)
-        .then(response => response.json())
-        .then(categories => {
-            console.log(categories);
-            // Logic to display categories on the frontend
-        })
-        .catch(err => {
-            console.error('Error fetching categories:', err);
-        });
-});
-// Assuming you have a function to handle voting
-function handleVote(subjectId, votedCategory) {
-    // Send the voted category to the backend to get related categories
-    fetch(`/api/category-suggestions?votedCategory=${votedCategory}`)
-        .then(response => response.json())
-        .then(categories => {
-            console.log('Suggested categories:', categories);
-            // Logic to display the fetched categories to the user
-        })
-        .catch(error => {
-            console.error('Error fetching related categories:', error);
-        });
-}
-
-// Function to render categories
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById('categories');
-    categoriesContainer.innerHTML = ''; // Clear existing categories
-
-    categories.forEach(category => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.classList.add('category');
-        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
-
-        category.subjects.forEach(subject => {
-            const subjectDiv = document.createElement('div');
-            subjectDiv.classList.add('subject');
-            subjectDiv.innerHTML = `
-                <p>${subject.name}</p>
-                <span class="vote-count">Votes: ${subject.votes}</span>
-            `;
-            categoryDiv.appendChild(subjectDiv);
-        });
-
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
 
 document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners for navigation buttons
@@ -251,27 +201,11 @@ function upvote(subjectId, categoryId) {
 }
 
 // New: Track User Preferences with Cookies
-// Function to track user preferences (voted categories)
 function trackUserPreference(categoryId) {
     let preferences = JSON.parse(getCookie('preferences') || '{}');
     preferences[categoryId] = (preferences[categoryId] || 0) + 1;
     setCookie('preferences', JSON.stringify(preferences), 365); // Persist for 1 year
 }
-
-// Example function for upvoting and tracking preference
-function upvote(subjectId, categoryId) {
-    fetch(`/api/subjects/${subjectId}/vote`, {
-        method: 'POST',
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            trackUserPreference(categoryId); // Track the category the user voted for
-        }
-    })
-    .catch(error => console.error('Error upvoting:', error));
-}
-
 
 // Updated: Render Categories with "Recommended" Label
 function renderCategories(categories, highlightSearchTerm = '') {
