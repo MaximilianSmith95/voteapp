@@ -50,21 +50,21 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 // Add event listener for the "Show Personalized Categories" button
-document.getElementById("personalizedButton").addEventListener("click", function() {
-    fetch('/api/personalized-categories')
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert(data.message); // In case no preferences are found
-            } else {
-                renderCategories(data); // Render personalized categories
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching personalized categories:', error);
-            alert('Error loading personalized categories.');
-        });
-});
+// document.getElementById("personalizedButton").addEventListener("click", function() {
+//     fetch('/api/personalized-categories')
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.message) {
+//                 alert(data.message); // In case no preferences are found
+//             } else {
+//                 renderCategories(data); // Render personalized categories
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error fetching personalized categories:', error);
+//             alert('Error loading personalized categories.');
+//         });
+// });
 
 // Function to render categories
 function renderCategories(categories) {
