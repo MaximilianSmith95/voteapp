@@ -70,60 +70,46 @@ app.get('/api/personalized-categories', (req, res) => {
         return res.json({ message: 'No preferences found' });
     }
 
+    // Collect keywords based on the categories the user has voted for
     const preferredCategoryIds = Object.keys(preferences);
+    const keywords = preferredCategoryIds.map(id => {
+        const categoryName = preferences[id]; // Example: "Disney", "Internet", etc.
+        return `%${categoryName}%`;  // Dynamic LIKE search
+    });
 
-    // First, get the categories that the user voted for based on their preferences
-    const query = `
-        SELECT c.category_id, c.name AS category_name, s.subject_id, s.name AS subject_name, s.votes
-        FROM Categories c
-        LEFT JOIN Subjects s ON c.category_id = s.category_id
-        WHERE c.category_id IN (${preferredCategoryIds.join(',')})
+    const relatedCategoriesQuery = `
+        SELECT category_id, name AS category_name
+        FROM Categories
+        WHERE name LIKE ?
     `;
 
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching personalized categories:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        // Reduce results into structured categories
-        const categories = results.reduce((acc, row) => {
-            let category = acc.find(cat => cat.category_id === row.category_id);
-            if (!category) {
-                category = { category_id: row.category_id, name: row.category_name, subjects: [] };
-                acc.push(category);
-            }
-            category.subjects.push({ subject_id: row.subject_id, name: row.subject_name, votes: row.votes });
-            return acc;
-        }, []);
-
-        // Now we need to fetch related categories based on keywords
-        const relatedCategoriesQuery = `
-            SELECT category_id, name AS category_name
-            FROM Categories
-            WHERE name LIKE ?
-        `;
-
-        // Collect all keywords based on the categories the user has voted for
-        let relatedCategories = [];
-        const keywords = Object.keys(preferences).map(id => {
-            const categoryName = results.find(row => row.category_id == id).category_name.toLowerCase();
-            return `%${categoryName}%`; // Create keyword queries for LIKE
-        });
-
-        const relatedPromises = keywords.map(keyword => {
-            return new Promise((resolve, reject) => {
-                db.query(relatedCategoriesQuery, [keyword], (err, relatedResults) => {
-                    if (err) {
-                        console.error('Error fetching related categories:', err);
-                        reject(err);
-                    } else {
-                        relatedCategories = [...relatedCategories, ...relatedResults];
-                        resolve();
-                    }
-                });
+    // Fetch categories related to the user’s votes
+    let relatedCategories = [];
+    const relatedPromises = keywords.map(keyword => {
+        return new Promise((resolve, reject) => {
+            db.query(relatedCategoriesQuery, [keyword], (err, relatedResults) => {
+                if (err) {
+                    console.error('Error fetching related categories:', err);
+                    reject(err);
+                } else {
+                    relatedCategories = [...relatedCategories, ...relatedResults];
+                    resolve();
+                }
             });
         });
+    });
+
+    // Wait for all related categories to be fetched
+    Promise.all(relatedPromises).then(() => {
+        // Remove duplicates by category_id
+        relatedCategories = Array.from(new Set(relatedCategories.map(a => a.category_id)))
+            .map(id => relatedCategories.find(a => a.category_id === id));
+
+        res.json(relatedCategories); // Return all related categories
+    }).catch(err => {
+        res.status(500).json({ error: 'Error fetching related categories' });
+    });
+});
 
         // Wait for all related categories to be fetched
         Promise.all(relatedPromises).then(() => {
