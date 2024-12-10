@@ -62,6 +62,7 @@ const voteLimiter = rateLimit({
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
 // Endpoint to get personalized categories based on user preferences
+// Endpoint to get personalized categories based on user preferences
 app.get('/api/personalized-categories', (req, res) => {
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
 
@@ -71,7 +72,7 @@ app.get('/api/personalized-categories', (req, res) => {
 
     const preferredCategoryIds = Object.keys(preferences);
 
-    // SQL query to fetch categories that match the user's preferences
+    // First, get the categories that the user voted for based on their preferences
     const query = `
         SELECT c.category_id, c.name AS category_name, s.subject_id, s.name AS subject_name, s.votes
         FROM Categories c
@@ -85,6 +86,7 @@ app.get('/api/personalized-categories', (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
+        // Reduce results into structured categories
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
@@ -95,7 +97,51 @@ app.get('/api/personalized-categories', (req, res) => {
             return acc;
         }, []);
 
-        res.json(categories);
+        // Now we need to fetch related categories based on keywords
+        const relatedCategoriesQuery = `
+            SELECT category_id, name AS category_name
+            FROM Categories
+            WHERE name LIKE ?
+        `;
+
+        // Collect all keywords based on the categories the user has voted for
+        let relatedCategories = [];
+        const keywords = Object.keys(preferences).map(id => {
+            const categoryName = results.find(row => row.category_id == id).category_name.toLowerCase();
+            return `%${categoryName}%`; // Create keyword queries for LIKE
+        });
+
+        const relatedPromises = keywords.map(keyword => {
+            return new Promise((resolve, reject) => {
+                db.query(relatedCategoriesQuery, [keyword], (err, relatedResults) => {
+                    if (err) {
+                        console.error('Error fetching related categories:', err);
+                        reject(err);
+                    } else {
+                        relatedCategories = [...relatedCategories, ...relatedResults];
+                        resolve();
+                    }
+                });
+            });
+        });
+
+        // Wait for all related categories to be fetched
+        Promise.all(relatedPromises).then(() => {
+            // Filter duplicates and make sure related categories are unique
+            relatedCategories = Array.from(new Set(relatedCategories.map(a => a.category_id)))
+                .map(id => relatedCategories.find(a => a.category_id === id));
+
+            // Merge related categories with user's current preferences
+            const allCategories = [...categories, ...relatedCategories];
+
+            // Remove duplicates in case a related category was already included in the user's preferences
+            const uniqueCategories = Array.from(new Set(allCategories.map(a => a.category_id)))
+                .map(id => allCategories.find(a => a.category_id === id));
+
+            res.json(uniqueCategories); // Return all unique categories
+        }).catch(err => {
+            res.status(500).json({ error: 'Error fetching related categories' });
+        });
     });
 });
 
