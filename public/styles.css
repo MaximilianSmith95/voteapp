@@ -13,98 +13,78 @@ body {
     padding: 10px;
 }
 
-/* General Modal Styles */
+form input, form textarea {
+    width: calc(100% - 20px);
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+form input:focus, form textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
 .modal {
-  position: fixed;              /* Make the modal overlay fixed */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: none;                /* Hidden by default */
-  align-items: center;          /* Center the modal content vertically */
-  justify-content: center;      /* Center the modal content horizontally */
-  z-index: 1000;                /* Ensure modal appears above other content */
-}
-
-/* Modal Content Styling */
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;           /* Rounded corners */
-  max-width: 500px;             /* Max width for the modal */
-  width: 90%;                   /* Responsive width */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  text-align: center;
-  animation: fadeIn 0.3s ease-in-out; /* Modal appearance animation */
-}
-
-/* Close Button Styling */
-button[type="button"] {
-  background-color: #f44336; /* Red color for Close button */
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-button[type="button"]:hover {
-  background-color: #d32f2f; /* Darker red on hover */
-}
-
-/* Modal Header */
-.modal h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-/* Input Fields */
-input[type="text"], input[type="email"], input[type="password"], textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-}
-
-input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus {
-  border-color: #7b22e7; /* Highlight border color on focus */
-  outline: none;
-}
-
-/* Button Styling */
-button[type="submit"] {
-  background-color: #7b22e7; /* Purple color for Submit button */
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-button[type="submit"]:hover {
-  background-color: #5e14b3; /* Darker purple on hover */
-}
-
-/* Make modal disappear when hidden */
-.hidden {
-  display: none !important; /* Override default display: none */
-}
-
-/* Modal Fade-In Animation */
-@keyframes fadeIn {
-  from {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #7b22e7, #9c67de); /* Purple gradient background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
     opacity: 0;
-  }
-  to {
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    color: white; /* Ensure text is readable */
+}
+
+.modal.visible {
     opacity: 1;
-  }
+    pointer-events: auto;
+}
+
+.modal input, .modal textarea {
+    width: calc(100% - 20px);
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: white; /* Default for light mode */
+    color: black; /* Default for light mode */
+}
+
+[data-theme="dark"] .modal input, 
+[data-theme="dark"] .modal textarea {
+    background-color: black; /* Dark mode input background */
+    color: white; /* Dark mode input text */
+    border: 1px solid #555; /* Subtle border for dark mode */
+}
+
+.modal button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #0056b3, #007bff);
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal button:hover {
+    background: linear-gradient(135deg, #003f8a, #0056b3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 main .category {
