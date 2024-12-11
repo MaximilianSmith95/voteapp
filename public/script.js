@@ -978,3 +978,4 @@ document.addEventListener("DOMContentLoaded", () => {
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
 });
+});
