@@ -121,31 +121,32 @@ document.getElementById('signUpForm').addEventListener('submit', (e) => {
 }); 
 
     // Log-In Form Submission
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
 
-        // Send Log-In data to the backend for authentication
-        fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Login successful!');
-                document.getElementById('loginModal').classList.add('hidden');
-            } else {
-                alert('Login failed: ' + data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+    // Send Log-In data to the backend for authentication
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    })
+    .then(response => response.json()) // Parse the response as JSON
+    .then(data => {
+        // Check if the response contains the "message" field indicating success
+        if (data.message) {
+            alert('Login successful!');
+            document.getElementById('loginModal').classList.add('hidden');
+        } else if (data.error) {
+            alert('Login failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
+});
 
     // Event listeners for filter buttons
     document.getElementById("forYouButton").addEventListener("click", () => {
