@@ -61,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNearMeCategories(currentCategoriesLimit);
     });
     
-document.addEventListener("DOMContentLoaded", () => {
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
     const feedButton = document.getElementById("feedButton"); // Feed button
 
