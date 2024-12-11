@@ -977,20 +977,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-}); // Properly close the DOMContentLoaded function
-
-// function fetchComments(subjectId) {
-//     fetch(`/api/subjects/${subjectId}/comments`)
-//         .then(response => response.json())
-//         .then(comments => {
-//             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-//             commentContainer.innerHTML = comments.map(comment => `
-//                 <div class="comment">
-//                     <strong>${comment.username}</strong>: 
-//                     ${comment.is_voice_review ? 
-//                         `<audio controls src="${comment.audio_path}"></audio>` : 
-//                         `<p>${comment.comment_text}</p>`}
-//                 </div>
-//             `).join("");
-//         });
-// }
+}); 
