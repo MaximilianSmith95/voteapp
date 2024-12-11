@@ -828,7 +828,6 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
             console.error("Error sending email:", error);
             alert("An error occurred. Please try again later.");
         });
-});
 
     const cookieConsent = document.getElementById("cookieConsent");
     const acceptCookiesButton = document.getElementById("acceptCookies");
