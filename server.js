@@ -7,6 +7,8 @@ const cookieParser = require("cookie-parser");
 const rateLimit = require('express-rate-limit'); // Import the rate-limiting middleware
 const AWS = require('aws-sdk');
 const multer = require('multer');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for temporary files
 
 // AWS S3 Configuration
@@ -41,6 +43,89 @@ db.connect(err => {
     if (err) throw err;
     console.log('Connected to MySQL Database');
 });
+
+// User Registration Endpoint
+app.post('/api/register', (req, res) => {
+    const { name, email, password } = req.body;
+
+    // Validate input
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check if the email is already taken
+    db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err) {
+            console.error('Error checking email:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+
+        if (results.length > 0) {
+            return res.status(400).json({ message: 'Email already registered' });
+        }
+
+        // Hash the password
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password:', err);
+                return res.status(500).json({ message: 'Server error' });
+            }
+
+            // Insert the new user into the database
+            db.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hashedPassword], (err, results) => {
+                if (err) {
+                    console.error('Error inserting user:', err);
+                    return res.status(500).json({ message: 'Server error' });
+                }
+
+                res.status(201).json({ success: true, message: 'User registered successfully' });
+            });
+        });
+    });
+});
+
+// User Login Endpoint
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Both email and password are required' });
+    }
+
+    // Find the user by email
+    db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err) {
+            console.error('Error fetching user:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const user = results[0];
+
+        // Compare the hashed password with the one in the database
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) {
+                console.error('Error comparing passwords:', err);
+                return res.status(500).json({ message: 'Server error' });
+            }
+
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Invalid email or password' });
+            }
+
+            // Generate a JWT token
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            res.status(200).json({ success: true, token });
+        });
+    });
+});
+
+// Other existing routes...
+
 
 // Haversine formula for distance calculation
 const haversine = (lat1, lon1, lat2, lon2) => {
