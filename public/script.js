@@ -113,23 +113,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Open the Sign-Up modal
 document.getElementById('signUpButton').addEventListener('click', () => {
-    document.getElementById('signUpModal').classList.remove('hidden');
+    document.getElementById('signUpModal').classList.add('visible');
 });
 
 // Open the Log-In modal
 document.getElementById('loginButtonTop').addEventListener('click', () => {
-    document.getElementById('loginModal').classList.remove('hidden');
+    document.getElementById('loginModal').classList.add('visible');
 });
 
 // Close the Sign-Up modal
 document.getElementById('closeSignUpModal').addEventListener('click', () => {
-    document.getElementById('signUpModal').classList.add('hidden');
+    document.getElementById('signUpModal').classList.remove('visible');
 });
 
 // Close the Log-In modal
 document.getElementById('closeLoginModal').addEventListener('click', () => {
-    document.getElementById('loginModal').classList.add('hidden');
+    document.getElementById('loginModal').classList.remove('visible');
 });
+
 
 // Sign-Up Form Submission
 document.getElementById('signUpForm').addEventListener('submit', (e) => {
