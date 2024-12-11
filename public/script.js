@@ -911,8 +911,7 @@ function upvote(subjectId) {
                 subjectElement.classList.add("voted");
             }
         });
-    }
-});
+        
 function fetchAndDisplayTotalVotes() {
     fetch('/api/totalVotes')
         .then(response => response.json())
