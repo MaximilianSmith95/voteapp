@@ -60,47 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
-
-    document.addEventListener("DOMContentLoaded", () => {
-    // Initialize variables
-    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login button
-    const feedButton = document.getElementById("feedButton"); // Feed button
-
-    // Check the login status and update buttons accordingly
-    const token = localStorage.getItem("token");
-
-    if (token) {
-        loginLogoutButton.textContent = "Logout"; // Change Login button to Logout
-        feedButton.style.display = "inline-block"; // Show Feed button
-    } else {
-        loginLogoutButton.textContent = "Login"; // Show Login button
-        feedButton.style.display = "none"; // Hide Feed button
-    }
-
-    // Add event listeners for buttons
-    loginLogoutButton.addEventListener("click", () => {
-        if (token) {
-            localStorage.removeItem("token"); // Remove token on logout
-            alert("Logged out successfully!");
-            location.reload(); // Reload the page to update the UI
-        } else {
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('loginModal').classList.add('visible');
-        }
-    });
-
-    feedButton.addEventListener("click", () => {
-        alert("You clicked the Feed button!"); // Placeholder for Feed functionality
-        // window.location.href = "/feed"; // Uncomment this when you implement Feed page
-    });
-
-    // Event listeners for modals (sign-up and login)
-    document.getElementById('signUpButton').addEventListener('click', function () {
-        const signUpModal = document.getElementById('signUpModal');
-        signUpModal.classList.remove('hidden');
-        signUpModal.classList.add('visible');
-    });
-
+    
     // Open Sign-Up Modal
     document.getElementById('signUpButton').addEventListener('click', function() {
         console.log('Sign Up button clicked'); // Check if this shows in the console
@@ -983,4 +943,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-}); 
+}); // Properly close the DOMContentLoaded function
+
+// function fetchComments(subjectId) {
+//     fetch(`/api/subjects/${subjectId}/comments`)
+//         .then(response => response.json())
+//         .then(comments => {
+//             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+//             commentContainer.innerHTML = comments.map(comment => `
+//                 <div class="comment">
+//                     <strong>${comment.username}</strong>: 
+//                     ${comment.is_voice_review ? 
+//                         `<audio controls src="${comment.audio_path}"></audio>` : 
+//                         `<p>${comment.comment_text}</p>`}
+//                 </div>
+//             `).join("");
+//         });
+// }
