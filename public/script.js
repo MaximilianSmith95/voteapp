@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
+
 // Open the Sign-Up modal
 document.getElementById('signUpButton').addEventListener('click', () => {
     document.getElementById('signUpModal').classList.remove('hidden');
