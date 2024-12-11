@@ -49,57 +49,7 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
-// Sign-Up Form Submission
-document.getElementById('signUpForm').addEventListener('submit', (e) => {
-    e.preventDefault();
 
-    const username = document.getElementById('signUpName').value;
-    const email = document.getElementById('signUpEmail').value;
-    const password = document.getElementById('signUpPassword').value;
-
-    // Send Sign-Up data to the backend for registration
-    fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(data.message);  // Registration successful message
-            document.getElementById('signUpModal').classList.add('hidden');
-        } else {
-            alert('Error: ' + data.error);  // Show error message
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-// Log-In Form Submission
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    // Send Log-In data to the backend for authentication
-    fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.token) {
-            localStorage.setItem('token', data.token);  // Store token for further requests
-            alert('Login successful!');
-            document.getElementById('loginModal').classList.add('hidden');
-        } else {
-            alert('Login failed: ' + data.error);  // Show error message
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -111,24 +61,32 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
-// Open the Sign-Up modal
-document.getElementById('signUpButton').addEventListener('click', () => {
-    document.getElementById('signUpModal').classList.add('visible');
+// Open Sign-Up Modal
+document.getElementById('signUpButton').addEventListener('click', function() {
+    const signUpModal = document.getElementById('signUpModal');
+    signUpModal.classList.remove('hidden');  // Show the modal
+    signUpModal.classList.add('visible');   // Add visible class to trigger display
 });
 
-// Open the Log-In modal
-document.getElementById('loginButtonTop').addEventListener('click', () => {
-    document.getElementById('loginModal').classList.add('visible');
+// Open Login Modal
+document.getElementById('loginButtonTop').addEventListener('click', function() {
+    const loginModal = document.getElementById('loginModal');
+    loginModal.classList.remove('hidden');  // Show the modal
+    loginModal.classList.add('visible');   // Add visible class to trigger display
 });
 
-// Close the Sign-Up modal
-document.getElementById('closeSignUpModal').addEventListener('click', () => {
-    document.getElementById('signUpModal').classList.remove('visible');
+// Close Sign-Up Modal
+document.getElementById('closeSignUpModal').addEventListener('click', function() {
+    const signUpModal = document.getElementById('signUpModal');
+    signUpModal.classList.add('hidden');  // Hide the modal
+    signUpModal.classList.remove('visible');
 });
 
-// Close the Log-In modal
-document.getElementById('closeLoginModal').addEventListener('click', () => {
-    document.getElementById('loginModal').classList.remove('visible');
+// Close Login Modal
+document.getElementById('closeLoginModal').addEventListener('click', function() {
+    const loginModal = document.getElementById('loginModal');
+    loginModal.classList.add('hidden');  // Hide the modal
+    loginModal.classList.remove('visible');
 });
 
 
