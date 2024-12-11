@@ -304,40 +304,34 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
 });
 
 // POST: Sign up route
+// POST: Sign up route
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
   
+  // Validate the input fields
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
   try {
     // Check if user already exists
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Error checking email' });
-      }
+    const [results] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
 
-      if (results.length > 0) {
-        return res.status(400).json({ error: 'Email is already in use' });
-      }
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'Email is already in use' });
+    }
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert new user into database
-      db.query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword], (err, result) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: 'Error registering user' });
-        }
+    // Insert new user into database
+    const [insertResult] = await db.promise().query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
 
-        res.status(201).json({ message: 'User registered successfully' });
-      });
-    });
+    // Successfully registered user
+    res.status(201).json({ message: 'User registered successfully', userId: insertResult.insertId });
+    
   } catch (error) {
-    console.error(error);
+    console.error('Error during user registration:', error);
     res.status(500).json({ error: 'Error registering user' });
   }
 });
