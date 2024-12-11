@@ -60,8 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
-
-document.addEventListener("DOMContentLoaded", () => {
+    
     // Open Sign-Up Modal
     document.getElementById('signUpButton').addEventListener('click', function() {
         console.log('Sign Up button clicked'); // Check if this shows in the console
