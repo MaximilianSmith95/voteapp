@@ -943,6 +943,45 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const loginButton = document.getElementById("loginButtonTop");
+    const feedButton = document.getElementById("feedButton");
+
+    // Check if a user is logged in by checking for a token in localStorage
+    const token = localStorage.getItem("token");
+
+    // If the token exists, show the logout button and the Feed button
+    if (token) {
+        loginButton.textContent = "Logout"; // Change Login button to Logout
+        feedButton.style.display = "inline-block"; // Show Feed button
+    } else {
+        loginButton.textContent = "Login"; // Keep Login button text if not logged in
+        feedButton.style.display = "none"; // Hide Feed button
+    }
+
+    // Handle Login/Logout button click
+    loginButton.addEventListener("click", () => {
+        if (token) {
+            // User is logged in, so we log out
+            localStorage.removeItem("token"); // Remove token from localStorage
+            alert("Logged out successfully!");
+            location.reload(); // Reload the page to update UI
+        } else {
+            // User is not logged in, so show the login modal
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('visible');
+        }
+    });
+
+    // Feed button click: Show personalized content or redirect to Feed page
+    feedButton.addEventListener("click", () => {
+        alert("You clicked the Feed button!"); // Add your feed functionality here
+        // You can redirect the user to a feed page, for example:
+        // window.location.href = "/feed"; // Replace with actual feed URL
+    });
+});
+
 }); // Properly close the DOMContentLoaded function
 
 // function fetchComments(subjectId) {
