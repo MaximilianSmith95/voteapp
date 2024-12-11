@@ -91,33 +91,34 @@ document.addEventListener("DOMContentLoaded", () => {
         loginModal.classList.remove('visible');
     });
 
-    // Sign-Up Form Submission
-    document.getElementById('signUpForm').addEventListener('submit', (e) => {
-        e.preventDefault();
+// Sign-Up Form Submission
+document.getElementById('signUpForm').addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        const name = document.getElementById('signUpName').value;
-        const email = document.getElementById('signUpEmail').value;
-        const password = document.getElementById('signUpPassword').value;
+    const name = document.getElementById('signUpName').value;
+    const email = document.getElementById('signUpEmail').value;
+    const password = document.getElementById('signUpPassword').value;
 
-        // Send Sign-Up data to the backend for registration
-        fetch('/api/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, password }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Registration successful! Please log in.');
-                document.getElementById('signUpModal').classList.add('hidden');
-            } else {
-                alert('Registration failed: ' + data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+    // Send Sign-Up data to the backend for registration
+    fetch('/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: name, email, password }), // Ensure "username" is sent
+    })
+    .then(response => response.json()) // Parse the response as JSON
+    .then(data => {
+        // Check if the backend response contains a message or error
+        if (data.message) {
+            alert('Registration successful! Please log in.');
+            document.getElementById('signUpModal').classList.add('hidden');
+        } else if (data.error) {
+            alert('Registration failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
+}); 
 
     // Log-In Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
