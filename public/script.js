@@ -61,32 +61,36 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
-// Open Sign-Up Modal
-document.getElementById('signUpButton').addEventListener('click', function() {
-    const signUpModal = document.getElementById('signUpModal');
-    signUpModal.classList.remove('hidden');  // Show the modal
-    signUpModal.classList.add('visible');   // Add visible class to trigger display
-});
+document.addEventListener("DOMContentLoaded", () => {
+    // Open Sign-Up Modal
+    document.getElementById('signUpButton').addEventListener('click', function() {
+        console.log('Sign Up button clicked'); // Check if this shows in the console
+        const signUpModal = document.getElementById('signUpModal');
+        signUpModal.classList.remove('hidden');
+        signUpModal.classList.add('visible');
+    });
 
-// Open Login Modal
-document.getElementById('loginButtonTop').addEventListener('click', function() {
-    const loginModal = document.getElementById('loginModal');
-    loginModal.classList.remove('hidden');  // Show the modal
-    loginModal.classList.add('visible');   // Add visible class to trigger display
-});
+    // Open Login Modal
+    document.getElementById('loginButtonTop').addEventListener('click', function() {
+        console.log('Login button clicked'); // Check if this shows in the console
+        const loginModal = document.getElementById('loginModal');
+        loginModal.classList.remove('hidden');
+        loginModal.classList.add('visible');
+    });
 
-// Close Sign-Up Modal
-document.getElementById('closeSignUpModal').addEventListener('click', function() {
-    const signUpModal = document.getElementById('signUpModal');
-    signUpModal.classList.add('hidden');  // Hide the modal
-    signUpModal.classList.remove('visible');
-});
+    // Close Sign-Up Modal
+    document.getElementById('closeSignUpModal').addEventListener('click', function() {
+        const signUpModal = document.getElementById('signUpModal');
+        signUpModal.classList.add('hidden');
+        signUpModal.classList.remove('visible');
+    });
 
-// Close Login Modal
-document.getElementById('closeLoginModal').addEventListener('click', function() {
-    const loginModal = document.getElementById('loginModal');
-    loginModal.classList.add('hidden');  // Hide the modal
-    loginModal.classList.remove('visible');
+    // Close Login Modal
+    document.getElementById('closeLoginModal').addEventListener('click', function() {
+        const loginModal = document.getElementById('loginModal');
+        loginModal.classList.add('hidden');
+        loginModal.classList.remove('visible');
+    });
 });
 
 
