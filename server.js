@@ -304,9 +304,10 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
 });
 
 // POST: Sign up route
-// POST: Sign up route
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
+    console.log('Received registration request:', { username, email, password });
+
   
   // Validate the input fields
   if (!username || !email || !password) {
