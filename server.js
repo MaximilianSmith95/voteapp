@@ -304,12 +304,11 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
 });
 
 // POST: Sign up route
+// POST: Sign up route
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
-    console.log('Received registration request:', { username, email, password });
 
-  
-  // Validate the input fields
+  // Basic validation of the fields
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'All fields are required' });
   }
@@ -325,14 +324,17 @@ app.post('/api/register', async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new user into database
-    const [insertResult] = await db.promise().query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
+    // Insert the new user into the database
+    const [insertResult] = await db.promise().query(
+      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+      [username, email, hashedPassword]
+    );
 
-    // Successfully registered user
+    // Send success response
     res.status(201).json({ message: 'User registered successfully', userId: insertResult.insertId });
-    
+
   } catch (error) {
-    console.error('Error during user registration:', error);
+    console.error('Error during registration:', error);
     res.status(500).json({ error: 'Error registering user' });
   }
 });
