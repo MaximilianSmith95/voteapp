@@ -945,40 +945,41 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const loginButton = document.getElementById("loginButtonTop");
+    const loginLogoutButton = document.getElementById("loginLogoutButton");
     const feedButton = document.getElementById("feedButton");
 
     // Check if a user is logged in by checking for a token in localStorage
     const token = localStorage.getItem("token");
 
-    // If the token exists, show the logout button and the Feed button
     if (token) {
-        loginButton.textContent = "Logout"; // Change Login button to Logout
+        // User is logged in, so show "Logout" button and "Feed"
+        loginLogoutButton.textContent = "Logout";
         feedButton.style.display = "inline-block"; // Show Feed button
     } else {
-        loginButton.textContent = "Login"; // Keep Login button text if not logged in
+        // User is not logged in, show "Login" button
+        loginLogoutButton.textContent = "Login";
         feedButton.style.display = "none"; // Hide Feed button
     }
 
     // Handle Login/Logout button click
-    loginButton.addEventListener("click", () => {
+    loginLogoutButton.addEventListener("click", () => {
         if (token) {
-            // User is logged in, so we log out
-            localStorage.removeItem("token"); // Remove token from localStorage
+            // If the user is logged in, logout by removing the token
+            localStorage.removeItem("token");
             alert("Logged out successfully!");
             location.reload(); // Reload the page to update UI
         } else {
-            // User is not logged in, so show the login modal
+            // If the user is not logged in, show the login modal
             document.getElementById('loginModal').classList.remove('hidden');
             document.getElementById('loginModal').classList.add('visible');
         }
     });
 
-    // Feed button click: Show personalized content or redirect to Feed page
+    // Feed button click: This can redirect to a personalized feed page or section
     feedButton.addEventListener("click", () => {
-        alert("You clicked the Feed button!"); // Add your feed functionality here
-        // You can redirect the user to a feed page, for example:
-        // window.location.href = "/feed"; // Replace with actual feed URL
+        alert("You clicked the Feed button!"); // Replace this with real feed functionality
+        // You can redirect the user to a feed page here, e.g.:
+        // window.location.href = "/feed";
     });
 });
 
