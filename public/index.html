@@ -148,6 +148,44 @@
         </form>
     </div>
 </div>
+<!-- Modal for Sign-Up -->
+<div id="signUpModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Create Your Account</h2>
+        <form id="signUpForm">
+            <label for="signUpName">Name:</label>
+            <input type="text" id="signUpName" name="name" placeholder="Enter your name" required>
+
+            <label for="signUpEmail">Email:</label>
+            <input type="email" id="signUpEmail" name="email" placeholder="Enter your email" required>
+
+            <label for="signUpPassword">Password:</label>
+            <input type="password" id="signUpPassword" name="password" placeholder="Enter a password" required>
+
+            <button type="submit" id="signUpButton">Sign Up</button>
+            <button type="button" id="closeSignUpModal">Close</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Log-In -->
+<div id="loginModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Login to Your Account</h2>
+        <form id="loginForm">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" name="email" placeholder="Enter your email" required>
+
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
+
+            <button type="submit" id="loginButton">Login</button>
+            <button type="button" id="closeLoginModal">Close</button>
+        </form>
+    </div>
+</div>
+
+
 
 
     </header>
@@ -156,6 +194,8 @@
 
 <button id="addContentButton" class="top-right-button">Submit Your Business/Content</button>
 <button id="darkModeToggle" class="top-right-button" style="margin-top: 45px;">Dark Mode</button>
+<button id="signUpButton" class="top-right-button" style="margin-top: 90px;">Sign Up</button>
+<button id="loginButtonTop" class="top-right-button" style="margin-top: 135px;">Login</button>      
     
 <nav>
 <!--     <button id="personalizedButton">Show Personalized Categories</button> -->
