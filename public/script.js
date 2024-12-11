@@ -58,6 +58,80 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
+// Open the Sign-Up modal
+document.getElementById('signUpButton').addEventListener('click', () => {
+    document.getElementById('signUpModal').classList.remove('hidden');
+});
+
+// Open the Log-In modal
+document.getElementById('loginButtonTop').addEventListener('click', () => {
+    document.getElementById('loginModal').classList.remove('hidden');
+});
+
+// Close the Sign-Up modal
+document.getElementById('closeSignUpModal').addEventListener('click', () => {
+    document.getElementById('signUpModal').classList.add('hidden');
+});
+
+// Close the Log-In modal
+document.getElementById('closeLoginModal').addEventListener('click', () => {
+    document.getElementById('loginModal').classList.add('hidden');
+});
+
+// Sign-Up Form Submission
+document.getElementById('signUpForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('signUpName').value;
+    const email = document.getElementById('signUpEmail').value;
+    const password = document.getElementById('signUpPassword').value;
+
+    // Send Sign-Up data to the backend for registration
+    fetch('/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Registration successful! Please log in.');
+            document.getElementById('signUpModal').classList.add('hidden');
+        } else {
+            alert('Registration failed: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+// Log-In Form Submission
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    // Send Log-In data to the backend for authentication
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Login successful!');
+            document.getElementById('loginModal').classList.add('hidden');
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
 
     document.getElementById("forYouButton").addEventListener("click", () => {
         infiniteScrollEnabled = true; // Enable infinite scroll
