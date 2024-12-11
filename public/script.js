@@ -829,7 +829,7 @@ document.getElementById("contentForm").addEventListener("submit", (e) => {
             alert("An error occurred. Please try again later.");
         });
 });
-document.addEventListener("DOMContentLoaded", () => {
+
     const cookieConsent = document.getElementById("cookieConsent");
     const acceptCookiesButton = document.getElementById("acceptCookies");
 
@@ -903,7 +903,7 @@ function upvote(subjectId) {
 }
 
 // On page load, retrieve and apply stored user behavior (e.g., highlight votes)
-document.addEventListener("DOMContentLoaded", () => {
+
     const userBehavior = JSON.parse(getCookie("userBehavior") || "{}");
 
     if (userBehavior.votes) {
@@ -954,7 +954,7 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
-document.addEventListener("DOMContentLoaded", () => {
+
     const darkModeToggle = document.getElementById("darkModeToggle");
 
     // Load saved theme from localStorage
