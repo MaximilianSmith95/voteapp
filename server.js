@@ -547,6 +547,27 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+// Save user interests
+app.post('/api/saveInterests', (req, res) => {
+    const { interests } = req.body;
+    const userId = req.userId; // Get user ID from the session or JWT token
+
+    // Insert or update the user's selected interests in the database
+    const query = `
+        INSERT INTO UserInterests (user_id, interest) 
+        VALUES ?
+        ON DUPLICATE KEY UPDATE interest = VALUES(interest);
+    `;
+
+    const values = interests.map(interest => [userId, interest]);
+
+    db.query(query, [values], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to save interests' });
+        }
+        res.json({ message: 'Interests saved successfully' });
+    });
+});
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
