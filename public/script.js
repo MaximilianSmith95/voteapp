@@ -61,155 +61,121 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNearMeCategories(currentCategoriesLimit);
     });
     
-document.addEventListener("DOMContentLoaded", () => {
-    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
-    const feedButton = document.getElementById("feedButton"); // Feed button
-
-    // Get the token from localStorage to check if the user is logged in
-    const token = localStorage.getItem("token");
-
-    // Show/hide buttons based on login state
-    if (token) {
-        loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
-        feedButton.style.display = "inline-block"; // Show Feed button
-    } else {
-        loginLogoutButton.textContent = "Login";  // Show Login button
-        feedButton.style.display = "none";        // Hide Feed button
-    }
-
-    // Handle Login/Logout button click
-    loginLogoutButton.addEventListener("click", () => {
-        if (token) {
-            // User is logged in, so log out by removing the token
-            localStorage.removeItem("token");
-            alert("Logged out successfully!");
-            location.reload();  // Reload the page to update UI
-        } else {
-            // User is not logged in, so show the login modal
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('loginModal').classList.add('visible');
-        }
-    });
-
-    // Handle Feed button click (this can be extended to redirect to a personalized feed)
-    feedButton.addEventListener("click", () => {
-        alert("You clicked the Feed button!"); // Placeholder
-        // window.location.href = "/feed"; // Uncomment when you implement Feed page
-    });
-
     // Open Sign-Up Modal
-    document.getElementById('signUpButton').addEventListener('click', function () {
+    document.getElementById('signUpButton').addEventListener('click', function() {
+        console.log('Sign Up button clicked'); // Check if this shows in the console
         const signUpModal = document.getElementById('signUpModal');
         signUpModal.classList.remove('hidden');
         signUpModal.classList.add('visible');
     });
 
     // Open Login Modal
-    document.getElementById('loginButtonTop').addEventListener('click', function () {
+    document.getElementById('loginButtonTop').addEventListener('click', function() {
+        console.log('Login button clicked'); // Check if this shows in the console
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.remove('hidden');
         loginModal.classList.add('visible');
     });
 
     // Close Sign-Up Modal
-    document.getElementById('closeSignUpModal').addEventListener('click', function () {
+    document.getElementById('closeSignUpModal').addEventListener('click', function() {
         const signUpModal = document.getElementById('signUpModal');
         signUpModal.classList.add('hidden');
         signUpModal.classList.remove('visible');
     });
 
     // Close Login Modal
-    document.getElementById('closeLoginModal').addEventListener('click', function () {
+    document.getElementById('closeLoginModal').addEventListener('click', function() {
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.add('hidden');
         loginModal.classList.remove('visible');
     });
 
-    // Sign-Up Form Submission
-    document.getElementById('signUpForm').addEventListener('submit', (e) => {
-        e.preventDefault();
+// Sign-Up Form Submission
+document.getElementById('signUpForm').addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        const name = document.getElementById('signUpName').value;
-        const email = document.getElementById('signUpEmail').value;
-        const password = document.getElementById('signUpPassword').value;
+    const name = document.getElementById('signUpName').value;
+    const email = document.getElementById('signUpEmail').value;
+    const password = document.getElementById('signUpPassword').value;
 
-        // Send Sign-Up data to backend
-        fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: name, email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert('Registration successful! Please log in.');
-                document.getElementById('signUpModal').classList.add('hidden');
-            } else if (data.error) {
-                alert('Registration failed: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+    // Send Sign-Up data to the backend for registration
+    fetch('/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: name, email, password }), // Ensure "username" is sent
+    })
+    .then(response => response.json()) // Parse the response as JSON
+    .then(data => {
+        // Check if the backend response contains a message or error
+        if (data.message) {
+            alert('Registration successful! Please log in.');
+            document.getElementById('signUpModal').classList.add('hidden');
+        } else if (data.error) {
+            alert('Registration failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
+}); 
 
-    // Login Form Submission
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
+    // Log-In Form Submission
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
 
-        // Send Log-In data to backend
-        fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.token) {
-                localStorage.setItem("token", data.token);  // Store token
-                alert('Login successful!');
-                document.getElementById('loginModal').classList.add('hidden');
-                location.reload();  // Reload page to update state
-            } else {
-                alert('Login failed: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+    // Send Log-In data to the backend for authentication
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    })
+    .then(response => response.json()) // Parse the response as JSON
+    .then(data => {
+        // Check if the response contains the "message" field indicating success
+        if (data.message) {
+            alert('Login successful!');
+            document.getElementById('loginModal').classList.add('hidden');
+        } else if (data.error) {
+            alert('Login failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
+});
 
-    // Set up filters and event listeners (e.g., for "For You" and "All" categories)
+    // Event listeners for filter buttons
     document.getElementById("forYouButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true;
+        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchForYouCategories;
-        currentCategoriesLimit = 15;
+        currentCategoriesLimit = 15; // Reset limit
         fetchForYouCategories(currentCategoriesLimit);
     });
 
     document.getElementById("allButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true;
+        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchAllCategories;
-        currentCategoriesLimit = 15;
+        currentCategoriesLimit = 15; // Reset limit
         fetchAllCategories(currentCategoriesLimit);
     });
 
     document.getElementById("latestButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true;
+        infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchLatestCategories;
-        currentCategoriesLimit = 15;
+        currentCategoriesLimit = 15; // Reset limit
         fetchLatestCategories(currentCategoriesLimit);
     });
 
-    // Set default filter to show all categories
+    // Default to "All Categories"
     activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
-    setupExploreMoreButton();  // Set up Explore More button
-    enableInfiniteScrolling();  // Enable infinite scrolling
+    setupExploreMoreButton(); // Set up the Explore More button
+    enableInfiniteScrolling(); // Enable infinite scrolling
 });
-
-// Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
-// CSS should hide elements with `.hidden` class and show them with `.visible` class
-
 
 // Search functionality with infinite scroll disabled
 window.filterContent = function () {
@@ -977,5 +943,22 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-});
-});
+}); 
+
+// Properly close the DOMContentLoaded function
+
+// function fetchComments(subjectId) {
+//     fetch(`/api/subjects/${subjectId}/comments`)
+//         .then(response => response.json())
+//         .then(comments => {
+//             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+//             commentContainer.innerHTML = comments.map(comment => `
+//                 <div class="comment">
+//                     <strong>${comment.username}</strong>: 
+//                     ${comment.is_voice_review ? 
+//                         `<audio controls src="${comment.audio_path}"></audio>` : 
+//                         `<p>${comment.comment_text}</p>`}
+//                 </div>
+//             `).join("");
+//         });
+// }
