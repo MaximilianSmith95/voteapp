@@ -51,8 +51,6 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
 }
 
 
-
-document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners for navigation buttons
     document.getElementById("geolocationButton").addEventListener("click", () => {
         infiniteScrollEnabled = true; // Enable infinite scroll
