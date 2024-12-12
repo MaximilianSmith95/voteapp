@@ -60,14 +60,44 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
-    
-    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
-    const feedButton = document.getElementById("feedButton"); // Feed button
-
     // Get the token from localStorage to check if the user is logged in
     const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
 
-    // Show/hide buttons based on login state
+    // Show the profile section if the user is logged in
+    const profileSection = document.getElementById("profileSection");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const profileDropdown = document.getElementById("profileDropdown");
+
+    if (token && username) {
+        // Show the profile section with username
+        profileSection.classList.remove("hidden");
+        usernameDisplay.textContent = username;
+
+        // Add a click event to toggle the dropdown menu
+        usernameDisplay.addEventListener("click", () => {
+            profileDropdown.classList.toggle("hidden");
+        });
+
+        // Handling dropdown options
+        document.getElementById("historyLink").addEventListener("click", () => {
+            // Handle History action (You can redirect or open a modal)
+            alert("History clicked");
+        });
+
+        document.getElementById("editProfileLink").addEventListener("click", () => {
+            // Handle Edit Profile action (You can open a modal to change the profile picture)
+            alert("Edit Profile Picture clicked");
+        });
+    } else {
+        // If the user is not logged in, ensure the profile section is hidden
+        profileSection.classList.add("hidden");
+    }
+
+    // Handle Login/Logout button functionality
+    const loginLogoutButton = document.getElementById("loginButtonTop");
+    const feedButton = document.getElementById("feedButton");
+
     if (token) {
         loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
         feedButton.style.display = "inline-block"; // Show Feed button
@@ -81,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (token) {
             // User is logged in, so log out by removing the token
             localStorage.removeItem("token");
+            localStorage.removeItem("username");
             alert("Logged out successfully!");
             location.reload();  // Reload the page to update UI
         } else {
@@ -89,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('loginModal').classList.add('visible');
         }
     });
+});
 
     // Handle Feed button click (this can be extended to redirect to a personalized feed)
     feedButton.addEventListener("click", () => {
