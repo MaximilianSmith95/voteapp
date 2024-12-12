@@ -85,6 +85,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // If the user is not logged in, ensure the profile section is hidden
         profileSection.classList.add("hidden");
     }
+    document.addEventListener("DOMContentLoaded", () => {
+    const feedButton = document.getElementById("feedButton");
+    const interestButtons = document.getElementById("interestButtons");
+
+    // Toggle the visibility of the interest buttons when My Feed button is clicked
+    feedButton.addEventListener("click", () => {
+        if (interestButtons.style.display === "none" || interestButtons.style.display === "") {
+            interestButtons.style.display = "block";
+        } else {
+            interestButtons.style.display = "none";
+        }
+    });
+});
+
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
