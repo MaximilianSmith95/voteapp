@@ -50,16 +50,6 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Attach event listeners for navigation buttons
-    document.getElementById("geolocationButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchNearMeCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchNearMeCategories(currentCategoriesLimit);
-    });
     
 document.addEventListener("DOMContentLoaded", () => {
     // Get the token and username from localStorage
