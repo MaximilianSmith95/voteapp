@@ -568,6 +568,20 @@ function displayCategories(categories) {
     });
 }
 
+document.getElementById("editInterestsLink").addEventListener("click", () => {
+    // Retrieve the current interests from localStorage
+    const currentInterests = JSON.parse(localStorage.getItem("userInterests")) || [];
+
+    // Show the "My Feed" page again with the selected interests pre-marked
+    document.getElementById("myFeedSection").classList.remove("hidden");
+
+    // Mark the selected interests as "selected" on the buttons
+    document.querySelectorAll(".interestButton").forEach(button => {
+        if (currentInterests.includes(button.textContent)) {
+            button.classList.add("selected");
+        }
+    });
+});
 
 
 // Add and fetch comments functionality remains as provided in the original script.
