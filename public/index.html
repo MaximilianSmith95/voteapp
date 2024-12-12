@@ -37,6 +37,20 @@
     Loading Total Votes...
 </div>
 
+    <div id="profileSection" class="profile-section hidden" style="position: absolute; top: 55px; left: 10px;">
+    <div id="usernameContainer" class="username-container">
+        <span id="usernameDisplay"></span>
+        <div id="profileDropdown" class="dropdown hidden">
+            <ul>
+                <li><a href="#" id="historyLink">History</a></li>
+                <li><a href="#" id="editProfileLink">Edit Profile Picture</a></li>
+                <li><a href="#" id="editInterestsLink">Edit Interests</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
 </div>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0">
@@ -200,6 +214,11 @@
 <nav>
 <!--     <button id="personalizedButton">Show Personalized Categories</button> -->
     <button id="feedButton" style="display: none;">MyFeed</button>
+    <div id="myFeedSection" class="hidden">
+    <h3>Select your interests:</h3>
+    <div id="interestButtonsContainer"></div>
+    <button id="doneButton">Done</button>
+</div>
     <button id="forYouButton">Vote Again</button>
     <button id="allButton">Discover</button>
 <!--     <button id="trendingButton">Trending</button> -->
@@ -251,6 +270,9 @@
     </p>
 </footer>
 
+
+
+</html>
 
 
 </html>
