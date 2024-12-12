@@ -117,11 +117,18 @@ app.get('/api/search', (req, res) => {
     });
 });
 
+
 app.get('/api/categories', (req, res) => {
+    const { interests } = req.query;
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
+     const query = `
+        SELECT category_id, name
+        FROM Categories
+        WHERE name IN (?)
+    `;
     // Base query for all categories and their subjects
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
