@@ -60,6 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
     // Get the token from localStorage to check if the user is logged in
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
