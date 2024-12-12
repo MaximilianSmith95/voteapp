@@ -368,7 +368,7 @@ app.post('/api/login', (req, res) => {
     // Create JWT token
     const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ message: 'Login successful', token });
+    res.json({ message: 'Login successful', token, username: user.username });
   });
 });
 
