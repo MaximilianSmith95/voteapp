@@ -547,6 +547,26 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+app.get('/api/categories', (req, res) => {
+    const { interests } = req.query;  // Get interests from query params
+    const interestArray = interests.split(",");  // Split interests into an array
+
+    // Assuming you have a 'categories' table and each category has 'tags' that relate to interests
+    const query = `
+        SELECT * FROM categories
+        WHERE MATCH(tags) AGAINST (? IN BOOLEAN MODE)
+    `;
+    
+    // Use the interestArray to create a search string or map it to categories in the DB
+    db.query(query, [interestArray.join(" ")] , (err, results) => {
+        if (err) {
+            res.status(500).send("Error fetching categories");
+            return;
+        }
+
+        res.json(results);  // Return filtered categories based on interests
+    });
+});
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
