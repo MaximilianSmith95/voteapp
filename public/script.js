@@ -102,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
-    const feedButton = document.getElementById("feedButton"); // Feed button
 
     // Show/hide buttons based on login state
     if (token) {
