@@ -117,18 +117,11 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-
 app.get('/api/categories', (req, res) => {
-    const { interests } = req.query;
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
-     const query = `
-        SELECT category_id, name
-        FROM Categories
-        WHERE name IN (?)
-    `;
     // Base query for all categories and their subjects
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
@@ -552,27 +545,6 @@ app.get('/api/totalVotes', (req, res) => {
         } else {
             res.json({ totalVotes: results[0]?.totalVotes || 0 });
         }
-    });
-});
-// Save user interests
-app.post('/api/saveInterests', (req, res) => {
-    const { interests } = req.body;
-    const userId = req.userId; // Get user ID from the session or JWT token
-
-    // Insert or update the user's selected interests in the database
-    const query = `
-        INSERT INTO UserInterests (user_id, interest) 
-        VALUES ?
-        ON DUPLICATE KEY UPDATE interest = VALUES(interest);
-    `;
-
-    const values = interests.map(interest => [userId, interest]);
-
-    db.query(query, [values], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to save interests' });
-        }
-        res.json({ message: 'Interests saved successfully' });
     });
 });
 
