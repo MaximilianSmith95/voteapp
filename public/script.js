@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
-    // Profile Section Handling (visible only when logged in)
+    // Show the profile section if the user is logged in
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (token && username) {
         // Show the profile section with username
         profileSection.classList.remove("hidden");
-        usernameDisplay.textContent = username;
+        usernameDisplay.textContent = username; // Set username
 
         // Add a click event to toggle the dropdown menu
         usernameDisplay.addEventListener("click", () => {
@@ -87,10 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Handle Login/Logout button functionality
-    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
-    const feedButton = document.getElementById("feedButton"); // Feed button
+    const loginLogoutButton = document.getElementById("loginButtonTop");
+    const feedButton = document.getElementById("feedButton");
 
-    // Show/hide buttons based on login state
     if (token) {
         loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
         feedButton.style.display = "inline-block"; // Show Feed button
@@ -113,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('loginModal').classList.add('visible');
         }
     });
+});
 
     // Handle Feed button click (this can be extended to redirect to a personalized feed)
     feedButton.addEventListener("click", () => {
