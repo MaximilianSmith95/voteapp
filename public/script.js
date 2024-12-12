@@ -547,7 +547,7 @@ function upvote(subjectId) {
 // Function to load categories based on selected interests
 function loadCategoriesByInterests(selectedInterests) {
     const interestsQuery = selectedInterests.join(","); // Join interests as a comma-separated string
-    fetch(`/api/categories?interests=${encodeURIComponent(interestsQuery)}`)
+    fetch(`/api/categories?interests=${encodeURIComponent(interestsQuery)}`)  // Correctly pass interests
         .then(response => response.json())
         .then(data => {
             // Display categories based on the returned data
@@ -555,6 +555,7 @@ function loadCategoriesByInterests(selectedInterests) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
+
 
 // Function to display categories
 function displayCategories(categories) {
