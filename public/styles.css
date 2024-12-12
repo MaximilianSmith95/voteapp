@@ -1,3 +1,27 @@
+/* Interest Buttons Styling (similar to nav buttons) */
+#interestButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.interestBtn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.interestBtn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
 /* Profile Section Styling */
 .profile-section {
     position: absolute;
