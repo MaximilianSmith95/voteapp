@@ -50,45 +50,23 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Attach event listeners for navigation buttons
+    document.getElementById("geolocationButton").addEventListener("click", () => {
+        infiniteScrollEnabled = true; // Enable infinite scroll
+        activeFilterFunction = fetchNearMeCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchNearMeCategories(currentCategoriesLimit);
+    });
     
 document.addEventListener("DOMContentLoaded", () => {
-    // Get the token and username from localStorage
-    const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
-
-    // Profile Section Handling (visible only when logged in)
-    const profileSection = document.getElementById("profileSection");
-    const usernameDisplay = document.getElementById("usernameDisplay");
-    const profileDropdown = document.getElementById("profileDropdown");
-
-    if (token && username) {
-        // Show the profile section with username
-        profileSection.classList.remove("hidden");
-        usernameDisplay.textContent = username;
-
-        // Add a click event to toggle the dropdown menu
-        usernameDisplay.addEventListener("click", () => {
-            profileDropdown.classList.toggle("hidden");
-        });
-
-        // Handling dropdown options
-        document.getElementById("historyLink").addEventListener("click", () => {
-            // Handle History action (You can redirect or open a modal)
-            alert("History clicked");
-        });
-
-        document.getElementById("editProfileLink").addEventListener("click", () => {
-            // Handle Edit Profile action (You can open a modal to change the profile picture)
-            alert("Edit Profile Picture clicked");
-        });
-    } else {
-        // If the user is not logged in, ensure the profile section is hidden
-        profileSection.classList.add("hidden");
-    }
-
-    // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
     const feedButton = document.getElementById("feedButton"); // Feed button
+
+    // Get the token from localStorage to check if the user is logged in
+    const token = localStorage.getItem("token");
 
     // Show/hide buttons based on login state
     if (token) {
@@ -104,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (token) {
             // User is logged in, so log out by removing the token
             localStorage.removeItem("token");
-            localStorage.removeItem("username");
             alert("Logged out successfully!");
             location.reload();  // Reload the page to update UI
         } else {
@@ -191,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             if (data.token) {
                 localStorage.setItem("token", data.token);  // Store token
-                localStorage.setItem("username", data.username);  // Store username
                 alert('Login successful!');
                 document.getElementById('loginModal').classList.add('hidden');
                 location.reload();  // Reload page to update state
@@ -229,14 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchAllCategories(currentCategoriesLimit);
     setupExploreMoreButton();  // Set up Explore More button
     enableInfiniteScrolling();  // Enable infinite scrolling
-
-    // Handle Geolocation Button for fetching near me categories
-    document.getElementById("geolocationButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchNearMeCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchNearMeCategories(currentCategoriesLimit);
-    });
 });
 
 // Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
@@ -1009,4 +977,5 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
+});
 });
