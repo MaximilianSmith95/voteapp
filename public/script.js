@@ -51,6 +51,8 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
 }
 
 
+
+document.addEventListener("DOMContentLoaded", () => {
     // Attach event listeners for navigation buttons
     document.getElementById("geolocationButton").addEventListener("click", () => {
         infiniteScrollEnabled = true; // Enable infinite scroll
@@ -58,13 +60,13 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
-
-    document.addEventListener("DOMContentLoaded", () => {
-    // Get the token from localStorage to check if the user is logged in
+    
+document.addEventListener("DOMContentLoaded", () => {
+    // Get the token and username from localStorage
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
-    // Show the profile section if the user is logged in
+    // Profile Section Handling (visible only when logged in)
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
@@ -95,9 +97,10 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     }
 
     // Handle Login/Logout button functionality
-    const loginLogoutButton = document.getElementById("loginButtonTop");
-    const feedButton = document.getElementById("feedButton");
+    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
+    const feedButton = document.getElementById("feedButton"); // Feed button
 
+    // Show/hide buttons based on login state
     if (token) {
         loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
         feedButton.style.display = "inline-block"; // Show Feed button
@@ -120,7 +123,6 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
             document.getElementById('loginModal').classList.add('visible');
         }
     });
-});
 
     // Handle Feed button click (this can be extended to redirect to a personalized feed)
     feedButton.addEventListener("click", () => {
@@ -199,6 +201,7 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .then(data => {
             if (data.token) {
                 localStorage.setItem("token", data.token);  // Store token
+                localStorage.setItem("username", data.username);  // Store username
                 alert('Login successful!');
                 document.getElementById('loginModal').classList.add('hidden');
                 location.reload();  // Reload page to update state
@@ -236,6 +239,14 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetchAllCategories(currentCategoriesLimit);
     setupExploreMoreButton();  // Set up Explore More button
     enableInfiniteScrolling();  // Enable infinite scrolling
+
+    // Handle Geolocation Button for fetching near me categories
+    document.getElementById("geolocationButton").addEventListener("click", () => {
+        infiniteScrollEnabled = true; // Enable infinite scroll
+        activeFilterFunction = fetchNearMeCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchNearMeCategories(currentCategoriesLimit);
+    });
 });
 
 // Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
@@ -1009,4 +1020,3 @@ document.addEventListener("DOMContentLoaded", () => {
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
 });
-
