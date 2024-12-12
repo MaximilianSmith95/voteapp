@@ -50,132 +50,198 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Attach event listeners for navigation buttons
-    document.getElementById("geolocationButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchNearMeCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchNearMeCategories(currentCategoriesLimit);
-    });
     
+document.addEventListener("DOMContentLoaded", () => {
+    // Get the token and username from localStorage
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+
+    // Profile Section Handling (visible only when logged in)
+    const profileSection = document.getElementById("profileSection");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const profileDropdown = document.getElementById("profileDropdown");
+
+    if (token && username) {
+        // Show the profile section with username
+        profileSection.classList.remove("hidden");
+        usernameDisplay.textContent = username;
+
+        // Add a click event to toggle the dropdown menu
+        usernameDisplay.addEventListener("click", () => {
+            profileDropdown.classList.toggle("hidden");
+        });
+
+        // Handling dropdown options
+        document.getElementById("historyLink").addEventListener("click", () => {
+            // Handle History action (You can redirect or open a modal)
+            alert("History clicked");
+        });
+
+        document.getElementById("editProfileLink").addEventListener("click", () => {
+            // Handle Edit Profile action (You can open a modal to change the profile picture)
+            alert("Edit Profile Picture clicked");
+        });
+    } else {
+        // If the user is not logged in, ensure the profile section is hidden
+        profileSection.classList.add("hidden");
+    }
+
+    // Handle Login/Logout button functionality
+    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
+    const feedButton = document.getElementById("feedButton"); // Feed button
+
+    // Show/hide buttons based on login state
+    if (token) {
+        loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
+        feedButton.style.display = "inline-block"; // Show Feed button
+    } else {
+        loginLogoutButton.textContent = "Login";  // Show Login button
+        feedButton.style.display = "none";        // Hide Feed button
+    }
+
+    // Handle Login/Logout button click
+    loginLogoutButton.addEventListener("click", () => {
+        if (token) {
+            // User is logged in, so log out by removing the token
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            alert("Logged out successfully!");
+            location.reload();  // Reload the page to update UI
+        } else {
+            // User is not logged in, so show the login modal
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('visible');
+        }
+    });
+
+    // Handle Feed button click (this can be extended to redirect to a personalized feed)
+    feedButton.addEventListener("click", () => {
+        alert("You clicked the Feed button!"); // Placeholder
+        // window.location.href = "/feed"; // Uncomment when you implement Feed page
+    });
+
     // Open Sign-Up Modal
-    document.getElementById('signUpButton').addEventListener('click', function() {
-        console.log('Sign Up button clicked'); // Check if this shows in the console
+    document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpModal = document.getElementById('signUpModal');
         signUpModal.classList.remove('hidden');
         signUpModal.classList.add('visible');
     });
 
     // Open Login Modal
-    document.getElementById('loginButtonTop').addEventListener('click', function() {
-        console.log('Login button clicked'); // Check if this shows in the console
+    document.getElementById('loginButtonTop').addEventListener('click', function () {
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.remove('hidden');
         loginModal.classList.add('visible');
     });
 
     // Close Sign-Up Modal
-    document.getElementById('closeSignUpModal').addEventListener('click', function() {
+    document.getElementById('closeSignUpModal').addEventListener('click', function () {
         const signUpModal = document.getElementById('signUpModal');
         signUpModal.classList.add('hidden');
         signUpModal.classList.remove('visible');
     });
 
     // Close Login Modal
-    document.getElementById('closeLoginModal').addEventListener('click', function() {
+    document.getElementById('closeLoginModal').addEventListener('click', function () {
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.add('hidden');
         loginModal.classList.remove('visible');
     });
 
-// Sign-Up Form Submission
-document.getElementById('signUpForm').addEventListener('submit', (e) => {
-    e.preventDefault();
+    // Sign-Up Form Submission
+    document.getElementById('signUpForm').addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    const name = document.getElementById('signUpName').value;
-    const email = document.getElementById('signUpEmail').value;
-    const password = document.getElementById('signUpPassword').value;
+        const name = document.getElementById('signUpName').value;
+        const email = document.getElementById('signUpEmail').value;
+        const password = document.getElementById('signUpPassword').value;
 
-    // Send Sign-Up data to the backend for registration
-    fetch('/api/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: name, email, password }), // Ensure "username" is sent
-    })
-    .then(response => response.json()) // Parse the response as JSON
-    .then(data => {
-        // Check if the backend response contains a message or error
-        if (data.message) {
-            alert('Registration successful! Please log in.');
-            document.getElementById('signUpModal').classList.add('hidden');
-        } else if (data.error) {
-            alert('Registration failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
-}); 
+        // Send Sign-Up data to backend
+        fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: name, email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Registration successful! Please log in.');
+                document.getElementById('signUpModal').classList.add('hidden');
+            } else if (data.error) {
+                alert('Registration failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-    // Log-In Form Submission
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
+    // Login Form Submission
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
 
-    // Send Log-In data to the backend for authentication
-    fetch('/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    })
-    .then(response => response.json()) // Parse the response as JSON
-    .then(data => {
-        // Check if the response contains the "message" field indicating success
-        if (data.message) {
-            alert('Login successful!');
-            document.getElementById('loginModal').classList.add('hidden');
-        } else if (data.error) {
-            alert('Login failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
-});
+        // Send Log-In data to backend
+        fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.token) {
+                localStorage.setItem("token", data.token);  // Store token
+                localStorage.setItem("username", data.username);  // Store username
+                alert('Login successful!');
+                document.getElementById('loginModal').classList.add('hidden');
+                location.reload();  // Reload page to update state
+            } else {
+                alert('Login failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-    // Event listeners for filter buttons
+    // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
+        infiniteScrollEnabled = true;
         activeFilterFunction = fetchForYouCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 15;
         fetchForYouCategories(currentCategoriesLimit);
     });
 
     document.getElementById("allButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
+        infiniteScrollEnabled = true;
         activeFilterFunction = fetchAllCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 15;
         fetchAllCategories(currentCategoriesLimit);
     });
 
     document.getElementById("latestButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
+        infiniteScrollEnabled = true;
         activeFilterFunction = fetchLatestCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 15;
         fetchLatestCategories(currentCategoriesLimit);
     });
 
-    // Default to "All Categories"
+    // Set default filter to show all categories
     activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
-    setupExploreMoreButton(); // Set up the Explore More button
-    enableInfiniteScrolling(); // Enable infinite scrolling
+    setupExploreMoreButton();  // Set up Explore More button
+    enableInfiniteScrolling();  // Enable infinite scrolling
+
+    // Handle Geolocation Button for fetching near me categories
+    document.getElementById("geolocationButton").addEventListener("click", () => {
+        infiniteScrollEnabled = true; // Enable infinite scroll
+        activeFilterFunction = fetchNearMeCategories;
+        currentCategoriesLimit = 15; // Reset limit
+        fetchNearMeCategories(currentCategoriesLimit);
+    });
 });
+
+// Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
+// CSS should hide elements with `.hidden` class and show them with `.visible` class
+
 
 // Search functionality with infinite scroll disabled
 window.filterContent = function () {
@@ -943,22 +1009,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-}); 
-
-// Properly close the DOMContentLoaded function
-
-// function fetchComments(subjectId) {
-//     fetch(`/api/subjects/${subjectId}/comments`)
-//         .then(response => response.json())
-//         .then(comments => {
-//             const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-//             commentContainer.innerHTML = comments.map(comment => `
-//                 <div class="comment">
-//                     <strong>${comment.username}</strong>: 
-//                     ${comment.is_voice_review ? 
-//                         `<audio controls src="${comment.audio_path}"></audio>` : 
-//                         `<p>${comment.comment_text}</p>`}
-//                 </div>
-//             `).join("");
-//         });
-// }
+});
