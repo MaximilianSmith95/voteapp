@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (token) {
         loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
         feedButton.style.display = "inline-block"; // Show Feed button
-        profileSection.classList.remove("hidden"); // Show profile section
         usernameDisplay.textContent = username; // Set username in profile
 
         // Add click event to toggle the profile dropdown menu
