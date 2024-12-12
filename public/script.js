@@ -544,6 +544,31 @@ function upvote(subjectId) {
         })
         .catch(error => console.error('Error upvoting:', error));
 }
+// Function to load categories based on selected interests
+function loadCategoriesByInterests(selectedInterests) {
+    const interestsQuery = selectedInterests.join(","); // Join interests as a comma-separated string
+    fetch(`/api/categories?interests=${encodeURIComponent(interestsQuery)}`)
+        .then(response => response.json())
+        .then(data => {
+            // Display categories based on the returned data
+            displayCategories(data);
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+// Function to display categories
+function displayCategories(categories) {
+    const categoriesContainer = document.getElementById("categoriesContainer");
+    categoriesContainer.innerHTML = '';  // Clear existing content
+
+    categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.textContent = category.name;  // Customize this as per your category structure
+        categoriesContainer.appendChild(categoryDiv);
+    });
+}
+
+
 
 // Add and fetch comments functionality remains as provided in the original script.
 
