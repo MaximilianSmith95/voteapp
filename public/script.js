@@ -53,155 +53,251 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Attach event listeners for navigation buttons
-    document.getElementById("geolocationButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
-        activeFilterFunction = fetchNearMeCategories;
-        currentCategoriesLimit = 15; // Reset limit
-        fetchNearMeCategories(currentCategoriesLimit);
+    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
+    const feedButton = document.getElementById("feedButton"); // Feed button
+    const profileSection = document.getElementById("profileSection");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const profileDropdown = document.getElementById("profileDropdown");
+
+    // Get the token and username from localStorage
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+
+    // Show/hide buttons based on login state
+    if (token) {
+        loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
+        feedButton.style.display = "inline-block"; // Show Feed button
+        profileSection.classList.remove("hidden"); // Show profile section
+        usernameDisplay.textContent = username; // Set username in profile
+
+        // Add click event to toggle the profile dropdown menu
+        usernameDisplay.addEventListener("click", () => {
+            profileDropdown.classList.toggle("hidden");
+        });
+
+        // Handle dropdown options
+        document.getElementById("historyLink").addEventListener("click", () => {
+            alert("History clicked");
+        });
+
+        document.getElementById("editProfileLink").addEventListener("click", () => {
+            alert("Edit Profile Picture clicked");
+        });
+    } else {
+        loginLogoutButton.textContent = "Login";  // Show Login button
+        feedButton.style.display = "none";        // Hide Feed button
+        profileSection.classList.add("hidden");  // Hide profile section
+    }
+
+    // Handle Login/Logout button click
+    loginLogoutButton.addEventListener("click", () => {
+        if (token) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            alert("Logged out successfully!");
+            location.reload();  // Reload the page to update UI
+        } else {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('visible');
+        }
     });
-    
+
+    // Handle Feed button click
+    feedButton.addEventListener("click", () => {
+        alert("You clicked the Feed button!");
+        // window.location.href = "/feed"; // Uncomment when Feed page is implemented
+    });
+
     // Open Sign-Up Modal
-    document.getElementById('signUpButton').addEventListener('click', function() {
-        console.log('Sign Up button clicked'); // Check if this shows in the console
+    document.getElementById('signUpButton').addEventListener('click', function () {
         const signUpModal = document.getElementById('signUpModal');
         signUpModal.classList.remove('hidden');
         signUpModal.classList.add('visible');
     });
 
     // Open Login Modal
-    document.getElementById('loginButtonTop').addEventListener('click', function() {
-        console.log('Login button clicked'); // Check if this shows in the console
+    document.getElementById('loginButtonTop').addEventListener('click', function () {
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.remove('hidden');
         loginModal.classList.add('visible');
     });
 
     // Close Sign-Up Modal
-    document.getElementById('closeSignUpModal').addEventListener('click', function() {
+    document.getElementById('closeSignUpModal').addEventListener('click', function () {
         const signUpModal = document.getElementById('signUpModal');
         signUpModal.classList.add('hidden');
         signUpModal.classList.remove('visible');
     });
 
     // Close Login Modal
-    document.getElementById('closeLoginModal').addEventListener('click', function() {
+    document.getElementById('closeLoginModal').addEventListener('click', function () {
         const loginModal = document.getElementById('loginModal');
         loginModal.classList.add('hidden');
         loginModal.classList.remove('visible');
     });
 
-// Sign-Up Form Submission
-document.getElementById('signUpForm').addEventListener('submit', (e) => {
-    e.preventDefault();
+    // Sign-Up Form Submission
+    document.getElementById('signUpForm').addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    const name = document.getElementById('signUpName').value;
-    const email = document.getElementById('signUpEmail').value;
-    const password = document.getElementById('signUpPassword').value;
+        const name = document.getElementById('signUpName').value;
+        const email = document.getElementById('signUpEmail').value;
+        const password = document.getElementById('signUpPassword').value;
 
-    // Send Sign-Up data to the backend for registration
-    fetch('/api/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: name, email, password }), // Ensure "username" is sent
-    })
-    .then(response => response.json()) // Parse the response as JSON
-    .then(data => {
-        // Check if the backend response contains a message or error
-        if (data.message) {
-            alert('Registration successful! Please log in.');
-            document.getElementById('signUpModal').classList.add('hidden');
-        } else if (data.error) {
-            alert('Registration failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
-}); 
+        fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: name, email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Registration successful! Please log in.');
+                document.getElementById('signUpModal').classList.add('hidden');
+            } else if (data.error) {
+                alert('Registration failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-    // Log-In Form Submission
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
+    // Login Form Submission
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
 
-    // Send Log-In data to the backend for authentication
-    fetch('/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    })
-    .then(response => response.json()) // Parse the response as JSON
-    .then(data => {
-        // Check if the response contains the "message" field indicating success
-        if (data.message) {
-            alert('Login successful!');
-            document.getElementById('loginModal').classList.add('hidden');
-        } else if (data.error) {
-            alert('Login failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error)); // Catch any errors during the fetch call
-});
+        fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.token) {
+                localStorage.setItem("token", data.token);  // Store token
+                localStorage.setItem("username", data.username);  // Store username
+                alert('Login successful!');
+                document.getElementById('loginModal').classList.add('hidden');
+                location.reload();  // Reload page to update state
+            } else {
+                alert('Login failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-    // Event listeners for filter buttons
+    // Search functionality with infinite scroll disabled
+    window.filterContent = function () {
+        const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+        const categoriesContainer = document.getElementById("categories");
+
+        categoriesContainer.innerHTML = "<p>Loading...</p>"; // Clear existing content while fetching
+        infiniteScrollEnabled = false; // Disable infinite scroll for searches
+
+        fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    renderCategories(data, searchTerm); // Render search results
+                } else {
+                    categoriesContainer.innerHTML = "<p>No results found.</p>";
+                }
+            })
+            .catch(error => console.error('Error fetching search results:', error));
+    };
+
+    // Handle "For You", "All", "Latest" button clicks
     document.getElementById("forYouButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
+        infiniteScrollEnabled = true;
         activeFilterFunction = fetchForYouCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 15;
         fetchForYouCategories(currentCategoriesLimit);
     });
 
     document.getElementById("allButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
+        infiniteScrollEnabled = true;
         activeFilterFunction = fetchAllCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 15;
         fetchAllCategories(currentCategoriesLimit);
     });
 
     document.getElementById("latestButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true; // Enable infinite scroll
+        infiniteScrollEnabled = true;
         activeFilterFunction = fetchLatestCategories;
-        currentCategoriesLimit = 15; // Reset limit
+        currentCategoriesLimit = 15;
         fetchLatestCategories(currentCategoriesLimit);
     });
 
-    // Default to "All Categories"
+    // Set default filter to show all categories
     activeFilterFunction = fetchAllCategories;
     fetchAllCategories(currentCategoriesLimit);
-    setupExploreMoreButton(); // Set up the Explore More button
-    enableInfiniteScrolling(); // Enable infinite scrolling
+    setupExploreMoreButton();  // Set up Explore More button
+    enableInfiniteScrolling();  // Enable infinite scrolling
+
+    // Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
+    // CSS should hide elements with `.hidden` class and show them with `.visible` class
 });
 
-// Search functionality with infinite scroll disabled
-window.filterContent = function () {
-    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-    const categoriesContainer = document.getElementById("categories");
-
-    // Clear existing content while fetching
-    categoriesContainer.innerHTML = "<p>Loading...</p>";
-
-    // Disable infinite scroll for searches
-    infiniteScrollEnabled = false;
-
-    // Fetch matching categories and their subjects from the backend
-    fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`)
+// Fetch functions for each filter
+function fetchAllCategories(limit) {
+    fetch(`/api/categories`)
         .then(response => response.json())
         .then(data => {
-            if (data && data.length > 0) {
-                renderCategories(data, searchTerm); // Render search results
-            } else {
-                categoriesContainer.innerHTML = "<p>No results found.</p>";
-            }
+            const prioritizedCategory = data.find(category => category.category_id === 918);
+            const remainingCategories = data.filter(category => category.category_id !== 918);
+
+            const shuffledCategories = prioritizedCategory
+                ? [prioritizedCategory, ...shuffleArray(remainingCategories)]
+                : shuffleArray(remainingCategories);
+
+            renderLimitedCategories(shuffledCategories, limit);
         })
-        .catch(error => console.error('Error fetching search results:', error));
-};
+        .catch(error => console.error('Error fetching categories:', error));
+}
 
+function fetchForYouCategories(limit) {
+    fetchAndRenderCategories(`/api/categories?type=for-you`, limit, (data) => {
+        return data.length === 0 ? shuffleArray(data) : data;
+    });
+}
 
+function fetchLatestCategories(limit) {
+    fetchAndRenderCategories(`/api/categories`, limit, (data) => {
+        return data.sort((a, b) => b.category_id - a.category_id); // Sort by category_id in descending order
+    });
+}
+
+function fetchNearMeCategories(limit) {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatitude = position.coords.latitude;
+                const userLongitude = position.coords.longitude;
+                fetch(`/api/categories?latitude=${userLatitude}&longitude=${userLongitude}&limit=${limit}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderLimitedCategories(data, limit); // Render categories as received
+                    })
+                    .catch(error => console.error('Error fetching nearby categories:', error));
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+            }
+        );
+    } else {
+        console.log("Geolocation is not available in this browser.");
+    }
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 // Fetch functions for each filter
 function fetchAllCategories(limit) {
     fetch(`/api/categories`)
