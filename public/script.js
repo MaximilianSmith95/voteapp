@@ -60,6 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
+    const editInterestsSection = document.getElementById("editInterestsSection");
+    const selectedInterestsList = document.getElementById("selectedInterestsList");
 
     // Initialize selected interests from localStorage (if any)
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
@@ -78,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const removeButton = interestButton.querySelector(".remove-btn");
         if (removeButton) {
             removeButton.addEventListener("click", (e) => {
+                // Remove the interest when "X" is clicked
                 removeInterest(interest);
                 updateInterestButton(interestButton, interest); // Update button state
             });
@@ -129,6 +132,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editProfileLink").addEventListener("click", () => {
             // Handle Edit Profile action (You can open a modal to change the profile picture)
             alert("Edit Profile Picture clicked");
+        });
+
+        // Show the Edit Interests section when "Edit Interests" is clicked
+        document.getElementById("editInterestsLink").addEventListener("click", () => {
+            editInterestsSection.classList.toggle("hidden");
+            updateSelectedInterests(); // Update the list when Edit Interests is clicked
         });
     } else {
         // If the user is not logged in, ensure the profile section is hidden
