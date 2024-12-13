@@ -60,9 +60,54 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
+    const editInterestsSection = document.getElementById("editInterestsSection");
+    const selectedInterestsList = document.getElementById("selectedInterestsList");
 
+    // Initialize selected interests from localStorage (if any)
+    let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+
+    // Function to update displayed interests in the "Edit Interests" section
+    function updateSelectedInterests() {
+        selectedInterestsList.innerHTML = ""; // Clear the list
+        selectedInterests.forEach(interest => {
+            const interestItem = document.createElement("div");
+            interestItem.classList.add("selected-interest");
+            interestItem.innerHTML = `${interest} <button class="remove-btn" data-interest="${interest}">×</button>`;
+            selectedInterestsList.appendChild(interestItem);
+        });
+
+        // Add event listeners for removing interests
+        const removeButtons = document.querySelectorAll(".remove-btn");
+        removeButtons.forEach(button => {
+            button.addEventListener("click", (e) => {
+                const interestToRemove = e.target.getAttribute("data-interest");
+                removeInterest(interestToRemove);
+            });
+        });
+    }
+
+    // Handle interest selection (adds the interest to the list)
+    const interestButtons = document.querySelectorAll(".interestBtn");
+    interestButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const interest = button.textContent.trim();
+            if (!selectedInterests.includes(interest)) {
+                selectedInterests.push(interest);
+                localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+                updateSelectedInterests(); // Update the displayed list
+            }
+        });
+    });
+
+    // Handle interest removal
+    function removeInterest(interest) {
+        selectedInterests = selectedInterests.filter(item => item !== interest);
+        localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+        updateSelectedInterests(); // Update the displayed list
+    }
+
+    // Handle the profile section visibility and dropdown toggle
     if (token && username) {
-        // Show the profile section with username
         profileSection.classList.remove("hidden");
         usernameDisplay.textContent = username;
 
@@ -80,6 +125,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editProfileLink").addEventListener("click", () => {
             // Handle Edit Profile action (You can open a modal to change the profile picture)
             alert("Edit Profile Picture clicked");
+        });
+
+        // Show the Edit Interests section when "Edit Interests" is clicked
+        document.getElementById("editInterestsLink").addEventListener("click", () => {
+            editInterestsSection.classList.toggle("hidden");
+            updateSelectedInterests(); // Update the list when Edit Interests is clicked
         });
     } else {
         // If the user is not logged in, ensure the profile section is hidden
