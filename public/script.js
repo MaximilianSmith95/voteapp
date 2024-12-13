@@ -258,29 +258,28 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
     loginUser(email, password); // Call the loginUser function (ensure it's declared before usage)
 });
 
-// Function to handle login
-function loginUser(email, password) {
-    fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Check if the server responded with a token and username
-        if (data.token && data.username) {
-            localStorage.setItem("token", data.token);  // Store the token
-            localStorage.setItem("username", data.username);  // Store the username
-            alert('Login successful!');
-            location.reload();  // Reload to update the UI
-        } else {
-            alert('Login failed: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during login. Please try again.');
-    });
+// When the user successfully logs in
+fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.token && data.username) {
+        // Store the token and username in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.username);
+        alert('Login successful!');
+        location.reload();  // Reload to update UI
+    } else {
+        alert('Login failed: ' + (data.error || 'Unknown error'));
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred during login. Please try again.');
+});
 }
 
 
@@ -688,70 +687,70 @@ function createCommentElement(commentData) {
     return commentElement;
 }
 
-// Function to validate and add a comment
-function addComment(subjectId) {
-    const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    let commentText = commentInput.value.trim();
+// // Function to validate and add a comment
+// function addComment(subjectId) {
+//     const commentInput = document.getElementById(`comment-input-${subjectId}`);
+//     let commentText = commentInput.value.trim();
 
-    // Sanitize and validate input
-    commentText = sanitizeInput(commentText);
-    if (!isValidComment(commentText)) {
-        alert("Your comment contains invalid content.");
-        return;
-    }
+//     // Sanitize and validate input
+//     commentText = sanitizeInput(commentText);
+//     if (!isValidComment(commentText)) {
+//         alert("Your comment contains invalid content.");
+//         return;
+//     }
 
-    // Check comment length
-    const maxLength = 200;
-    if (commentText.length > maxLength) {
-        alert("Your comment is too long.");
-        return;
-    }
+//     // Check comment length
+//     const maxLength = 200;
+//     if (commentText.length > maxLength) {
+//         alert("Your comment is too long.");
+//         return;
+//     }
 
-    // Flag prohibited content
-    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
-    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
-        alert("Your comment contains prohibited content.");
-        return;
-    }
+//     // Flag prohibited content
+//     const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
+//     if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
+//         alert("Your comment contains prohibited content.");
+//         return;
+//     }
 
-    // Sanitize for safe rendering and proceed to submit
-    const sanitizedText = escapeHTML(commentText);
-    fetch(`/api/subjects/${subjectId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comment_text: sanitizedText })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Prepend the new comment
-                const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-                const newComment = createCommentElement(data.comment);
-                commentContainer.prepend(newComment);
-                commentInput.value = ''; // Clear input field
-            }
-        })
-        .catch(error => console.error('Error adding comment:', error));
-}
+//     // Sanitize for safe rendering and proceed to submit
+//     const sanitizedText = escapeHTML(commentText);
+//     fetch(`/api/subjects/${subjectId}/comment`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ comment_text: sanitizedText })
+//     })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.success) {
+//                 // Prepend the new comment
+//                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+//                 const newComment = createCommentElement(data.comment);
+//                 commentContainer.prepend(newComment);
+//                 commentInput.value = ''; // Clear input field
+//             }
+//         })
+//         .catch(error => console.error('Error adding comment:', error));
+// }
 
-function enableCommentInfiniteScroll(subjectId) {
-    const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
-    let currentPage = 1;
-    let isLoading = false;
+// function enableCommentInfiniteScroll(subjectId) {
+//     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
+//     let currentPage = 1;
+//     let isLoading = false;
 
-    commentsContainer.addEventListener('scroll', () => {
-        if (
-            commentsContainer.scrollTop + commentsContainer.clientHeight >= commentsContainer.scrollHeight - 10 &&
-            !isLoading
-        ) {
-            isLoading = true;
-            currentPage++;
-            fetchComments(subjectId, currentPage).then(() => {
-                isLoading = false;
-            });
-        }
-    });
-}
+//     commentsContainer.addEventListener('scroll', () => {
+//         if (
+//             commentsContainer.scrollTop + commentsContainer.clientHeight >= commentsContainer.scrollHeight - 10 &&
+//             !isLoading
+//         ) {
+//             isLoading = true;
+//             currentPage++;
+//             fetchComments(subjectId, currentPage).then(() => {
+//                 isLoading = false;
+//             });
+//         }
+//     });
+// }
 
 
 
