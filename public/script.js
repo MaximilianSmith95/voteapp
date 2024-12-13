@@ -245,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
-});
 
 // Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
 // CSS should hide elements with `.hidden` class and show them with `.visible` class
