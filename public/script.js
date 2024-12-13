@@ -666,6 +666,16 @@ window.toggleComments = function (subjectId) {
     }
 };
 
+// Function to create and return a comment HTML element
+function createCommentElement(commentData) {
+    const commentElement = document.createElement('div');
+    commentElement.classList.add('comment');
+    commentElement.innerHTML = `
+        <strong>${commentData.username}:</strong> ${escapeHTML(commentData.text)}
+        <span class="comment-time">${new Date(commentData.createdAt).toLocaleString()}</span>
+    `;
+    return commentElement;
+}
 
 function getUsernameFromCookie() {
     return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
