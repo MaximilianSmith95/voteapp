@@ -387,6 +387,11 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     // Get the token from the Authorization header
     const token = req.headers['authorization']?.split(' ')[1];  // Get the token from the header
 
+    // Ensure that the username and comment_text are received
+    if (!username || !comment_text) {
+        return res.status(400).json({ success: false, error: 'Username or comment text is missing' });
+    }
+
     if (!token) {
         return res.status(401).json({ success: false, error: 'You must be logged in to comment' });
     }
