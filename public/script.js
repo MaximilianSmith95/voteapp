@@ -672,12 +672,8 @@ window.toggleComments = function (subjectId) {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
+   const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
 
-        if (!username) {
-        alert("You must be logged in to leave a comment.");
-        return; // Prevent further execution if not logged in
-    }
 
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
@@ -690,12 +686,8 @@ function addComment(subjectId) {
             if (data.success) {
                 // Prepend the new comment to the top of the list
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-const newComment = document.createElement('div');
-newComment.classList.add('comment'); // Add the comment class
-newComment.innerHTML = `
-    <strong>${username}:</strong> ${sanitizedText}
-`;
-                commentContainer.prepend(newComment);
+                const newCommentElement = createCommentElement(data.comment);
+                commentContainer.prepend(newCommentElement);
 
                 commentInput.value = ""; // Clear input field
             }
