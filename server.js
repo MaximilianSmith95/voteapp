@@ -382,14 +382,7 @@ app.post('/api/logout', (req, res) => {
 // Add a comment
 app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
-    const { comment_text, parent_comment_id = null } = req.body;
-
-    // Ensure user is authenticated
-    if (!req.session || !req.session.username) {
-        return res.status(401).json({ success: false, error: 'You must be logged in to comment' });
-    }
-
-    const username = req.session.username; // Get the username from the session
+    const { username, comment_text, parent_comment_id = null } = req.body;
 
     const query = `
         INSERT INTO comments (subject_id, username, comment_text, parent_comment_id, created_at)
@@ -414,8 +407,6 @@ app.post('/api/subjects/:id/comment', (req, res) => {
         });
     });
 });
-
-
 
 // Combined comments and voice reviews fetch
 // Fetch comments with pagination
