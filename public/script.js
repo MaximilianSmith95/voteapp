@@ -254,30 +254,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById('loginPassword').value;
 
         // Send Log-In data to backend
-function loginUser(email, password) {
-    fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Check if the server responded with a token and username
-        if (data.token && data.username) {
-            localStorage.setItem("token", data.token);  // Store the token
-            localStorage.setItem("username", data.username);  // Store the username
-            alert('Login successful!');
-            location.reload();  // Reload to update the UI
-        } else {
-            alert('Login failed: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during login. Please try again.');
+        fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.token) {
+                localStorage.setItem("token", data.token);  // Store token
+                localStorage.setItem("username", data.username);  // Store username
+                alert('Login successful!');
+                document.getElementById('loginModal').classList.add('hidden');
+                location.reload();  // Reload page to update state
+            } else {
+                alert('Login failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
-}
-
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
@@ -689,29 +684,23 @@ function getUsernameFromCookie() {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
+    const username = getUsernameFromCookie();
 
-    // Retrieve token and username from localStorage
-    const token = localStorage.getItem('token');  
-    const username = localStorage.getItem('username');  // Ensure this exists in localStorage
-
-    if (!token || !username) {
+    if (!username) {
         alert("You need to sign in to leave a comment.");
         return;
     }
 
-    // Proceed with submitting the comment
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Send the token in the header
-            },
-            body: JSON.stringify({ username, comment_text: commentText })  // Send username and comment
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, comment_text: commentText })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Prepend the new comment to the top of the list
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
                 const newCommentElement = createCommentElement(data.comment);
                 commentContainer.prepend(newCommentElement);
@@ -722,8 +711,6 @@ function addComment(subjectId) {
         .catch(error => console.error('Error posting comment:', error));
     }
 }
-
-
 
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
