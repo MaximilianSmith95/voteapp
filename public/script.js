@@ -262,17 +262,22 @@ function loginUser(email, password) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.token) {
+        // Check if the server responded with a token and username
+        if (data.token && data.username) {
             localStorage.setItem("token", data.token);  // Store the token
             localStorage.setItem("username", data.username);  // Store the username
             alert('Login successful!');
             location.reload();  // Reload to update the UI
         } else {
-            alert('Login failed: ' + data.error);
+            alert('Login failed: ' + (data.error || 'Unknown error'));
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred during login. Please try again.');
+    });
 }
+
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
