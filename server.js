@@ -385,13 +385,13 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     const { comment_text, parent_comment_id = null } = req.body;
 
     // Get the token from the Authorization header
-    const token = req.headers['authorization']?.split(' ')[1];  // Get the token from the header
+    const token = req.headers['authorization']?.split(' ')[1];  // Extract token after "Bearer"
 
-    // Ensure that the username and comment_text are received
-    if (!username || !comment_text) {
-        return res.status(400).json({ success: false, error: 'Username or comment text is missing' });
+    if (!comment_text) {
+        return res.status(400).json({ success: false, error: 'Comment text is missing' });
     }
 
+    // Check if token exists (if the user is logged in)
     if (!token) {
         return res.status(401).json({ success: false, error: 'You must be logged in to comment' });
     }
@@ -402,7 +402,12 @@ app.post('/api/subjects/:id/comment', (req, res) => {
             return res.status(401).json({ success: false, error: 'Invalid token' });
         }
 
-        const username = decoded.username;  // Extract username from the decoded token
+        // Extract the username from the decoded token
+        const username = decoded.username;
+
+        if (!username) {
+            return res.status(400).json({ success: false, error: 'Username is missing' });
+        }
 
         const query = `
             INSERT INTO comments (subject_id, username, comment_text, parent_comment_id, created_at)
@@ -428,6 +433,7 @@ app.post('/api/subjects/:id/comment', (req, res) => {
         });
     });
 });
+
 // Combined comments and voice reviews fetch
 // Fetch comments with pagination
 app.get('/api/subjects/:id/comments', (req, res) => {
