@@ -494,23 +494,24 @@ function toggleComments(subjectId) {
     toggleButton.textContent = commentsContainer.classList.contains('hidden') ? '▼' : '▲';
 }
 
-// Sanitize Input
+// Sanitize Input: Remove URLs from the comment
 function sanitizeInput(input) {
     return input.replace(/https?:\/\/[^\s]+/g, ''); // Remove URLs
 }
 
-// Validate Comment Content
+// Validate Comment Content: Only allow alphanumeric characters and common punctuation
 function isValidComment(input) {
     const validPattern = /^[a-zA-Z0-9\s.,!?]+$/; // Adjust as necessary
     return validPattern.test(input);
 }
 
-// Escape HTML for Safe Rendering
+// Escape HTML for Safe Rendering: Prevent XSS by encoding HTML entities
 function escapeHTML(input) {
     const div = document.createElement('div');
     div.textContent = input;
     return div.innerHTML;
 }
+
 
 // Updated: Navigation Event Listener for "For You" Button
 document.getElementById('forYouButton').addEventListener('click', () => {
@@ -631,41 +632,56 @@ function getUsernameFromCookie() {
     return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
 }
 
+// Validate and Add Comment
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    const commentText = commentInput.value.trim();
-    const username = getUsernameFromCookie();
+    let commentText = commentInput.value.trim();
 
-    if (!username) {
-        alert("You need to sign in to leave a comment.");
+    // Sanitize and validate input
+    commentText = sanitizeInput(commentText);
+    if (!isValidComment(commentText)) {
+        alert("Your comment contains invalid content.");
         return;
     }
 
-    if (commentText) {
-        const token = localStorage.getItem("token"); // Ensure token is correctly retrieved
+    // Check comment length
+    const maxLength = 200;
+    if (commentText.length > maxLength) {
+        alert("Your comment is too long.");
+        return;
+    }
 
-        fetch(`/api/subjects/${subjectId}/comment`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`  // Include the token here
-            },
-            body: JSON.stringify({ username, comment_text: commentText })
-        })
+    // Flag prohibited content
+    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
+    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
+        alert("Your comment contains prohibited content.");
+        return;
+    }
+
+    // Sanitize for safe rendering and proceed to submit
+    const sanitizedText = escapeHTML(commentText);
+    fetch(`/api/subjects/${subjectId}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment_text: sanitizedText })
+    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Prepend the new comment to the top of the list
+                // Prepend the new comment
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-                const newCommentElement = createCommentElement(data.comment);
-                commentContainer.prepend(newCommentElement);
-
-                commentInput.value = ""; // Clear input field
+                const newComment = document.createElement('div');
+                newComment.classList.add('comment');
+                newComment.innerHTML = `
+                    <strong>User:</strong> ${sanitizedText}
+                `;
+                commentContainer.prepend(newComment);
+                commentInput.value = ''; // Clear input field
             }
         })
-        .catch(error => console.error('Error posting comment:', error));
-    }
+        .catch(error => console.error('Error adding comment:', error));
 }
+
 
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
