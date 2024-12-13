@@ -21,6 +21,29 @@
     background-color: #0056b3;
     transform: scale(1.05);
 }
+/* Styling for the interest buttons with "X" to remove */
+.selected-interest {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.selected-interest .remove-btn {
+    margin-left: 10px;
+    font-size: 1.2rem;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.selected-interest:hover {
+    background-color: #0056b3;
+}
 
 /* Profile Section Styling */
 .profile-section {
