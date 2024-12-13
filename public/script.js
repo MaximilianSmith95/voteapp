@@ -60,41 +60,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
-    const editInterestsSection = document.getElementById("editInterestsSection");
-    const selectedInterestsList = document.getElementById("selectedInterestsList");
 
     // Initialize selected interests from localStorage (if any)
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-    // Function to update displayed interests in the "Edit Interests" section
-    function updateSelectedInterests() {
-        selectedInterestsList.innerHTML = ""; // Clear the list
-        selectedInterests.forEach(interest => {
-            const interestItem = document.createElement("div");
-            interestItem.classList.add("selected-interest");
-            interestItem.innerHTML = `${interest} <button class="remove-btn" data-interest="${interest}">×</button>`;
-            selectedInterestsList.appendChild(interestItem);
-        });
+    // Function to update the "X" button and mark selected interests
+    function updateInterestButton(interestButton, interest) {
+        if (selectedInterests.includes(interest)) {
+            // Add the "X" button to the interest button
+            interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
+        } else {
+            // Reset the interest button to its original state
+            interestButton.innerHTML = `${interest}`;
+        }
 
-        // Add event listeners for removing interests
-        const removeButtons = document.querySelectorAll(".remove-btn");
-        removeButtons.forEach(button => {
-            button.addEventListener("click", (e) => {
-                const interestToRemove = e.target.getAttribute("data-interest");
-                removeInterest(interestToRemove);
+        // Add event listener to the "X" button for removal
+        const removeButton = interestButton.querySelector(".remove-btn");
+        if (removeButton) {
+            removeButton.addEventListener("click", (e) => {
+                removeInterest(interest);
+                updateInterestButton(interestButton, interest); // Update button state
             });
-        });
+        }
     }
 
     // Handle interest selection (adds the interest to the list)
     const interestButtons = document.querySelectorAll(".interestBtn");
     interestButtons.forEach(button => {
+        const interest = button.textContent.trim();
+        // Initially update the button based on whether it's selected
+        updateInterestButton(button, interest);
+
         button.addEventListener("click", () => {
-            const interest = button.textContent.trim();
-            if (!selectedInterests.includes(interest)) {
+            if (selectedInterests.includes(interest)) {
+                // Remove the interest from the list if it's already selected
+                removeInterest(interest);
+            } else {
+                // Add the interest to the list if it's not already selected
                 selectedInterests.push(interest);
                 localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-                updateSelectedInterests(); // Update the displayed list
+                updateInterestButton(button, interest); // Update the button state
             }
         });
     });
@@ -103,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function removeInterest(interest) {
         selectedInterests = selectedInterests.filter(item => item !== interest);
         localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-        updateSelectedInterests(); // Update the displayed list
     }
 
     // Handle the profile section visibility and dropdown toggle
@@ -125,12 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editProfileLink").addEventListener("click", () => {
             // Handle Edit Profile action (You can open a modal to change the profile picture)
             alert("Edit Profile Picture clicked");
-        });
-
-        // Show the Edit Interests section when "Edit Interests" is clicked
-        document.getElementById("editInterestsLink").addEventListener("click", () => {
-            editInterestsSection.classList.toggle("hidden");
-            updateSelectedInterests(); // Update the list when Edit Interests is clicked
         });
     } else {
         // If the user is not logged in, ensure the profile section is hidden
@@ -231,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error('Error:', error));
     });
 });
-
 
     // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
