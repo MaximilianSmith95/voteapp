@@ -384,7 +384,7 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { comment_text, parent_comment_id = null } = req.body;
 
-    // Get the token from the Authorization header
+    // Get the token from the Authorization header (e.g., "Bearer <token>")
     const token = req.headers['authorization']?.split(' ')[1];  // Extract token after "Bearer"
 
     if (!comment_text) {
@@ -433,6 +433,7 @@ app.post('/api/subjects/:id/comment', (req, res) => {
         });
     });
 });
+
 
 // Combined comments and voice reviews fetch
 // Fetch comments with pagination
