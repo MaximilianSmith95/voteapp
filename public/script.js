@@ -697,12 +697,6 @@ function generateRandomUsername() {
     return username;
 }
 
-// Example usage
-const username = generateRandomUsername();
-console.log(username);  // Example output: "A7#kZ0v"
-
-
-
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
