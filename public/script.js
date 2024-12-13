@@ -685,11 +685,11 @@ function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
 
-    // Retrieve token from localStorage
-    const token = localStorage.getItem('token');  // Retrieve the token
-    const username = localStorage.getItem('username');  // Retrieve the username
+    // Retrieve token and username from localStorage
+    const token = localStorage.getItem('token');  
+    const username = localStorage.getItem('username');  // Ensure this exists in localStorage
 
-    if (!token) {
+    if (!token || !username) {
         alert("You need to sign in to leave a comment.");
         return;
     }
@@ -700,14 +700,13 @@ function addComment(subjectId) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Send the JWT token in the Authorization header
+                'Authorization': `Bearer ${token}` // Send the token in the header
             },
-            body: JSON.stringify({ username, comment_text: commentText }) // Send username and comment
+            body: JSON.stringify({ username, comment_text: commentText })  // Send username and comment
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Prepend the new comment to the top of the list
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
                 const newCommentElement = createCommentElement(data.comment);
                 commentContainer.prepend(newCommentElement);
@@ -718,6 +717,7 @@ function addComment(subjectId) {
         .catch(error => console.error('Error posting comment:', error));
     }
 }
+
 
 
 function enableCommentInfiniteScroll(subjectId) {
