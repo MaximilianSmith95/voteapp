@@ -247,32 +247,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // Login Form Submission
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
+ // Login Form Submission
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
 
-        // Send Log-In data to backend
-        fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.token) {
-                localStorage.setItem("token", data.token);  // Store token
-                localStorage.setItem("username", data.username);  // Store username
-                alert('Login successful!');
-                document.getElementById('loginModal').classList.add('hidden');
-                location.reload();  // Reload page to update state
-            } else {
-                alert('Login failed: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
+    // Send Log-In data to backend
+    loginUser(email, password); // Call the loginUser function (ensure it's declared before usage)
+});
+
+// Function to handle login
+function loginUser(email, password) {
+    fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Check if the server responded with a token and username
+        if (data.token && data.username) {
+            localStorage.setItem("token", data.token);  // Store the token
+            localStorage.setItem("username", data.username);  // Store the username
+            alert('Login successful!');
+            location.reload();  // Reload to update the UI
+        } else {
+            alert('Login failed: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred during login. Please try again.');
     });
+}
+
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
@@ -667,6 +677,7 @@ window.toggleComments = function (subjectId) {
 };
 
 // Function to create and return a comment HTML element
+// Function to create and return a comment HTML element
 function createCommentElement(commentData) {
     const commentElement = document.createElement('div');
     commentElement.classList.add('comment');
@@ -677,39 +688,50 @@ function createCommentElement(commentData) {
     return commentElement;
 }
 
-function getUsernameFromCookie() {
-    return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
-}
-
+// Function to validate and add a comment
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    const commentText = commentInput.value.trim();
-    const username = getUsernameFromCookie();
+    let commentText = commentInput.value.trim();
 
-    if (!username) {
-        alert("You need to sign in to leave a comment.");
+    // Sanitize and validate input
+    commentText = sanitizeInput(commentText);
+    if (!isValidComment(commentText)) {
+        alert("Your comment contains invalid content.");
         return;
     }
 
-    if (commentText) {
-        fetch(`/api/subjects/${subjectId}/comment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, comment_text: commentText })
-        })
+    // Check comment length
+    const maxLength = 200;
+    if (commentText.length > maxLength) {
+        alert("Your comment is too long.");
+        return;
+    }
+
+    // Flag prohibited content
+    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
+    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
+        alert("Your comment contains prohibited content.");
+        return;
+    }
+
+    // Sanitize for safe rendering and proceed to submit
+    const sanitizedText = escapeHTML(commentText);
+    fetch(`/api/subjects/${subjectId}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment_text: sanitizedText })
+    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Prepend the new comment to the top of the list
+                // Prepend the new comment
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-                const newCommentElement = createCommentElement(data.comment);
-                commentContainer.prepend(newCommentElement);
-
-                commentInput.value = ""; // Clear input field
+                const newComment = createCommentElement(data.comment);
+                commentContainer.prepend(newComment);
+                commentInput.value = ''; // Clear input field
             }
         })
-        .catch(error => console.error('Error posting comment:', error));
-    }
+        .catch(error => console.error('Error adding comment:', error));
 }
 
 function enableCommentInfiniteScroll(subjectId) {
@@ -973,6 +995,31 @@ document.addEventListener("DOMContentLoaded", () => {
         setCookie("cookiesAccepted", "true", 365); // Set cookie for 1 year
         cookieConsent.classList.add("hidden"); // Hide the banner
         console.log("Cookie consent accepted and banner hidden.");
+    });
+
+    // Handle Login/Logout button functionality
+    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
+
+    // Show/hide buttons based on login state
+    if (localStorage.getItem("token")) {
+        loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
+    } else {
+        loginLogoutButton.textContent = "Login";  // Show Login button
+    }
+
+    // Handle Login/Logout button click
+    loginLogoutButton.addEventListener("click", () => {
+        if (localStorage.getItem("token")) {
+            // User is logged in, so log out by removing the token
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            alert("Logged out successfully!");
+            location.reload();  // Reload the page to update UI
+        } else {
+            // User is not logged in, so show the login modal
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('visible');
+        }
     });
 });
 
