@@ -512,56 +512,6 @@ function escapeHTML(input) {
     return div.innerHTML;
 }
 
-// Validate and Add Comment
-function addComment(subjectId) {
-    const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    let commentText = commentInput.value.trim();
-
-    // Sanitize and validate input
-    commentText = sanitizeInput(commentText);
-    if (!isValidComment(commentText)) {
-        alert("Your comment contains invalid content.");
-        return;
-    }
-
-    // Check comment length
-    const maxLength = 200;
-    if (commentText.length > maxLength) {
-        alert("Your comment is too long.");
-        return;
-    }
-
-    // Flag prohibited content
-    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
-    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
-        alert("Your comment contains prohibited content.");
-        return;
-    }
-
-    // Sanitize for safe rendering and proceed to submit
-    const sanitizedText = escapeHTML(commentText);
-    fetch(`/api/subjects/${subjectId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comment_text: sanitizedText })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Prepend the new comment
-                const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-                const newComment = document.createElement('div');
-                newComment.classList.add('comment');
-                newComment.innerHTML = `
-                    <strong>User:</strong> ${sanitizedText}
-                `;
-                commentContainer.prepend(newComment);
-                commentInput.value = ''; // Clear input
-            }
-        })
-        .catch(error => console.error('Error adding comment:', error));
-}
-
 // Updated: Navigation Event Listener for "For You" Button
 document.getElementById('forYouButton').addEventListener('click', () => {
     infiniteScrollEnabled = true; // Enable infinite scroll
