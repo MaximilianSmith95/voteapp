@@ -244,19 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error('Error:', error));
     });
 
-    // Hide "Add Comment" button and input until user is logged in
-    const commentInput = document.getElementById("comment-input");
-    const addCommentButton = document.getElementById("add-comment-btn");
-
-    if (!token) {
-        commentInput.style.display = "none";
-        addCommentButton.style.display = "none";
-    } else {
-        commentInput.style.display = "block";
-        addCommentButton.style.display = "inline-block";
-    }
-});
-
     // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
         e.preventDefault();
