@@ -162,26 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
             interestButtonsSection.style.display = "none";
         }
     });
-// Get all comment sections
-    const commentSections = document.querySelectorAll('.comment-section');
 
-    commentSections.forEach(commentSection => {
-        // Find the specific subject's comment input and button by the subject id
-        const subjectId = commentSection.dataset.subjectId;  // Assuming you set subjectId as data-attribute
-
-        const commentInput = document.getElementById(`comment-input-${subjectId}`);
-        const commentButton = document.getElementById(`comment-btn-${subjectId}`);
-
-        if (!token) {
-            // Hide the comment input and button if the user is not logged in
-            commentInput.style.display = "none";
-            commentButton.style.display = "none";
-        } else {
-            // Ensure the comment input and button are visible if the user is logged in
-            commentInput.style.display = "inline-block";
-            commentButton.style.display = "inline-block";
-        }
-    });
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
 
@@ -262,8 +243,19 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error('Error:', error));
     });
-});
 
+    // Hide "Add Comment" button and input until user is logged in
+    const commentInput = document.getElementById("comment-input");
+    const addCommentButton = document.getElementById("add-comment-btn");
+
+    if (!token) {
+        commentInput.style.display = "none";
+        addCommentButton.style.display = "none";
+    } else {
+        commentInput.style.display = "block";
+        addCommentButton.style.display = "inline-block";
+    }
+});
 
     // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
