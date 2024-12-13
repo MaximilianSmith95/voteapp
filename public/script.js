@@ -254,24 +254,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById('loginPassword').value;
 
         // Send Log-In data to backend
-       fetch('/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-})
-.then(response => response.json())
-.then(data => {
-    if (data.token) {
-        localStorage.setItem("token", data.token);  // Store the token
-        localStorage.setItem("username", data.username);  // Store the username
-        alert('Login successful!');
-        location.reload();  // Reload to update the UI
-    } else {
-        alert('Login failed: ' + data.error);
-    }
-})
-.catch(error => console.error('Error:', error));
-};
+function loginUser(email, password) {
+    fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.token) {
+            localStorage.setItem("token", data.token);  // Store the token
+            localStorage.setItem("username", data.username);  // Store the username
+            alert('Login successful!');
+            location.reload();  // Reload to update the UI
+        } else {
+            alert('Login failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
