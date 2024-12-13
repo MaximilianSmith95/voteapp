@@ -672,7 +672,8 @@ window.toggleComments = function (subjectId) {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = `User${Math.floor(Math.random() * 1000)}`;
+    const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
+
 
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
