@@ -683,7 +683,24 @@ window.toggleComments = function (subjectId) {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-   const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
+  const username = localStorage.getItem("username") || generateRandomUsername();
+function generateRandomUsername() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+';
+    let username = '';
+    const usernameLength = 7;  // Maximum length of 7 characters
+
+    for (let i = 0; i < usernameLength; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        username += characters[randomIndex];
+    }
+
+    return username;
+}
+
+// Example usage
+const username = generateRandomUsername();
+console.log(username);  // Example output: "A7#kZ0v"
+
 
 
     if (commentText) {
