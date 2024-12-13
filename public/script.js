@@ -667,11 +667,19 @@ window.toggleComments = function (subjectId) {
 };
 
 
-// Function to add a comment to a subject
+function getUsernameFromCookie() {
+    return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
+}
+
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = `User${Math.floor(Math.random() * 1000)}`;
+    const username = getUsernameFromCookie();
+
+    if (!username) {
+        alert("You need to sign in to leave a comment.");
+        return;
+    }
 
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
@@ -693,6 +701,7 @@ function addComment(subjectId) {
         .catch(error => console.error('Error posting comment:', error));
     }
 }
+
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
     let currentPage = 1;
