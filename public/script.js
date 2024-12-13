@@ -642,9 +642,14 @@ function addComment(subjectId) {
     }
 
     if (commentText) {
+        const token = localStorage.getItem("token"); // Ensure token is correctly retrieved
+
         fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Include the token here
+            },
             body: JSON.stringify({ username, comment_text: commentText })
         })
         .then(response => response.json())
