@@ -495,23 +495,73 @@ function toggleComments(subjectId) {
 }
 
 // Sanitize Input: Remove URLs from the comment
+// Sanitize Input
 function sanitizeInput(input) {
     return input.replace(/https?:\/\/[^\s]+/g, ''); // Remove URLs
 }
 
-// Validate Comment Content: Only allow alphanumeric characters and common punctuation
+// Validate Comment Content
 function isValidComment(input) {
     const validPattern = /^[a-zA-Z0-9\s.,!?]+$/; // Adjust as necessary
     return validPattern.test(input);
 }
 
-// Escape HTML for Safe Rendering: Prevent XSS by encoding HTML entities
+// Escape HTML for Safe Rendering
 function escapeHTML(input) {
     const div = document.createElement('div');
     div.textContent = input;
     return div.innerHTML;
 }
 
+// Validate and Add Comment
+function addComment(subjectId) {
+    const commentInput = document.getElementById(`comment-input-${subjectId}`);
+    let commentText = commentInput.value.trim();
+
+    // Sanitize and validate input
+    commentText = sanitizeInput(commentText);
+    if (!isValidComment(commentText)) {
+        alert("Your comment contains invalid content.");
+        return;
+    }
+
+    // Check comment length
+    const maxLength = 200;
+    if (commentText.length > maxLength) {
+        alert("Your comment is too long.");
+        return;
+    }
+
+    // Flag prohibited content
+    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
+    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
+        alert("Your comment contains prohibited content.");
+        return;
+    }
+
+    // Sanitize for safe rendering and proceed to submit
+    const sanitizedText = escapeHTML(commentText);
+    fetch(`/api/subjects/${subjectId}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment_text: sanitizedText })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Prepend the new comment
+                const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+                const newComment = document.createElement('div');
+                newComment.classList.add('comment');
+                newComment.innerHTML = `
+                    <strong>User:</strong> ${sanitizedText}
+                `;
+                commentContainer.prepend(newComment);
+                commentInput.value = ''; // Clear input
+            }
+        })
+        .catch(error => console.error('Error adding comment:', error));
+}
 
 // Updated: Navigation Event Listener for "For You" Button
 document.getElementById('forYouButton').addEventListener('click', () => {
@@ -617,72 +667,33 @@ window.toggleComments = function (subjectId) {
     }
 };
 
-// Function to create and return a comment HTML element
-function createCommentElement(commentData) {
-    const commentElement = document.createElement('div');
-    commentElement.classList.add('comment');
-    commentElement.innerHTML = `
-        <strong>${commentData.username}:</strong> ${escapeHTML(commentData.text)}
-        <span class="comment-time">${new Date(commentData.createdAt).toLocaleString()}</span>
-    `;
-    return commentElement;
-}
 
-function getUsernameFromCookie() {
-    return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
-}
-
-// Validate and Add Comment
+// Function to add a comment to a subject
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    let commentText = commentInput.value.trim();
+    const commentText = commentInput.value.trim();
+    const username = `User${Math.floor(Math.random() * 1000)}`;
 
-    // Sanitize and validate input
-    commentText = sanitizeInput(commentText);
-    if (!isValidComment(commentText)) {
-        alert("Your comment contains invalid content.");
-        return;
-    }
-
-    // Check comment length
-    const maxLength = 200;
-    if (commentText.length > maxLength) {
-        alert("Your comment is too long.");
-        return;
-    }
-
-    // Flag prohibited content
-    const flaggedKeywords = ["spam", "malware", "phishing"]; // Extend as needed
-    if (flaggedKeywords.some(keyword => commentText.includes(keyword))) {
-        alert("Your comment contains prohibited content.");
-        return;
-    }
-
-    // Sanitize for safe rendering and proceed to submit
-    const sanitizedText = escapeHTML(commentText);
-    fetch(`/api/subjects/${subjectId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comment_text: sanitizedText })
-    })
+    if (commentText) {
+        fetch(`/api/subjects/${subjectId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, comment_text: commentText })
+        })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Prepend the new comment
+                // Prepend the new comment to the top of the list
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-                const newComment = document.createElement('div');
-                newComment.classList.add('comment');
-                newComment.innerHTML = `
-                    <strong>User:</strong> ${sanitizedText}
-                `;
-                commentContainer.prepend(newComment);
-                commentInput.value = ''; // Clear input field
+                const newCommentElement = createCommentElement(data.comment);
+                commentContainer.prepend(newCommentElement);
+
+                commentInput.value = ""; // Clear input field
             }
         })
-        .catch(error => console.error('Error adding comment:', error));
+        .catch(error => console.error('Error posting comment:', error));
+    }
 }
-
-
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
     let currentPage = 1;
@@ -768,7 +779,6 @@ function createCommentElement(comment) {
 
     return commentElement;
 }
-
 
 
 // // Function to start recording voice reviews
