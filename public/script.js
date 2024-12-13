@@ -139,14 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Get the feed button and the interest buttons section
     const feedButton = document.getElementById("feedButton");
-    const interestButtons = document.getElementById("interestButtons");
+    const interestButtonsSection = document.getElementById("interestButtons");
 
     // Toggle the visibility of the interest buttons when My Feed button is clicked
     feedButton.addEventListener("click", () => {
-        if (interestButtons.style.display === "none" || interestButtons.style.display === "") {
-            interestButtons.style.display = "block";
+        if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
+            interestButtonsSection.style.display = "block";
         } else {
-            interestButtons.style.display = "none";
+            interestButtonsSection.style.display = "none";
         }
     });
 
