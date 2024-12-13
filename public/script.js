@@ -243,6 +243,8 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error('Error:', error));
     });
+});
+
 
     // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
@@ -684,6 +686,13 @@ function generateRandomUsername() {
     return username;
 }
 
+// Function to add a comment to a subject
+function addComment(subjectId) {
+    const commentInput = document.getElementById(`comment-input-${subjectId}`);
+    const commentText = commentInput.value.trim();
+   const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
+
+
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
@@ -1091,3 +1100,4 @@ document.addEventListener("DOMContentLoaded", () => {
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
 });
+                          
