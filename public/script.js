@@ -68,11 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
+        // Check if the interest is in the selected interests
         if (selectedInterests.includes(interest)) {
             // Add the "X" button to the interest button
             interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
         } else {
-            // Reset the interest button to its original state
+            // Reset the interest button to its original state (no "X")
             interestButton.innerHTML = `${interest}`;
         }
 
@@ -80,9 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const removeButton = interestButton.querySelector(".remove-btn");
         if (removeButton) {
             removeButton.addEventListener("click", (e) => {
+                // Prevent bubbling to avoid triggering the main button click
+                e.stopPropagation();
                 // Remove the interest when "X" is clicked
                 removeInterest(interest);
-                updateInterestButton(interestButton, interest); // Update button state
+                updateInterestButton(interestButton, interest); // Update the button state
             });
         }
     }
@@ -98,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (selectedInterests.includes(interest)) {
                 // Remove the interest from the list if it's already selected
                 removeInterest(interest);
+                updateInterestButton(button, interest); // Update button state
             } else {
                 // Add the interest to the list if it's not already selected
                 selectedInterests.push(interest);
@@ -109,7 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle interest removal
     function removeInterest(interest) {
+        // Remove the interest from the array
         selectedInterests = selectedInterests.filter(item => item !== interest);
+        // Update the localStorage with the new array of selected interests
         localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
     }
 
@@ -238,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error('Error:', error));
     });
 });
+
 
     // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
