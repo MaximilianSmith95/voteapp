@@ -85,7 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // If the user is not logged in, ensure the profile section is hidden
         profileSection.classList.add("hidden");
     }
-    document.addEventListener("DOMContentLoaded", () => {
+
+    // Get the feed button and the interest buttons section
     const feedButton = document.getElementById("feedButton");
     const interestButtons = document.getElementById("interestButtons");
 
@@ -97,8 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
             interestButtons.style.display = "none";
         }
     });
-});
-
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
@@ -125,12 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('loginModal').classList.remove('hidden');
             document.getElementById('loginModal').classList.add('visible');
         }
-    });
-
-    // Handle Feed button click (this can be extended to redirect to a personalized feed)
-    feedButton.addEventListener("click", () => {
-        alert("You clicked the Feed button!"); // Placeholder
-        // window.location.href = "/feed"; // Uncomment when you implement Feed page
     });
 
     // Open Sign-Up Modal
@@ -186,6 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error('Error:', error));
     });
+});
+
 
     // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', (e) => {
