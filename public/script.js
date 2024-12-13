@@ -684,18 +684,25 @@ function getUsernameFromCookie() {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = getUsernameFromCookie();
 
-    if (!username) {
+    // Retrieve token from localStorage
+    const token = localStorage.getItem('token');  // Retrieve the token
+    const username = localStorage.getItem('username');  // Retrieve the username
+
+    if (!token) {
         alert("You need to sign in to leave a comment.");
         return;
     }
 
+    // Proceed with submitting the comment
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, comment_text: commentText })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Send the JWT token in the Authorization header
+            },
+            body: JSON.stringify({ username, comment_text: commentText }) // Send username and comment
         })
         .then(response => response.json())
         .then(data => {
@@ -711,6 +718,7 @@ function addComment(subjectId) {
         .catch(error => console.error('Error posting comment:', error));
     }
 }
+
 
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
