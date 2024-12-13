@@ -674,6 +674,10 @@ function addComment(subjectId) {
     const commentText = commentInput.value.trim();
     const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
 
+        if (!username) {
+        alert("You must be logged in to leave a comment.");
+        return; // Prevent further execution if not logged in
+    }
 
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
@@ -687,6 +691,10 @@ function addComment(subjectId) {
                 // Prepend the new comment to the top of the list
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
                 const newCommentElement = createCommentElement(data.comment);
+                newComment.classList.add('comment');
+            newComment.innerHTML = `
+                <strong>${username}:</strong> ${sanitizedText}
+            `;
                 commentContainer.prepend(newCommentElement);
 
                 commentInput.value = ""; // Clear input field
