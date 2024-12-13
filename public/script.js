@@ -690,12 +690,12 @@ function addComment(subjectId) {
             if (data.success) {
                 // Prepend the new comment to the top of the list
                 const commentContainer = document.getElementById(`comment-section-${subjectId}`);
-                const newCommentElement = createCommentElement(data.comment);
-                newComment.classList.add('comment');
-            newComment.innerHTML = `
-                <strong>${username}:</strong> ${sanitizedText}
-            `;
-                commentContainer.prepend(newCommentElement);
+const newComment = document.createElement('div');
+newComment.classList.add('comment'); // Add the comment class
+newComment.innerHTML = `
+    <strong>${username}:</strong> ${sanitizedText}
+`;
+                commentContainer.prepend(newComment);
 
                 commentInput.value = ""; // Clear input field
             }
