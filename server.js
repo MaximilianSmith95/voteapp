@@ -384,12 +384,6 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { username, comment_text, parent_comment_id = null } = req.body;
 
-    if (!username) {
-        return res.status(400).json({ error: 'You must be logged in to leave a comment.' });
-    }
-    // Fallback to random username if none provided
-const user = username || `User${Math.floor(Math.random() * 1000)}`;
-
     const query = `
         INSERT INTO comments (subject_id, username, comment_text, parent_comment_id, created_at)
         VALUES (?, ?, ?, ?, NOW())
