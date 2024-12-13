@@ -384,55 +384,37 @@ app.post('/api/subjects/:id/comment', (req, res) => {
     const { id: subjectId } = req.params;
     const { comment_text, parent_comment_id = null } = req.body;
 
-    // Get the token from the Authorization header (e.g., "Bearer <token>")
-    const token = req.headers['authorization']?.split(' ')[1];  // Extract token after "Bearer"
-
-    if (!comment_text) {
-        return res.status(400).json({ success: false, error: 'Comment text is missing' });
-    }
-
-    // Check if token exists (if the user is logged in)
-    if (!token) {
+    // Ensure user is authenticated
+    if (!req.session || !req.session.username) {
         return res.status(401).json({ success: false, error: 'You must be logged in to comment' });
     }
 
-    // Verify the token using JWT
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    const username = req.session.username; // Get the username from the session
+
+    const query = `
+        INSERT INTO comments (subject_id, username, comment_text, parent_comment_id, created_at)
+        VALUES (?, ?, ?, ?, NOW())
+    `;
+
+    db.query(query, [subjectId, username, comment_text, parent_comment_id], (err, results) => {
         if (err) {
-            return res.status(401).json({ success: false, error: 'Invalid token' });
+            console.error('Error inserting comment:', err);
+            return res.status(500).json({ success: false, error: 'Failed to add comment' });
         }
 
-        // Extract the username from the decoded token
-        const username = decoded.username;
-
-        if (!username) {
-            return res.status(400).json({ success: false, error: 'Username is missing' });
-        }
-
-        const query = `
-            INSERT INTO comments (subject_id, username, comment_text, parent_comment_id, created_at)
-            VALUES (?, ?, ?, ?, NOW())
-        `;
-
-        db.query(query, [subjectId, username, comment_text, parent_comment_id], (err, results) => {
-            if (err) {
-                console.error('Error inserting comment:', err);
-                return res.status(500).json({ success: false, error: 'Failed to add comment' });
+        res.json({
+            success: true,
+            comment: {
+                id: results.insertId,
+                username,
+                text: comment_text,
+                parentCommentId: parent_comment_id,
+                createdAt: new Date() // Current server time
             }
-
-            res.json({
-                success: true,
-                comment: {
-                    id: results.insertId,
-                    username,
-                    text: comment_text,
-                    parentCommentId: parent_comment_id,
-                    createdAt: new Date() // Current server time
-                }
-            });
         });
     });
 });
+
 
 
 // Combined comments and voice reviews fetch
