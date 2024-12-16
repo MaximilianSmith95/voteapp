@@ -546,6 +546,55 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+fetch("/game/start", { method: "POST", body: JSON.stringify({ userId: "guest" }) })
+    .then(response => response.json())
+    .then(data => {
+        if (!data || !data.items) {
+            throw new Error("Failed to fetch game data.");
+        }
+        setupGame(data);
+    })
+    .catch(error => {
+        alert("Could not start the game. Please try again later.");
+        console.error("Error fetching game data:", error);
+    });
+app.post('/game/guess', (req, res) => {
+    const { userId, guess } = req.body;
+    const game = activeGames[userId];
+    
+    if (!game) return res.status(400).json({ message: 'No active game.' });
+
+    if (guess.toLowerCase() === game.hiddenItem.toLowerCase()) {
+        const score = calculateScore(game);
+        
+        db.query(
+            'INSERT INTO user_scores (user_id, score) VALUES (?, ?) ON DUPLICATE KEY UPDATE score = score + VALUES(score)',
+            [userId, score],
+            (err) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ message: 'Error saving score.' });
+                }
+                delete activeGames[userId];
+                return res.json({ success: true, message: 'Correct!', score });
+            }
+        );
+    } else {
+        game.attemptsLeft -= 1;
+        if (game.attemptsLeft === 0) {
+            delete activeGames[userId];
+            return res.json({ success: false, message: `Game over. The answer was "${game.hiddenItem}".`, score: 0 });
+        }
+        res.json({ success: false, message: 'Incorrect. Try again!' });
+    }
+});
+app.get('/leaderboard', (req, res) => {
+    db.query('SELECT username, score FROM users JOIN user_scores USING(user_id) ORDER BY score DESC LIMIT 10', 
+    (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        res.json(results);
+    });
+});
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
