@@ -274,6 +274,24 @@
 </main>
       <main id="gameContainer" style="display: none;">
     <h2>Welcome to NerdGo_ Game!</h2>
+          <div id="gameContainer">
+    <h2>Welcome to NerdGo_ Game!</h2>
+    <p id="gameInstructions">Guess the missing item in this list!</p>
+
+    <!-- List of items with one missing -->
+    <ul id="gameList"></ul>
+
+    <!-- Input for guesses -->
+    <input type="text" id="guessInput" placeholder="Enter your guess..." />
+    <button id="submitGuess">Submit</button>
+
+    <!-- Feedback messages -->
+    <p id="feedbackMessage"></p>
+
+    <!-- Reveal answer button -->
+    <button id="revealAnswer" style="display: none;">Reveal Answer</button>
+</div>
+
     <div id="gameArea">
         <!-- Instructions -->
         <p id="gameInstructions"></p>
