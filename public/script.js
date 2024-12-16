@@ -19,88 +19,71 @@ function setupExploreMoreButton() {
         }
     });
 }
-document.getElementById("nerdgoGameButton").addEventListener("click", () => {
-    // Hide other sections
-    document.querySelector("main").style.display = "none";
-    
-    // Show the game section
-    const gameContainer = document.getElementById("gameContainer");
-    gameContainer.style.display = "block";
-
-    // Start a new game
-    startNewGame();
+document.addEventListener("DOMContentLoaded", () => {
+    // Start a new game when the NerdGo_ button is clicked
+    document.getElementById("nerdgoGameButton").addEventListener("click", () => {
+        startNewGame();
+    });
 });
-function startNewGame() {
-    // Fetch a new game from the backend
-    fetch("/game/start", { method: "POST", body: JSON.stringify({ userId: "guest" }) })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === "Game started!") {
-                setupGame(data);
-            } else {
-                alert("Failed to start the game.");
-            }
-        })
-        .catch(error => console.error("Error starting game:", error));
-}
 
-function setupGame(gameData) {
+function startNewGame() {
     const gameInstructions = document.getElementById("gameInstructions");
     const gameList = document.getElementById("gameList");
-    const guessInput = document.getElementById("guessInput");
     const feedbackMessage = document.getElementById("feedbackMessage");
     const revealAnswerButton = document.getElementById("revealAnswer");
 
-    // Reset UI
-    gameInstructions.textContent = `Guess the missing item in this list: ${gameData.title}`;
-    gameList.innerHTML = ""; // Clear previous items
+    // Reset game state
+    gameList.innerHTML = ""; // Clear list
     feedbackMessage.textContent = "";
     revealAnswerButton.style.display = "none";
-    guessInput.value = "";
 
-    // Display list items with blanks
+    // Placeholder: Example game data
+    const gameData = {
+        title: "Top 10 Countries by Population",
+        items: [
+            "China",
+            "India",
+            "United States",
+            "Indonesia",
+            "Pakistan",
+            null, // Missing item
+            "Brazil",
+            "Nigeria",
+            "Bangladesh",
+            "Russia"
+        ],
+        hiddenItem: "Japan"
+    };
+
+    // Display game instructions
+    gameInstructions.textContent = `Guess the missing item in: ${gameData.title}`;
+
+    // Render the list with one blank
     gameData.items.forEach((item, index) => {
         const listItem = document.createElement("li");
         listItem.textContent = item || `Item ${index + 1}: [???]`;
         gameList.appendChild(listItem);
     });
 
-    // Submit guess functionality
+    // Handle guesses
     document.getElementById("submitGuess").onclick = () => {
-        const guess = guessInput.value.trim();
-        if (guess) {
-            submitGuess(gameData, guess);
+        const guessInput = document.getElementById("guessInput");
+        const userGuess = guessInput.value.trim();
+
+        if (userGuess.toLowerCase() === gameData.hiddenItem.toLowerCase()) {
+            feedbackMessage.textContent = "Correct! Well done!";
+            feedbackMessage.style.color = "green";
         } else {
-            alert("Please enter a guess.");
+            feedbackMessage.textContent = "Incorrect. Try again!";
+            feedbackMessage.style.color = "red";
         }
     };
-}
 
-function submitGuess(gameData, guess) {
-    fetch("/game/guess", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: "guest", guess }),
-    })
-        .then(response => response.json())
-        .then(data => {
-            const feedbackMessage = document.getElementById("feedbackMessage");
-            if (data.success) {
-                feedbackMessage.textContent = `Correct! You scored ${data.score} points.`;
-                document.getElementById("revealAnswer").style.display = "none"; // Hide reveal button
-            } else {
-                feedbackMessage.textContent = data.message;
-                if (gameData.attemptsLeft === 0) {
-                    document.getElementById("revealAnswer").style.display = "block";
-                }
-            }
-        })
-        .catch(error => console.error("Error submitting guess:", error));
-}
-
-// Reveal answer functionality
-document.getElementById("revealAnswer").onclick = () => {
-    alert("The correct answer is: " + gameData.hiddenItem);
+    // Reveal the answer
+    revealAnswerButton.onclick = () => {
+        alert(`The correct answer is: ${gameData.hiddenItem}`);
+    };
+    revealAnswerButton.style.display = "block";
 };
 
 // Function to enable infinite scrolling
