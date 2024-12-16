@@ -19,6 +19,89 @@ function setupExploreMoreButton() {
         }
     });
 }
+document.getElementById("nerdgoGameButton").addEventListener("click", () => {
+    // Hide other sections
+    document.querySelector("main").style.display = "none";
+    
+    // Show the game section
+    const gameContainer = document.getElementById("gameContainer");
+    gameContainer.style.display = "block";
+
+    // Start a new game
+    startNewGame();
+});
+function startNewGame() {
+    // Fetch a new game from the backend
+    fetch("/game/start", { method: "POST", body: JSON.stringify({ userId: "guest" }) })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === "Game started!") {
+                setupGame(data);
+            } else {
+                alert("Failed to start the game.");
+            }
+        })
+        .catch(error => console.error("Error starting game:", error));
+}
+
+function setupGame(gameData) {
+    const gameInstructions = document.getElementById("gameInstructions");
+    const gameList = document.getElementById("gameList");
+    const guessInput = document.getElementById("guessInput");
+    const feedbackMessage = document.getElementById("feedbackMessage");
+    const revealAnswerButton = document.getElementById("revealAnswer");
+
+    // Reset UI
+    gameInstructions.textContent = `Guess the missing item in this list: ${gameData.title}`;
+    gameList.innerHTML = ""; // Clear previous items
+    feedbackMessage.textContent = "";
+    revealAnswerButton.style.display = "none";
+    guessInput.value = "";
+
+    // Display list items with blanks
+    gameData.items.forEach((item, index) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = item || `Item ${index + 1}: [???]`;
+        gameList.appendChild(listItem);
+    });
+
+    // Submit guess functionality
+    document.getElementById("submitGuess").onclick = () => {
+        const guess = guessInput.value.trim();
+        if (guess) {
+            submitGuess(gameData, guess);
+        } else {
+            alert("Please enter a guess.");
+        }
+    };
+}
+
+function submitGuess(gameData, guess) {
+    fetch("/game/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: "guest", guess }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            const feedbackMessage = document.getElementById("feedbackMessage");
+            if (data.success) {
+                feedbackMessage.textContent = `Correct! You scored ${data.score} points.`;
+                document.getElementById("revealAnswer").style.display = "none"; // Hide reveal button
+            } else {
+                feedbackMessage.textContent = data.message;
+                if (gameData.attemptsLeft === 0) {
+                    document.getElementById("revealAnswer").style.display = "block";
+                }
+            }
+        })
+        .catch(error => console.error("Error submitting guess:", error));
+}
+
+// Reveal answer functionality
+document.getElementById("revealAnswer").onclick = () => {
+    alert("The correct answer is: " + gameData.hiddenItem);
+})
 
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
@@ -1080,89 +1163,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
-    });
-});
-document.getElementById("nerdgoGameButton").addEventListener("click", () => {
-    // Hide other sections
-    document.querySelector("main").style.display = "none";
-    
-    // Show the game section
-    const gameContainer = document.getElementById("gameContainer");
-    gameContainer.style.display = "block";
-
-    // Start a new game
-    startNewGame();
-});
-function startNewGame() {
-    // Fetch a new game from the backend
-    fetch("/game/start", { method: "POST", body: JSON.stringify({ userId: "guest" }) })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === "Game started!") {
-                setupGame(data);
-            } else {
-                alert("Failed to start the game.");
-            }
-        })
-        .catch(error => console.error("Error starting game:", error));
-}
-
-function setupGame(gameData) {
-    const gameInstructions = document.getElementById("gameInstructions");
-    const gameList = document.getElementById("gameList");
-    const guessInput = document.getElementById("guessInput");
-    const feedbackMessage = document.getElementById("feedbackMessage");
-    const revealAnswerButton = document.getElementById("revealAnswer");
-
-    // Reset UI
-    gameInstructions.textContent = `Guess the missing item in this list: ${gameData.title}`;
-    gameList.innerHTML = ""; // Clear previous items
-    feedbackMessage.textContent = "";
-    revealAnswerButton.style.display = "none";
-    guessInput.value = "";
-
-    // Display list items with blanks
-    gameData.items.forEach((item, index) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = item || `Item ${index + 1}: [???]`;
-        gameList.appendChild(listItem);
-    });
-
-    // Submit guess functionality
-    document.getElementById("submitGuess").onclick = () => {
-        const guess = guessInput.value.trim();
-        if (guess) {
-            submitGuess(gameData, guess);
-        } else {
-            alert("Please enter a guess.");
-        }
-    };
-}
-
-function submitGuess(gameData, guess) {
-    fetch("/game/guess", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: "guest", guess }),
-    })
-        .then(response => response.json())
-        .then(data => {
-            const feedbackMessage = document.getElementById("feedbackMessage");
-            if (data.success) {
-                feedbackMessage.textContent = `Correct! You scored ${data.score} points.`;
-                document.getElementById("revealAnswer").style.display = "none"; // Hide reveal button
-            } else {
-                feedbackMessage.textContent = data.message;
-                if (gameData.attemptsLeft === 0) {
-                    document.getElementById("revealAnswer").style.display = "block";
-                }
-            }
-        })
-        .catch(error => console.error("Error submitting guess:", error));
-}
-
-// Reveal answer functionality
-document.getElementById("revealAnswer").onclick = () => {
-    alert("The correct answer is: " + gameData.hiddenItem);
     });
 });
