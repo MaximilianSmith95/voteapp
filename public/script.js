@@ -101,7 +101,7 @@ function submitGuess(gameData, guess) {
 // Reveal answer functionality
 document.getElementById("revealAnswer").onclick = () => {
     alert("The correct answer is: " + gameData.hiddenItem);
-})
+};
 
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
