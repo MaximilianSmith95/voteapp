@@ -259,6 +259,7 @@
     <button id="latestButton">Latest</button>
 <!--      <button id="hotButton">Hot Topics</button>
     <button id="coldButton">Cold Topics</button> -->
+     <button id="nerdgoGameButton">NerdGo_ Game</button>
     
 </nav>
 
@@ -271,6 +272,29 @@
 
 
 </main>
+      <main id="gameContainer" style="display: none;">
+    <h2>Welcome to NerdGo_ Game!</h2>
+    <div id="gameArea">
+        <!-- Instructions -->
+        <p id="gameInstructions"></p>
+
+        <!-- Display List Items -->
+        <ul id="gameList">
+            <!-- Dynamically filled with list items -->
+        </ul>
+
+        <!-- Guess Input -->
+        <input type="text" id="guessInput" placeholder="Enter your guess..." />
+        <button id="submitGuess">Submit</button>
+
+        <!-- Feedback Section -->
+        <p id="feedbackMessage"></p>
+
+        <!-- Reveal Answer Button -->
+        <button id="revealAnswer" style="display: none;">Reveal Answer</button>
+    </div>
+</main>
+
        <script>
         window.addEventListener("load", function() {
             document.getElementById("loading-animation").style.display = "none";
