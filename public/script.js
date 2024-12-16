@@ -20,11 +20,15 @@ function setupExploreMoreButton() {
     });
 }
 document.addEventListener("DOMContentLoaded", () => {
-    // Start a new game when the NerdGo_ button is clicked
     document.getElementById("nerdgoGameButton").addEventListener("click", () => {
+        console.log("NerdGo_ Game button clicked!"); // Debugging line
+        const gameContainer = document.getElementById("gameContainer");
+        document.querySelector("main").style.display = "none"; // Hide other main sections
+        gameContainer.style.display = "block"; // Show the game container
         startNewGame();
     });
 });
+
 
 function startNewGame() {
     const gameInstructions = document.getElementById("gameInstructions");
