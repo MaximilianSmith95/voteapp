@@ -270,45 +270,15 @@
       <div id="overlay" class="overlay hidden"></div>
       <div id="topicsContainer"></div>
 
-
-</main>
-      <main id="gameContainer" style="display: none;">
-    <h2>Welcome to NerdGo_!</h2>
-    <p id="gameInstructions">Guess the missing item in this list!</p>
-
-    <!-- List of items with one missing -->
+     <div id="gameContainer" style="display:none;">
+    <h2 id="gameInstructions"></h2>
     <ul id="gameList"></ul>
-
-    <!-- Input for guesses -->
-   
+    <input id="guessInput" type="text" placeholder="Enter your guess..." />
     <button id="submitGuess">Submit</button>
-
-    <!-- Feedback messages -->
     <p id="feedbackMessage"></p>
-
-    <!-- Reveal answer button -->
-    <button id="revealAnswer" style="display: none;">Reveal Answer</button>
+    <button id="revealAnswer" style="display:none;">Reveal Answer</button>
 </div>
 
-    <div id="gameArea">
-        <!-- Instructions -->
-        <p id="gameInstructions"></p>
-
-        <!-- Display List Items -->
-        <ul id="gameList">
-            <!-- Dynamically filled with list items -->
-        </ul>
-
-        <!-- Guess Input -->
-        <input type="text" id="guessInput" placeholder="Enter your guess..." />
-        <button id="submitGuess">Submit</button>
-
-        <!-- Feedback Section -->
-        <p id="feedbackMessage"></p>
-
-        <!-- Reveal Answer Button -->
-        <button id="revealAnswer" style="display: none;">Reveal Answer</button>
-    </div>
 </main>
 
        <script>
