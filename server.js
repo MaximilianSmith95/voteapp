@@ -45,40 +45,33 @@ db.connect(err => {
 });
 // Route to fetch a new game list
 app.get('/api/game/start', (req, res) => {
-    const gameType = req.query.type || 'missing-item';
-
-    // Correct SQL query with 'type' column
-    const query = `
-        SELECT list_id, title, items 
-        FROM game_lists 
-        WHERE type = ? 
-        ORDER BY RAND() LIMIT 1;
-    `;
-
+    const gameType = req.query.type; // 'missing-item' or 'list-title'
+    
+    const query = 'SELECT list_id, title, items FROM game_lists WHERE type = ? LIMIT 1';
     db.query(query, [gameType], (err, results) => {
         if (err) {
-            console.error("Database query error:", err);
-            return res.status(500).json({ error: "Database query failed." });
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
-
         if (results.length === 0) {
-            return res.status(404).json({ error: "No games found for this type." });
+            return res.status(404).json({ error: 'No game found' });
         }
 
+        // Parse JSON 'items' field properly
         const game = results[0];
-        const items = JSON.parse(game.items);
+        try {
+            game.items = JSON.parse(game.items); // Ensure 'items' field is JSON
+        } catch (e) {
+            console.error('Error parsing items field:', e);
+            return res.status(500).json({ error: 'Invalid items data format' });
+        }
 
-        // For 'missing-item', hide a random item
-        const missingIndex = Math.floor(Math.random() * items.length);
-        const hiddenItem = items[missingIndex];
-        items[missingIndex] = null;
-
+        // Send the formatted response
         res.json({
             game_id: game.list_id,
             title: game.title,
-            items: items,
-            hiddenItem: hiddenItem,
-            type: gameType
+            items: game.items,
+            hiddenItem: game.items[0] // Example logic for hidden item
         });
     });
 });
