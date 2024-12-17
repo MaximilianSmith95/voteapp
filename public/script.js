@@ -97,17 +97,21 @@ function startNewGame() {
                 });
             };
 
-            revealAnswerButton.onclick = () => {
-                alert(`The correct answer is: ${data.hiddenItem}`);
-            };
-            revealAnswerButton.style.display = "block";
-        })
-        .catch(error => {
-            console.error(error);
-            feedbackMessage.textContent = "Error loading game. Please try again.";
-        });
-}
+ revealAnswerButton.onclick = () => {
+    alert(`The correct answer is: ${data.hiddenItem}`);
+};
+revealAnswerButton.style.display = "block";
 
+fetch(`/api/game/start?type=missing-item`)
+    .then(response => response.json())
+    .then(data => {
+        // Game logic here
+    })
+    .catch(error => {
+        console.error(error);
+        feedbackMessage.textContent = "Error loading game. Please try again.";
+    });
+    
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
     window.addEventListener("scroll", () => {
