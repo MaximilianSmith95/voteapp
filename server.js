@@ -43,6 +43,77 @@ db.connect(err => {
     if (err) throw err;
     console.log('Connected to MySQL Database');
 });
+// Route to fetch a new game list
+app.get('/api/game/start', (req, res) => {
+    const gameType = req.query.type || 'missing-item';
+
+    // Correct SQL query with 'type' column
+    const query = `
+        SELECT list_id, title, items 
+        FROM game_lists 
+        WHERE type = ? 
+        ORDER BY RAND() LIMIT 1;
+    `;
+
+    db.query(query, [gameType], (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).json({ error: "Database query failed." });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "No games found for this type." });
+        }
+
+        const game = results[0];
+        const items = JSON.parse(game.items);
+
+        // For 'missing-item', hide a random item
+        const missingIndex = Math.floor(Math.random() * items.length);
+        const hiddenItem = items[missingIndex];
+        items[missingIndex] = null;
+
+        res.json({
+            game_id: game.list_id,
+            title: game.title,
+            items: items,
+            hiddenItem: hiddenItem,
+            type: gameType
+        });
+    });
+});
+
+// Route to submit a guess
+app.post('/api/game/submit', (req, res) => {
+    const { user_id, game_id, guess, attempts, type } = req.body;
+
+    if (!user_id || !game_id || !guess) {
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    const query = `SELECT items FROM game_lists WHERE list_id = ?`;
+    db.query(query, [game_id], (err, results) => {
+        if (err) return res.status(500).json({ error: "Database query failed" });
+        if (results.length === 0) return res.status(404).json({ error: "Game not found" });
+
+        const items = JSON.parse(results[0].items);
+        const correctAnswer = items.find(item => item && item.toLowerCase() === guess.toLowerCase());
+
+        if (correctAnswer) {
+            const score = 100 - (attempts * 20); // Deduct points based on attempts
+            const insertScore = `
+                INSERT INTO user_scores (user_id, list_id, score, attempts)
+                VALUES (?, ?, ?, ?)
+            `;
+            db.query(insertScore, [user_id, game_id, score, attempts], (err) => {
+                if (err) return res.status(500).json({ error: "Failed to record score" });
+                res.json({ success: true, score: score });
+            });
+        } else {
+            res.json({ success: false, message: "Incorrect guess. Try again!" });
+        }
+    });
+});
 
 // Haversine formula for distance calculation
 const haversine = (lat1, lon1, lat2, lon2) => {
@@ -546,78 +617,6 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
-// Route to fetch a new game list
-app.get('/api/game/start', (req, res) => {
-    const gameType = req.query.type || 'missing-item';
-
-    // Correct SQL query with 'type' column
-    const query = `
-        SELECT list_id, title, items 
-        FROM game_lists 
-        WHERE type = ? 
-        ORDER BY RAND() LIMIT 1;
-    `;
-
-    db.query(query, [gameType], (err, results) => {
-        if (err) {
-            console.error("Database query error:", err);
-            return res.status(500).json({ error: "Database query failed." });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ error: "No games found for this type." });
-        }
-
-        const game = results[0];
-        const items = JSON.parse(game.items);
-
-        // For 'missing-item', hide a random item
-        const missingIndex = Math.floor(Math.random() * items.length);
-        const hiddenItem = items[missingIndex];
-        items[missingIndex] = null;
-
-        res.json({
-            game_id: game.list_id,
-            title: game.title,
-            items: items,
-            hiddenItem: hiddenItem,
-            type: gameType
-        });
-    });
-});
-
-// Route to submit a guess
-app.post('/api/game/submit', (req, res) => {
-    const { user_id, game_id, guess, attempts, type } = req.body;
-
-    if (!user_id || !game_id || !guess) {
-        return res.status(400).json({ error: "Missing required fields." });
-    }
-
-    const query = `SELECT items FROM game_lists WHERE list_id = ?`;
-    db.query(query, [game_id], (err, results) => {
-        if (err) return res.status(500).json({ error: "Database query failed" });
-        if (results.length === 0) return res.status(404).json({ error: "Game not found" });
-
-        const items = JSON.parse(results[0].items);
-        const correctAnswer = items.find(item => item && item.toLowerCase() === guess.toLowerCase());
-
-        if (correctAnswer) {
-            const score = 100 - (attempts * 20); // Deduct points based on attempts
-            const insertScore = `
-                INSERT INTO user_scores (user_id, list_id, score, attempts)
-                VALUES (?, ?, ?, ?)
-            `;
-            db.query(insertScore, [user_id, game_id, score, attempts], (err) => {
-                if (err) return res.status(500).json({ error: "Failed to record score" });
-                res.json({ success: true, score: score });
-            });
-        } else {
-            res.json({ success: false, message: "Incorrect guess. Try again!" });
-        }
-    });
-});
-
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
