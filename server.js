@@ -547,13 +547,20 @@ app.get('/api/totalVotes', (req, res) => {
     });
 });
 // Route to fetch a new game list
+// Route to fetch a new game list
 app.get('/api/game/start', (req, res) => {
-    const gameType = req.query.type || 'missing-item'; // Default game type
+    const gameType = req.query.type || 'missing-item'; // Default to missing-item
     const query = `SELECT * FROM game_lists WHERE type = ? ORDER BY RAND() LIMIT 1`;
 
     db.query(query, [gameType], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        if (results.length === 0) return res.status(404).json({ error: 'No game found' });
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No game found' });
+        }
 
         const game = results[0];
         const items = JSON.parse(game.items);
@@ -561,23 +568,23 @@ app.get('/api/game/start', (req, res) => {
         if (gameType === 'missing-item') {
             const missingIndex = Math.floor(Math.random() * items.length);
             const hiddenItem = items[missingIndex];
-            items[missingIndex] = null; // Replace one item with null for guessing
+            items[missingIndex] = null; // Replace an item with null
 
             return res.json({
                 game_id: game.list_id,
                 title: game.title,
                 items: items,
-                type: gameType,
-                hint: hiddenItem.charAt(0) // Hint: First letter of hidden item
-            });
-        } else {
-            return res.json({
-                game_id: game.list_id,
-                title: null, // User guesses the title
-                items: items,
+                hiddenItem: hiddenItem,
                 type: gameType
             });
         }
+
+        res.json({
+            game_id: game.list_id,
+            title: game.title,
+            items: items,
+            type: gameType
+        });
     });
 });
 
