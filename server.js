@@ -58,9 +58,12 @@ app.get('/api/game/start', (req, res) => {
         }
 
         const game = results[0];
+        let items;
+
         try {
-            // Parse 'items' only if it's valid JSON
-            const items = JSON.parse(game.items);
+            // Ensure items is parsed as JSON
+            items = typeof game.items === 'string' ? JSON.parse(game.items) : game.items;
+
             res.json({
                 game_id: game.list_id,
                 title: game.title,
