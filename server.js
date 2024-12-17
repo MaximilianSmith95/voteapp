@@ -548,7 +548,7 @@ app.get('/api/totalVotes', (req, res) => {
 });
 // Route to fetch a new game list
 app.get('/api/game/start', (req, res) => {
-    const gameType = req.query.type || 'missing-item'; // Default to missing-item
+    const gameType = req.query.type || 'missing-item'; // Default game type
     const query = `SELECT * FROM game_lists WHERE type = ? ORDER BY RAND() LIMIT 1`;
 
     db.query(query, [gameType], (err, results) => {
@@ -561,15 +561,14 @@ app.get('/api/game/start', (req, res) => {
         if (gameType === 'missing-item') {
             const missingIndex = Math.floor(Math.random() * items.length);
             const hiddenItem = items[missingIndex];
-            items[missingIndex] = null; // Replace with null for guessing
+            items[missingIndex] = null; // Replace one item with null for guessing
 
             return res.json({
                 game_id: game.list_id,
                 title: game.title,
                 items: items,
                 type: gameType,
-                hint: hiddenItem.charAt(0), // Hint: First letter
-                hiddenItem: hiddenItem
+                hint: hiddenItem.charAt(0) // Hint: First letter of hidden item
             });
         } else {
             return res.json({
