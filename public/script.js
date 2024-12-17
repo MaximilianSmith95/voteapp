@@ -39,10 +39,18 @@ function startNewGame() {
 
     const gameType = 'missing-item'; // Change to 'list-title' for other mode
 
-    fetch(`/api/game/start?type=${gameType}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error);
+   fetch('/api/game/start?type=missing-item')
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) throw new Error(data.error);
+        console.log("Game data loaded:", data); // Debugging
+        // Continue game logic...
+    })
+    .catch(error => {
+        console.error(error);
+        document.getElementById("feedbackMessage").textContent = "Error loading game. Please try again.";
+    });
+
 
             gameInstructions.textContent = gameType === 'missing-item'
                 ? `Guess the missing item in: ${data.title}`
