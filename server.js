@@ -546,6 +546,64 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+app.get('/api/game/start', (req, res) => {
+    const { type } = req.query;
+
+    const query = `
+        SELECT game_id, title, items, hidden_item, game_type
+        FROM game_lists
+        WHERE game_type = ? 
+        ORDER BY RAND() LIMIT 1;
+    `;
+
+    db.query(query, [type], (err, results) => {
+        if (err) {
+            console.error('Error fetching game:', err);
+            return res.status(500).json({ error: 'Failed to fetch game.' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No game found.' });
+        }
+
+        const game = results[0];
+        res.json({
+            game_id: game.game_id,
+            title: game.title,
+            items: JSON.parse(game.items),
+            hidden_item: game.hidden_item,
+            game_type: game.game_type
+        });
+    });
+});
+app.post('/api/game/submit', (req, res) => {
+    const { user_id, game_id, guess, attempts } = req.body;
+
+    const query = 'SELECT hidden_item FROM game_lists WHERE game_id = ?';
+    db.query(query, [game_id], (err, results) => {
+        if (err || results.length === 0) {
+            return res.status(500).json({ error: 'Error verifying game.' });
+        }
+
+        const correctItem = results[0].hidden_item;
+        const isCorrect = guess.toLowerCase() === correctItem.toLowerCase();
+
+        if (isCorrect) {
+            // Record user score
+            const insertScore = `
+                INSERT INTO user_scores (user_id, game_id, score, attempts)
+                VALUES (?, ?, ?, ?)
+            `;
+            db.query(insertScore, [user_id, game_id, 10 - attempts, attempts], (insertErr) => {
+                if (insertErr) {
+                    console.error('Error saving score:', insertErr);
+                }
+            });
+            return res.json({ success: true, score: 10 - attempts });
+        }
+
+        res.json({ success: false, message: 'Incorrect guess!' });
+    });
+});
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
