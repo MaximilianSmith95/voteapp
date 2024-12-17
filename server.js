@@ -546,66 +546,6 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
-app.get('/api/game/start', (req, res) => {
-    const { type } = req.query; // 'missing-item' or 'list-title'
-    
-    // Query to fetch a random game from the database
-   const query = `
-    SELECT list_id, title, items, type 
-    FROM game_lists 
-    WHERE type = ? 
-    ORDER BY RAND() LIMIT 1;
-`;
-
-   db.query(query, [type], (err, results) => {
-    if (err) {
-        console.error("Database query error:", err);
-        return res.status(500).json({ error: "Database query failed." });
-    }
-
-    if (results.length === 0) {
-        return res.status(404).json({ error: "No games found for this type." });
-    }
-
-    const game = results[0];
-    res.json({
-        game_id: game.list_id,       // Updated to match the column name
-        title: game.title,
-        items: JSON.parse(game.items), // Parse the JSON string
-        type: game.type
-    });
-});
-
-
-app.post('/api/game/submit', (req, res) => {
-    const { user_id, game_id, guess, attempts } = req.body;
-
-    const query = 'SELECT hidden_item FROM game_lists WHERE game_id = ?';
-    db.query(query, [game_id], (err, results) => {
-        if (err || results.length === 0) {
-            return res.status(500).json({ error: 'Error verifying game.' });
-        }
-
-        const correctItem = results[0].hidden_item;
-        const isCorrect = guess.toLowerCase() === correctItem.toLowerCase();
-
-        if (isCorrect) {
-            // Record user score
-            const insertScore = `
-                INSERT INTO user_scores (user_id, game_id, score, attempts)
-                VALUES (?, ?, ?, ?)
-            `;
-            db.query(insertScore, [user_id, game_id, 10 - attempts, attempts], (insertErr) => {
-                if (insertErr) {
-                    console.error('Error saving score:', insertErr);
-                }
-            });
-            return res.json({ success: true, score: 10 - attempts });
-        }
-
-        res.json({ success: false, message: 'Incorrect guess!' });
-    });
-});
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
