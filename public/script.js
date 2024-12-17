@@ -24,11 +24,20 @@ function startNewGame() {
     let currentGameData = null;
 
     // Fetch the game data
-    fetch(`/api/game/start?type=${gameType}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error);
-            console.log("Game data loaded:", data);
+fetch('/api/game/start?type=missing-item')
+    .then(response => {
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Game data loaded:", data);
+        // Proceed with rendering the game
+    })
+    .catch(error => {
+        console.error("Error fetching game:", error);
+        document.getElementById("feedbackMessage").textContent = "Error loading game. Please try again.";
+    });
+
 
             currentGameData = data; // Store game data
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
