@@ -546,6 +546,72 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+// Route to fetch a new game list
+app.get('/api/game/start', (req, res) => {
+    const gameType = req.query.type || 'missing-item'; // Default to missing-item
+    const query = `SELECT * FROM game_lists WHERE type = ? ORDER BY RAND() LIMIT 1`;
+
+    db.query(query, [gameType], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (results.length === 0) return res.status(404).json({ error: 'No game found' });
+
+        const game = results[0];
+        const items = JSON.parse(game.items);
+
+        if (gameType === 'missing-item') {
+            const missingIndex = Math.floor(Math.random() * items.length);
+            const hiddenItem = items[missingIndex];
+            items[missingIndex] = null; // Replace with null for guessing
+
+            return res.json({
+                game_id: game.list_id,
+                title: game.title,
+                items: items,
+                type: gameType,
+                hint: hiddenItem.charAt(0), // Hint: First letter
+                hiddenItem: hiddenItem
+            });
+        } else {
+            return res.json({
+                game_id: game.list_id,
+                title: null, // User guesses the title
+                items: items,
+                type: gameType
+            });
+        }
+    });
+});
+
+// Route to submit a guess and record the score
+app.post('/api/game/submit', (req, res) => {
+    const { user_id, game_id, guess, attempts, type } = req.body;
+
+    db.query('SELECT * FROM game_lists WHERE list_id = ?', [game_id], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (results.length === 0) return res.status(404).json({ error: 'Game not found' });
+
+        const game = results[0];
+        const correctAnswer = type === 'missing-item'
+            ? JSON.parse(game.items).find(item => item !== null)
+            : game.title;
+
+        if (guess.toLowerCase() === correctAnswer.toLowerCase()) {
+            const score = 100 - (attempts * 10); // Simple scoring logic
+
+            db.query(
+                'INSERT INTO user_scores (user_id, list_id, score, attempts) VALUES (?, ?, ?, ?)',
+                [user_id, game_id, score, attempts],
+                (err) => {
+                    if (err) return res.status(500).json({ error: 'Failed to save score' });
+                    return res.json({ success: true, score });
+                }
+            );
+        } else {
+            return res.json({ success: false, message: 'Incorrect guess. Try again!' });
+        }
+    });
+});
+
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
