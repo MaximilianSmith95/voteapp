@@ -550,33 +550,32 @@ app.get('/api/game/start', (req, res) => {
     const { type } = req.query; // 'missing-item' or 'list-title'
     
     // Query to fetch a random game from the database
-    const query = `
-        SELECT game_id, title, items, hidden_item, game_type 
-        FROM game_lists 
-        WHERE game_type = ? 
-        ORDER BY RAND() LIMIT 1;
-    `;
+   const query = `
+    SELECT list_id, title, items, type 
+    FROM game_lists 
+    WHERE type = ? 
+    ORDER BY RAND() LIMIT 1;
+`;
 
-    db.query(query, [type], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database query failed.' });
-        }
+   db.query(query, [type], (err, results) => {
+    if (err) {
+        console.error("Database query error:", err);
+        return res.status(500).json({ error: "Database query failed." });
+    }
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'No games found for this type.' });
-        }
+    if (results.length === 0) {
+        return res.status(404).json({ error: "No games found for this type." });
+    }
 
-        const game = results[0];
-        res.json({
-            game_id: game.game_id,
-            title: game.title,
-            items: JSON.parse(game.items), // Parse JSON string to object
-            hidden_item: game.hidden_item,
-            game_type: game.game_type
-        });
+    const game = results[0];
+    res.json({
+        game_id: game.list_id,       // Updated to match the column name
+        title: game.title,
+        items: JSON.parse(game.items), // Parse the JSON string
+        type: game.type
     });
 });
+
 
 app.post('/api/game/submit', (req, res) => {
     const { user_id, game_id, guess, attempts } = req.body;
