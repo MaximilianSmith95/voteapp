@@ -8,7 +8,80 @@ function renderLimitedCategories(categories, limit = 15) {
     const limitedCategories = categories.slice(0, limit);
     renderCategories(limitedCategories); // Reuse existing render logic
 }
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
+});
 
+function startNewGame() {
+    const gameContainer = document.getElementById("gameContainer");
+    const gameInstructions = document.getElementById("gameInstructions");
+    const gameList = document.getElementById("gameList");
+    const feedbackMessage = document.getElementById("feedbackMessage");
+    const revealAnswerButton = document.getElementById("revealAnswer");
+    const guessInput = document.getElementById("guessInput");
+
+    fetch('/api/game/start?type=missing-item')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) throw new Error(data.error);
+
+            // Update UI
+            gameContainer.style.display = "block";
+            gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
+            feedbackMessage.textContent = "";
+            revealAnswerButton.style.display = "none";
+            guessInput.value = "";
+
+            gameList.innerHTML = "";
+            data.items.forEach((item, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = item || `[Item ${index + 1}: ???]`;
+                gameList.appendChild(listItem);
+            });
+
+            // Handle guesses
+            let attempts = 0;
+            document.getElementById("submitGuess").onclick = () => {
+                const guess = guessInput.value.trim();
+                if (!guess) return alert("Please enter a guess.");
+                attempts++;
+
+                fetch('/api/game/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: 1, // Replace with dynamic user ID
+                        game_id: data.game_id,
+                        guess: guess,
+                        attempts: attempts
+                    })
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            feedbackMessage.textContent = `Correct! Your score: ${result.score}`;
+                            feedbackMessage.style.color = "green";
+                            revealAnswerButton.style.display = "none";
+                        } else {
+                            feedbackMessage.textContent = `Incorrect! Attempts: ${attempts}`;
+                            feedbackMessage.style.color = "red";
+                            if (attempts >= 4) {
+                                feedbackMessage.textContent += ` The correct answer was: ${data.hidden_item}`;
+                                revealAnswerButton.style.display = "none";
+                            }
+                        }
+                    });
+            };
+
+            revealAnswerButton.onclick = () => {
+                alert(`The correct answer is: ${data.hidden_item}`);
+            };
+        })
+        .catch(error => {
+            console.error(error);
+            feedbackMessage.textContent = "Error loading game. Please try again.";
+        });
+}
 // Function to set up "Explore More" button
 function setupExploreMoreButton() {
     const exploreMoreButton = document.getElementById("exploreMoreButton");
