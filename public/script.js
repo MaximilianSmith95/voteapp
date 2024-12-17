@@ -86,7 +86,7 @@ fetch('/api/game/start?type=missing-item')
                 alert(`The correct answer is: ${currentGameData.hiddenItem}`);
             };
             revealAnswerButton.style.display = "block";
-        })
+        }
         .catch(error => {
             console.error("Error:", error);
             feedbackMessage.textContent = "Error loading game. Please try again.";
