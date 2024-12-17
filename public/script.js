@@ -32,10 +32,15 @@ function startNewGame() {
         .then(data => {
             console.log("Game data loaded:", data);
             currentGameData = data; // Store game data
+
+            // Make the game container visible
+            gameContainer.style.display = "block";
+
+            // Set game instructions
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
             gameList.innerHTML = "";
 
-            // Render the list items
+            // Render list items
             data.items.forEach((item, index) => {
                 const listItem = document.createElement("li");
                 listItem.textContent = item || `Item ${index + 1}: [???]`;
