@@ -31,64 +31,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function startNewGame() {
+    const gameContainer = document.getElementById("gameContainer");
     const gameInstructions = document.getElementById("gameInstructions");
     const gameList = document.getElementById("gameList");
     const feedbackMessage = document.getElementById("feedbackMessage");
     const revealAnswerButton = document.getElementById("revealAnswer");
 
-    // Reset game state
-    gameList.innerHTML = ""; // Clear list
-    feedbackMessage.textContent = "";
-    revealAnswerButton.style.display = "none";
+    const gameType = 'missing-item'; // Change to 'list-title' for other mode
 
-    // Placeholder: Example game data
-    const gameData = {
-        title: "Top 10 Countries by Population",
-        items: [
-            "China",
-            "India",
-            "United States",
-            "Indonesia",
-            "Pakistan",
-            null, // Missing item
-            "Brazil",
-            "Nigeria",
-            "Bangladesh",
-            "Russia"
-        ],
-        hiddenItem: "Japan"
-    };
+    fetch(`/api/game/start?type=${gameType}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) throw new Error(data.error);
 
-    // Display game instructions
-    gameInstructions.textContent = `Guess the missing item in: ${gameData.title}`;
+            gameInstructions.textContent = gameType === 'missing-item'
+                ? `Guess the missing item in: ${data.title}`
+                : `Guess the title for this list:`;
 
-    // Render the list with one blank
-    gameData.items.forEach((item, index) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = item || `Item ${index + 1}: [???]`;
-        gameList.appendChild(listItem);
-    });
+            gameList.innerHTML = "";
+            data.items.forEach((item, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = item || `Item ${index + 1}: [???]`;
+                gameList.appendChild(listItem);
+            });
 
-    // Handle guesses
-    document.getElementById("submitGuess").onclick = () => {
-        const guessInput = document.getElementById("guessInput");
-        const userGuess = guessInput.value.trim();
+            let attempts = 0;
 
-        if (userGuess.toLowerCase() === gameData.hiddenItem.toLowerCase()) {
-            feedbackMessage.textContent = "Correct! Well done!";
-            feedbackMessage.style.color = "green";
-        } else {
-            feedbackMessage.textContent = "Incorrect. Try again!";
-            feedbackMessage.style.color = "red";
-        }
-    };
+            document.getElementById("submitGuess").onclick = () => {
+                const guess = document.getElementById("guessInput").value.trim();
+                if (!guess) return alert("Please enter a guess.");
 
-    // Reveal the answer
-    revealAnswerButton.onclick = () => {
-        alert(`The correct answer is: ${gameData.hiddenItem}`);
-    };
-    revealAnswerButton.style.display = "block";
-};
+                attempts++;
+                fetch('/api/game/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: 1, // Replace with dynamic user ID
+                        game_id: data.game_id,
+                        guess: guess,
+                        attempts: attempts,
+                        type: gameType
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        feedbackMessage.textContent = `Correct! Your score: ${result.score}`;
+                        feedbackMessage.style.color = "green";
+                        revealAnswerButton.style.display = "none";
+                    } else {
+                        feedbackMessage.textContent = result.message;
+                        feedbackMessage.style.color = "red";
+                        if (attempts >= 4) {
+                            feedbackMessage.textContent += ` The correct answer was: ${data.hiddenItem}`;
+                        }
+                    }
+                });
+            };
+
+            revealAnswerButton.onclick = () => {
+                alert(`The correct answer is: ${data.hiddenItem}`);
+            };
+            revealAnswerButton.style.display = "block";
+        })
+        .catch(error => {
+            console.error(error);
+            feedbackMessage.textContent = "Error loading game. Please try again.";
+        });
+}
 
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
