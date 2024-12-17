@@ -13,17 +13,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function startNewGame() {
+    // Hide all main sections first
+    document.getElementById("categories").style.display = "none"; // Hide categories
+    document.getElementById("gameContainer").style.display = "block"; // Show game container
+
+    // Fetch and render game content
     const gameContainer = document.getElementById("gameContainer");
     const gameInstructions = document.getElementById("gameInstructions");
     const gameList = document.getElementById("gameList");
     const feedbackMessage = document.getElementById("feedbackMessage");
     const revealAnswerButton = document.getElementById("revealAnswer");
 
-    const gameType = 'missing-item'; // Set game mode
+    const gameType = 'missing-item';
     let attempts = 0;
     let currentGameData = null;
 
-    // Fetch the game data
     fetch('/api/game/start?type=missing-item')
         .then(response => {
             if (!response.ok) throw new Error(`Server error: ${response.status}`);
@@ -31,33 +35,28 @@ function startNewGame() {
         })
         .then(data => {
             console.log("Game data loaded:", data);
-            currentGameData = data; // Store game data
+            currentGameData = data;
 
-            // Make the game container visible
-            gameContainer.style.display = "block";
-
-            // Set game instructions
+            // Update UI
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
             gameList.innerHTML = "";
 
-            // Render list items
             data.items.forEach((item, index) => {
                 const listItem = document.createElement("li");
                 listItem.textContent = item || `Item ${index + 1}: [???]`;
                 gameList.appendChild(listItem);
             });
 
-            // Handle guess submission
             document.getElementById("submitGuess").onclick = () => {
                 const guess = document.getElementById("guessInput").value.trim();
                 if (!guess) return alert("Please enter a guess.");
-
                 attempts++;
+
                 fetch('/api/game/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        user_id: 1, // Replace with dynamic user ID
+                        user_id: 1,
                         game_id: currentGameData.game_id,
                         guess: guess,
                         attempts: attempts,
@@ -84,7 +83,6 @@ function startNewGame() {
                 });
             };
 
-            // Reveal answer button
             revealAnswerButton.onclick = () => {
                 alert(`The correct answer is: ${currentGameData.hiddenItem}`);
             };
