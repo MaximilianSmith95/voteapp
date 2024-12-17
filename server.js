@@ -548,44 +548,44 @@ app.get('/api/totalVotes', (req, res) => {
 });
 // Route to fetch a new game list
 app.get('/api/game/start', (req, res) => {
-    const gameType = req.query.type || 'missing-item'; // Default to 'missing-item'
-    const query = `SELECT list_id, title, items FROM game_lists WHERE type = ? ORDER BY RAND() LIMIT 1`;
+    const gameType = req.query.type || 'missing-item';
+
+    // Correct SQL query with 'type' column
+    const query = `
+        SELECT list_id, title, items 
+        FROM game_lists 
+        WHERE type = ? 
+        ORDER BY RAND() LIMIT 1;
+    `;
 
     db.query(query, [gameType], (err, results) => {
         if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ error: "Database query failed" });
+            console.error("Database query error:", err);
+            return res.status(500).json({ error: "Database query failed." });
         }
+
         if (results.length === 0) {
-            return res.status(404).json({ error: "No game found" });
+            return res.status(404).json({ error: "No games found for this type." });
         }
 
         const game = results[0];
-        const items = JSON.parse(game.items); // Parse JSON items
+        const items = JSON.parse(game.items);
 
-        if (gameType === 'missing-item') {
-            const missingIndex = Math.floor(Math.random() * items.length);
-            const hiddenItem = items[missingIndex];
-            items[missingIndex] = null; // Replace one item with null
+        // For 'missing-item', hide a random item
+        const missingIndex = Math.floor(Math.random() * items.length);
+        const hiddenItem = items[missingIndex];
+        items[missingIndex] = null;
 
-            return res.json({
-                game_id: game.list_id,
-                title: game.title,
-                items: items,
-                hiddenItem: hiddenItem,
-                type: gameType,
-            });
-        } else {
-            // list-title game mode
-            return res.json({
-                game_id: game.list_id,
-                title: game.title,
-                items: items,
-                type: gameType,
-            });
-        }
+        res.json({
+            game_id: game.list_id,
+            title: game.title,
+            items: items,
+            hiddenItem: hiddenItem,
+            type: gameType
+        });
     });
 });
+
 // Route to submit a guess
 app.post('/api/game/submit', (req, res) => {
     const { user_id, game_id, guess, attempts, type } = req.body;
