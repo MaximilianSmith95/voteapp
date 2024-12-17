@@ -24,25 +24,18 @@ function startNewGame() {
     let currentGameData = null;
 
     // Fetch the game data
-fetch('/api/game/start?type=missing-item')
-    .then(response => {
-        if (!response.ok) throw new Error(`Server error: ${response.status}`);
-        return response.json();
-    })
-    .then(data => {
-        console.log("Game data loaded:", data);
-        // Proceed with rendering the game
-    })
-    .catch(error => {
-        console.error("Error fetching game:", error);
-        document.getElementById("feedbackMessage").textContent = "Error loading game. Please try again.";
-    });
-
-
+    fetch('/api/game/start?type=missing-item')
+        .then(response => {
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Game data loaded:", data);
             currentGameData = data; // Store game data
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
             gameList.innerHTML = "";
 
+            // Render the list items
             data.items.forEach((item, index) => {
                 const listItem = document.createElement("li");
                 listItem.textContent = item || `Item ${index + 1}: [???]`;
@@ -79,19 +72,25 @@ fetch('/api/game/start?type=missing-item')
                             feedbackMessage.textContent += ` The correct answer was: ${currentGameData.hiddenItem}`;
                         }
                     }
+                })
+                .catch(error => {
+                    console.error("Error submitting guess:", error);
+                    feedbackMessage.textContent = "Error submitting guess. Please try again.";
                 });
             };
 
+            // Reveal answer button
             revealAnswerButton.onclick = () => {
                 alert(`The correct answer is: ${currentGameData.hiddenItem}`);
             };
             revealAnswerButton.style.display = "block";
-        }
-        catch(error => {
-            console.error("Error:", error);
+        })
+        .catch(error => {
+            console.error("Error fetching game:", error);
             feedbackMessage.textContent = "Error loading game. Please try again.";
         });
 }
+
 
 // Function to set up "Explore More" button
 function setupExploreMoreButton() {
