@@ -547,34 +547,37 @@ app.get('/api/totalVotes', (req, res) => {
     });
 });
 app.get('/api/game/start', (req, res) => {
-    const { type } = req.query;
-
+    const { type } = req.query; // 'missing-item' or 'list-title'
+    
+    // Query to fetch a random game from the database
     const query = `
-        SELECT game_id, title, items, hidden_item, game_type
-        FROM game_lists
+        SELECT game_id, title, items, hidden_item, game_type 
+        FROM game_lists 
         WHERE game_type = ? 
         ORDER BY RAND() LIMIT 1;
     `;
 
     db.query(query, [type], (err, results) => {
         if (err) {
-            console.error('Error fetching game:', err);
-            return res.status(500).json({ error: 'Failed to fetch game.' });
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database query failed.' });
         }
+
         if (results.length === 0) {
-            return res.status(404).json({ error: 'No game found.' });
+            return res.status(404).json({ error: 'No games found for this type.' });
         }
 
         const game = results[0];
         res.json({
             game_id: game.game_id,
             title: game.title,
-            items: JSON.parse(game.items),
+            items: JSON.parse(game.items), // Parse JSON string to object
             hidden_item: game.hidden_item,
             game_type: game.game_type
         });
     });
 });
+
 app.post('/api/game/submit', (req, res) => {
     const { user_id, game_id, guess, attempts } = req.body;
 
