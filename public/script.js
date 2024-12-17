@@ -43,11 +43,15 @@ function startNewGame() {
 
     const gameType = 'missing-item'; // Set game type here
     let attempts = 0;
+    let currentGameData = null; // Store game data globally for this function
 
     fetch(`/api/game/start?type=${gameType}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) throw new Error(data.error);
+
+            // Store the game data
+            currentGameData = data;
 
             // Update UI
             gameInstructions.textContent = gameType === 'missing-item'
@@ -62,70 +66,55 @@ function startNewGame() {
                 gameList.appendChild(listItem);
             });
 
-            // Guess logic
+            // Submit Guess Logic
             document.getElementById("submitGuess").onclick = () => {
                 const guess = document.getElementById("guessInput").value.trim();
                 if (!guess) return alert("Please enter a guess.");
 
                 attempts++;
-                if (guess.toLowerCase() === data.hiddenItem.toLowerCase()) {
-                    feedbackMessage.textContent = "Correct! Well done.";
-                    feedbackMessage.style.color = "green";
-                } else if (attempts >= 4) {
-                    feedbackMessage.textContent = `Out of attempts! The correct answer was: ${data.hiddenItem}`;
-                    feedbackMessage.style.color = "red";
-                } else {
-                    feedbackMessage.textContent = "Incorrect! Try again.";
-                    feedbackMessage.style.color = "orange";
-                }
+                fetch('/api/game/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: 1, // Replace with dynamic user ID
+                        game_id: currentGameData.game_id,
+                        guess: guess,
+                        attempts: attempts,
+                        type: gameType
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        feedbackMessage.textContent = `Correct! Your score: ${result.score}`;
+                        feedbackMessage.style.color = "green";
+                        revealAnswerButton.style.display = "none"; // Hide reveal button
+                    } else {
+                        feedbackMessage.textContent = result.message;
+                        feedbackMessage.style.color = "red";
+
+                        if (attempts >= 4) {
+                            feedbackMessage.textContent += ` The correct answer was: ${currentGameData.hiddenItem}`;
+                            revealAnswerButton.style.display = "none"; // Disable further attempts
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error submitting guess:", error);
+                    feedbackMessage.textContent = "Error submitting guess. Please try again.";
+                });
             };
 
-            revealAnswerButton.onclick = () => alert(`The correct answer is: ${data.hiddenItem}`);
+            // Reveal Answer Logic
+            revealAnswerButton.onclick = () => {
+                alert(`The correct answer is: ${currentGameData.hiddenItem}`);
+            };
             revealAnswerButton.style.display = "block";
         })
         .catch(error => {
             console.error("Error:", error);
             feedbackMessage.textContent = "Error loading game. Please try again.";
         });
-}
-
-    // Handle Guess Submission
-    document.getElementById("submitGuess").onclick = () => {
-        const guess = document.getElementById("guessInput").value.trim();
-        if (!guess) return alert("Please enter a guess.");
-
-        attempts++;
-        fetch('/api/game/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: 1, // Replace with dynamic user ID
-                game_id: currentGameData.game_id,
-                guess: guess,
-                attempts: attempts,
-                type: gameType
-            })
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                feedbackMessage.textContent = `Correct! Your score: ${result.score}`;
-                feedbackMessage.style.color = "green";
-                revealAnswerButton.style.display = "none"; // Hide reveal button on success
-            } else {
-                feedbackMessage.textContent = result.message;
-                feedbackMessage.style.color = "red";
-                if (attempts >= 4) {
-                    feedbackMessage.textContent += ` The correct answer was: ${currentGameData.hiddenItem}`;
-                    revealAnswerButton.style.display = "none"; // Prevent further attempts
-                }
-            }
-        })
-        .catch(error => {
-            console.error("Error submitting guess:", error);
-            feedbackMessage.textContent = "Error submitting guess. Please try again.";
-        });
-    };
 }
 
 // Function to enable infinite scrolling
