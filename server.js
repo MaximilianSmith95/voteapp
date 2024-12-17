@@ -46,35 +46,34 @@ db.connect(err => {
 // Route to fetch a new game list
 app.get('/api/game/start', (req, res) => {
     const gameType = req.query.type; // 'missing-item' or 'list-title'
-    
+
     const query = 'SELECT list_id, title, items FROM game_lists WHERE type = ? LIMIT 1';
     db.query(query, [gameType], (err, results) => {
         if (err) {
-            console.error('Database error:', err);
+            console.error('Database query error:', err);
             return res.status(500).json({ error: 'Internal Server Error' });
         }
         if (results.length === 0) {
             return res.status(404).json({ error: 'No game found' });
         }
 
-        // Parse JSON 'items' field properly
         const game = results[0];
         try {
-            game.items = JSON.parse(game.items); // Ensure 'items' field is JSON
-        } catch (e) {
-            console.error('Error parsing items field:', e);
-            return res.status(500).json({ error: 'Invalid items data format' });
+            // Parse 'items' only if it's valid JSON
+            const items = JSON.parse(game.items);
+            res.json({
+                game_id: game.list_id,
+                title: game.title,
+                items: items,
+                hiddenItem: items[0] // Example: Hide the first item
+            });
+        } catch (parseError) {
+            console.error('Error parsing items field:', parseError);
+            res.status(500).json({ error: 'Invalid data format in database' });
         }
-
-        // Send the formatted response
-        res.json({
-            game_id: game.list_id,
-            title: game.title,
-            items: game.items,
-            hiddenItem: game.items[0] // Example logic for hidden item
-        });
     });
 });
+
 
 // Route to submit a guess
 app.post('/api/game/submit', (req, res) => {
