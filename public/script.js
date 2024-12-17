@@ -35,48 +35,59 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function startNewGame() {
+    const gameContainer = document.getElementById("gameContainer");
     const gameInstructions = document.getElementById("gameInstructions");
     const gameList = document.getElementById("gameList");
     const feedbackMessage = document.getElementById("feedbackMessage");
     const revealAnswerButton = document.getElementById("revealAnswer");
 
-    const gameType = 'missing-item'; // Set game mode: 'missing-item' or 'list-title'
-    let attempts = 0; // Track the number of attempts
-    let currentGameData = null; // Store fetched game data
+    const gameType = 'missing-item'; // Set game type here
+    let attempts = 0;
 
-    // Fetch game data from backend
     fetch(`/api/game/start?type=${gameType}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) throw new Error(data.error);
-            console.log("Game data loaded:", data); // Debugging line
 
-            // Store game data for further use
-            currentGameData = data;
-
-            // Update instructions based on game mode
+            // Update UI
             gameInstructions.textContent = gameType === 'missing-item'
                 ? `Guess the missing item in: ${data.title}`
-                : `Guess the title for this list:`;
+                : `Guess the title for this list.`;
 
-            // Render the list items (replace one with ??? in 'missing-item' mode)
+            // Render list
             gameList.innerHTML = "";
             data.items.forEach((item, index) => {
                 const listItem = document.createElement("li");
-                listItem.textContent = item || `Item ${index + 1}: [???]`;
+                listItem.textContent = item || `[Item ${index + 1}: ???]`;
                 gameList.appendChild(listItem);
             });
 
-            // Reveal Answer Button Logic
-            revealAnswerButton.onclick = () => {
-                alert(`The correct answer is: ${data.hiddenItem}`);
+            // Guess logic
+            document.getElementById("submitGuess").onclick = () => {
+                const guess = document.getElementById("guessInput").value.trim();
+                if (!guess) return alert("Please enter a guess.");
+
+                attempts++;
+                if (guess.toLowerCase() === data.hiddenItem.toLowerCase()) {
+                    feedbackMessage.textContent = "Correct! Well done.";
+                    feedbackMessage.style.color = "green";
+                } else if (attempts >= 4) {
+                    feedbackMessage.textContent = `Out of attempts! The correct answer was: ${data.hiddenItem}`;
+                    feedbackMessage.style.color = "red";
+                } else {
+                    feedbackMessage.textContent = "Incorrect! Try again.";
+                    feedbackMessage.style.color = "orange";
+                }
             };
+
+            revealAnswerButton.onclick = () => alert(`The correct answer is: ${data.hiddenItem}`);
             revealAnswerButton.style.display = "block";
         })
         .catch(error => {
             console.error("Error:", error);
             feedbackMessage.textContent = "Error loading game. Please try again.";
         });
+}
 
     // Handle Guess Submission
     document.getElementById("submitGuess").onclick = () => {
