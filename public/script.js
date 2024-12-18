@@ -45,7 +45,27 @@ function startNewGame() {
     let attempts = 0;
     let currentGameData = null;
 
-    fetch('/api/game/start?type=missing-item')
+  const data = {
+    game_id: 1,
+    title: "Top 10 Highest Grossing Movies",
+    items: ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars: The Force Awakens", "???", "Spider-Man: No Way Home", "Jurassic World", "The Lion King", "The Avengers", "Furious 7"],
+    hiddenItemIndex: 4,
+    originalValue: "Avengers: Infinity War"
+};
+startGameWithData(data);
+
+function startGameWithData(data) {
+    console.log("Game data loaded:", data);
+    currentGameData = data;
+    gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
+    gameList.innerHTML = "";
+    data.items.forEach((item, index) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = item || `Item ${index + 1}: [???]`;
+        gameList.appendChild(listItem);
+    });
+}
+
         .then(response => {
             if (!response.ok) throw new Error(`Server error: ${response.status}`);
             return response.json();
