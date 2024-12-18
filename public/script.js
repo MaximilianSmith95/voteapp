@@ -12,21 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
 });
 function resetSections() {
-    // Hide all sections and the game container
+    // Hide all sections and game container initially
     document.querySelectorAll('.section').forEach(section => {
         section.style.display = 'none';
     });
     const gameContainer = document.getElementById('gameContainer');
     if (gameContainer) gameContainer.style.display = 'none';
 
-    // Show the categories by default and restore grid layout
+    // Show categories and main content by default
     const mainContent = document.getElementById('categories'); // Categories section ID
-    if (mainContent) {
-        mainContent.style.display = 'block';
-        mainContent.classList.add('grid-layout'); // Add a class to enforce grid layout
-    }
+    if (mainContent) mainContent.style.display = 'block';
 }
-
 
 
 function startNewGame() {
@@ -45,27 +41,7 @@ function startNewGame() {
     let attempts = 0;
     let currentGameData = null;
 
-  const data = {
-    game_id: 1,
-    title: "Top 10 Highest Grossing Movies",
-    items: ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars: The Force Awakens", "???", "Spider-Man: No Way Home", "Jurassic World", "The Lion King", "The Avengers", "Furious 7"],
-    hiddenItemIndex: 4,
-    originalValue: "Avengers: Infinity War"
-};
-startGameWithData(data);
-
-function startGameWithData(data) {
-    console.log("Game data loaded:", data);
-    currentGameData = data;
-    gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
-    gameList.innerHTML = "";
-    data.items.forEach((item, index) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = item || `Item ${index + 1}: [???]`;
-        gameList.appendChild(listItem);
-    });
-}
-
+    fetch('/api/game/start?type=missing-item')
         .then(response => {
             if (!response.ok) throw new Error(`Server error: ${response.status}`);
             return response.json();
@@ -78,14 +54,12 @@ function startGameWithData(data) {
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
             gameList.innerHTML = "";
 
-            // Render items in the list
-            data.items.forEach((item) => {
+            data.items.forEach((item, index) => {
                 const listItem = document.createElement("li");
-                listItem.textContent = item; // "???" will already be in place from the backend
+                listItem.textContent = item || `Item ${index + 1}: [???]`;
                 gameList.appendChild(listItem);
             });
 
-            // Handle guess submission
             document.getElementById("submitGuess").onclick = () => {
                 const guess = document.getElementById("guessInput").value.trim();
                 if (!guess) return alert("Please enter a guess.");
@@ -111,8 +85,8 @@ function startGameWithData(data) {
                     } else {
                         feedbackMessage.textContent = result.message;
                         feedbackMessage.style.color = "red";
-                        if (attempts >= 3) {
-                            feedbackMessage.textContent += ` The correct answer was: ${currentGameData.items[currentGameData.hiddenItemIndex]}`;
+                        if (attempts >= 4) {
+                            feedbackMessage.textContent += ` The correct answer was: ${currentGameData.hiddenItem}`;
                         }
                     }
                 })
@@ -122,11 +96,9 @@ function startGameWithData(data) {
                 });
             };
 
-            // Handle reveal answer button
             revealAnswerButton.onclick = () => {
-                alert(`The correct answer is: ${currentGameData.items[currentGameData.hiddenItemIndex]}`);
+                alert(`The correct answer is: ${currentGameData.hiddenItem}`);
             };
-
             revealAnswerButton.style.display = "block";
         })
         .catch(error => {
@@ -134,6 +106,7 @@ function startGameWithData(data) {
             feedbackMessage.textContent = "Error loading game. Please try again.";
         });
 }
+
 
 // Function to set up "Explore More" button
 function setupExploreMoreButton() {
