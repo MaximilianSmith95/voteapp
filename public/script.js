@@ -12,17 +12,21 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
 });
 function resetSections() {
-    // Hide all sections and game container initially
+    // Hide all sections and the game container
     document.querySelectorAll('.section').forEach(section => {
         section.style.display = 'none';
     });
     const gameContainer = document.getElementById('gameContainer');
     if (gameContainer) gameContainer.style.display = 'none';
 
-    // Show categories and main content by default
+    // Show the categories by default and restore grid layout
     const mainContent = document.getElementById('categories'); // Categories section ID
-    if (mainContent) mainContent.style.display = 'block';
+    if (mainContent) {
+        mainContent.style.display = 'block';
+        mainContent.classList.add('grid-layout'); // Add a class to enforce grid layout
+    }
 }
+
 
 
 function startNewGame() {
