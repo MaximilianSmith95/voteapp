@@ -12,19 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
 });
 function resetSections() {
-    // Hide all sections initially
+    // Hide all sections and game container initially
     document.querySelectorAll('.section').forEach(section => {
         section.style.display = 'none';
     });
-
-    // Reset game container
     const gameContainer = document.getElementById('gameContainer');
     if (gameContainer) gameContainer.style.display = 'none';
 
-    // Show main content by default
-    const mainContent = document.getElementById('mainContent'); // Adjust ID to match your main section
+    // Show categories and main content by default
+    const mainContent = document.getElementById('categories'); // Categories section ID
     if (mainContent) mainContent.style.display = 'block';
 }
+
 
 function startNewGame() {
     // Hide all main sections first
