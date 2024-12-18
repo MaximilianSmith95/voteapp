@@ -90,9 +90,9 @@ function startNewGame() {
                     } else {
                         feedbackMessage.textContent = result.message;
                         feedbackMessage.style.color = "red";
-                        if (attempts >= 4) {
-    feedbackMessage.textContent += ` The correct answer was: ${currentGameData.originalValue}`;
-                    }
+                       if (attempts >= 3) {
+    feedbackMessage.textContent += ` The correct answer was: ${currentGameData.items[currentGameData.hiddenItemIndex]}`;
+}
                 })
                 .catch(error => {
                     console.error("Error submitting guess:", error);
