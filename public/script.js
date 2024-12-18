@@ -11,6 +11,20 @@ function renderLimitedCategories(categories, limit = 15) {
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
 });
+function resetSections() {
+    // Hide all sections initially
+    document.querySelectorAll('.section').forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // Reset game container
+    const gameContainer = document.getElementById('gameContainer');
+    if (gameContainer) gameContainer.style.display = 'none';
+
+    // Show main content by default
+    const mainContent = document.getElementById('mainContent'); // Adjust ID to match your main section
+    if (mainContent) mainContent.style.display = 'block';
+}
 
 function startNewGame() {
     // Hide all main sections first
@@ -365,6 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchForYouCategories;
         currentCategoriesLimit = 15;
+        resetSections(); // Reset all sections
         fetchForYouCategories(currentCategoriesLimit);
     });
 
@@ -372,6 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchAllCategories;
         currentCategoriesLimit = 15;
+        resetSections(); // Reset all sections
         fetchAllCategories(currentCategoriesLimit);
     });
 
@@ -379,6 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchLatestCategories;
         currentCategoriesLimit = 15;
+        resetSections(); // Reset all sections
         fetchLatestCategories(currentCategoriesLimit);
     });
 
@@ -393,6 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchNearMeCategories;
         currentCategoriesLimit = 15; // Reset limit
+        resetSections(); // Reset all sections
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
