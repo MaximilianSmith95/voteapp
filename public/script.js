@@ -10,30 +10,6 @@ function renderLimitedCategories(categories, limit = 15) {
 }
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
-        // Hide all sections and show the game
-    document.querySelectorAll("main, #categories, #otherSections").forEach((section) => {
-        section.style.display = "none";
-    });
-    document.getElementById("gameContainer").style.display = "block";
-});
-
-document.querySelectorAll("nav button").forEach((button) => {
-    button.addEventListener("click", (event) => {
-        const targetId = event.target.getAttribute("data-target");
-        if (targetId === "gameContainer") {
-            // Hide everything else and show game
-            document.querySelectorAll("main, #categories, #otherSections").forEach((section) => {
-                section.style.display = "none";
-            });
-            document.getElementById("gameContainer").style.display = "block";
-        } else {
-            // Show the clicked section and hide the game
-            document.getElementById("gameContainer").style.display = "none";
-            document.querySelectorAll("main, #categories, #otherSections").forEach((section) => {
-                section.style.display = section.id === targetId ? "block" : "none";
-            });
-        }
-    });
 });
 function resetSections() {
     // Hide all sections and game container initially
