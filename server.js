@@ -62,15 +62,19 @@ app.get('/api/game/start', (req, res) => {
 
         try {
             items = JSON.parse(game.items); // Parse JSON
-            const hiddenItemIndex = items.findIndex(item => item === null); // Find the missing item
+           const hiddenItemIndex = items.findIndex(item => item === null);
+if (hiddenItemIndex !== -1) {
+    res.json({
+        game_id: game.list_id,
+        title: game.title,
+        items: items,
+        hiddenItem: "???",
+        hiddenIndex: hiddenItemIndex
+    });
+} else {
+    res.status(500).json({ error: 'No missing item found in the list' });
+}
 
-            res.json({
-                game_id: game.list_id,
-                title: game.title,
-                items: items,
-                hiddenItem: hiddenItemIndex >= 0 ? null : items[hiddenItemIndex],
-                hiddenIndex: hiddenItemIndex // Send index for front-end reference
-            });
         } catch (parseError) {
             console.error('Error parsing items field:', parseError);
             res.status(500).json({ error: 'Invalid data format in database' });
