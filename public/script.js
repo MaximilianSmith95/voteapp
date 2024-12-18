@@ -58,11 +58,12 @@ function startNewGame() {
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
             gameList.innerHTML = "";
 
-            data.items.forEach((item, index) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = item || `Item ${index + 1}: [???]`;
-                gameList.appendChild(listItem);
-            });
+            data.items.forEach((item) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = item; // "???" will already be in place from the backend
+    gameList.appendChild(listItem);
+});
+
 
             document.getElementById("submitGuess").onclick = () => {
                 const guess = document.getElementById("guessInput").value.trim();
@@ -90,8 +91,7 @@ function startNewGame() {
                         feedbackMessage.textContent = result.message;
                         feedbackMessage.style.color = "red";
                         if (attempts >= 4) {
-                            feedbackMessage.textContent += ` The correct answer was: ${currentGameData.hiddenItem}`;
-                        }
+    feedbackMessage.textContent += ` The correct answer was: ${currentGameData.originalValue}`;
                     }
                 })
                 .catch(error => {
@@ -100,9 +100,10 @@ function startNewGame() {
                 });
             };
 
-            revealAnswerButton.onclick = () => {
-                alert(`The correct answer is: ${currentGameData.hiddenItem}`);
-            };
+           revealAnswerButton.onclick = () => {
+    alert(`The correct answer is: ${currentGameData.originalValue}`);
+};
+
             revealAnswerButton.style.display = "block";
         })
         .catch(error => {
