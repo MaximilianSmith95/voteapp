@@ -48,6 +48,7 @@ app.get('/api/game/start', async (req, res) => {
     try {
         const gameType = req.query.type;
 
+        // Fetch a random game list from the database
         const [rows] = await db.execute(`
             SELECT list_id, title, items 
             FROM game_lists 
@@ -57,28 +58,34 @@ app.get('/api/game/start', async (req, res) => {
         `, [gameType]);
 
         if (!rows || rows.length === 0) {
-            return res.status(404).json({ message: "No game data found" });
+            console.error("No data found for game type:", gameType);
+            return res.status(404).json({ message: "No game data found." });
         }
 
         let gameData = rows[0];
         let items;
 
+        // Safely parse the 'items' JSON field
         try {
             items = JSON.parse(gameData.items);
+            if (!Array.isArray(items)) throw new Error("Parsed items is not an array.");
         } catch (err) {
-            console.error("Error parsing JSON:", err.message);
-            return res.status(500).json({ message: "Invalid data format in database" });
+            console.error("Error parsing items JSON:", err.message, gameData.items);
+            return res.status(500).json({ message: "Invalid data format in the database." });
         }
 
-        // Find the missing item
+        // Find the missing item (null or "null")
         const hiddenItemIndex = items.findIndex(item => item === null || item === "null");
         if (hiddenItemIndex === -1) {
-            return res.status(500).json({ message: "No missing item found" });
+            console.error("No missing item found in:", items);
+            return res.status(500).json({ message: "No missing item found in the game data." });
         }
 
+        // Store the missing item and mask it
         const hiddenItem = items[hiddenItemIndex];
-        items[hiddenItemIndex] = "???"; // Replace with placeholder
+        items[hiddenItemIndex] = "???";
 
+        // Send the game data to the client
         res.json({
             game_id: gameData.list_id,
             title: gameData.title,
@@ -88,7 +95,7 @@ app.get('/api/game/start', async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error:", error.message);
+        console.error("Server error:", error.message);
         res.status(500).json({ message: "Server error: " + error.message });
     }
 });
