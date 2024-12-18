@@ -44,44 +44,49 @@ db.connect(err => {
     console.log('Connected to MySQL Database');
 });
 // Route to fetch a new game list
-app.get('/api/game/start', (req, res) => {
-    const gameType = req.query.type; // 'missing-item' or 'list-title'
+app.get('/api/game/start', async (req, res) => {
+    try {
+        const gameType = req.query.type;
 
-    const query = 'SELECT list_id, title, items FROM game_lists WHERE type = ? LIMIT 1';
-    db.query(query, [gameType], (err, results) => {
-        if (err) {
-            console.error('Database query error:', err);
-            return res.status(500).json({ error: 'Internal Server Error' });
+        // Query database for a "missing-item" game list
+        const [rows] = await db.execute(`
+            SELECT list_id, title, items 
+            FROM game_lists 
+            WHERE type = ? 
+            ORDER BY RAND() 
+            LIMIT 1
+        `, [gameType]);
+
+        if (!rows || rows.length === 0) {
+            return res.status(404).json({ message: "No game found for this type" });
         }
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'No game found' });
+
+        // Parse the items array and find a missing item
+        let gameData = rows[0];
+        let items = JSON.parse(gameData.items);
+
+        // Hide one random item in the list
+        const hiddenItemIndex = items.findIndex(item => item === "null");
+        if (hiddenItemIndex === -1) {
+            return res.status(500).json({ message: "No missing item found in the list" });
         }
 
-        const game = results[0];
-        let items;
+        let hiddenItem = items[hiddenItemIndex];
+        items[hiddenItemIndex] = "???";
 
-        try {
-            items = JSON.parse(game.items); // Parse JSON
+        // Send game data
+        res.json({
+            game_id: gameData.list_id,
+            title: gameData.title,
+            items: items,
+            hiddenItemIndex: hiddenItemIndex,
+            originalValue: hiddenItem
+        });
 
-            // Find the missing item (null value) in the list
-            const hiddenItemIndex = items.findIndex(item => item === null);
-            if (hiddenItemIndex === -1) {
-                return res.status(500).json({ error: 'No missing item found in this list' });
-            }
-
-            res.json({
-                game_id: game.list_id,
-                title: game.title,
-                items: items.map((item, index) => (index === hiddenItemIndex ? '???' : item)),
-                hiddenItemIndex: hiddenItemIndex,
-                originalValue: "hidden" // Don't send originalValue to the client
-            });
-
-        } catch (parseError) {
-            console.error('Error parsing items field:', parseError);
-            res.status(500).json({ error: 'Invalid data format in database' });
-        }
-    });
+    } catch (error) {
+        console.error("Error fetching game:", error);
+        res.status(500).json({ message: "Server error. Please try again later." });
+    }
 });
 
 // Route to submit a guess
