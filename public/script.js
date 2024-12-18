@@ -58,13 +58,14 @@ function startNewGame() {
             gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
             gameList.innerHTML = "";
 
+            // Render items in the list
             data.items.forEach((item) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = item; // "???" will already be in place from the backend
-    gameList.appendChild(listItem);
-});
+                const listItem = document.createElement("li");
+                listItem.textContent = item; // "???" will already be in place from the backend
+                gameList.appendChild(listItem);
+            });
 
-
+            // Handle guess submission
             document.getElementById("submitGuess").onclick = () => {
                 const guess = document.getElementById("guessInput").value.trim();
                 if (!guess) return alert("Please enter a guess.");
@@ -90,18 +91,21 @@ function startNewGame() {
                     } else {
                         feedbackMessage.textContent = result.message;
                         feedbackMessage.style.color = "red";
-                       if (attempts >= 3) {
-    feedbackMessage.textContent += ` The correct answer was: ${currentGameData.items[currentGameData.hiddenItemIndex]}`;
-                }
+                        if (attempts >= 3) {
+                            feedbackMessage.textContent += ` The correct answer was: ${currentGameData.items[currentGameData.hiddenItemIndex]}`;
+                        }
+                    }
+                })
                 .catch(error => {
                     console.error("Error submitting guess:", error);
                     feedbackMessage.textContent = "Error submitting guess. Please try again.";
                 });
             };
 
-           revealAnswerButton.onclick = () => {
-    alert(`The correct answer is: ${currentGameData.originalValue}`);
-};
+            // Handle reveal answer button
+            revealAnswerButton.onclick = () => {
+                alert(`The correct answer is: ${currentGameData.items[currentGameData.hiddenItemIndex]}`);
+            };
 
             revealAnswerButton.style.display = "block";
         })
@@ -110,7 +114,6 @@ function startNewGame() {
             feedbackMessage.textContent = "Error loading game. Please try again.";
         });
 }
-
 
 // Function to set up "Explore More" button
 function setupExploreMoreButton() {
