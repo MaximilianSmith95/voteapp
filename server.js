@@ -48,7 +48,6 @@ app.get('/api/game/start', async (req, res) => {
     try {
         const gameType = req.query.type;
 
-        // Query database for a "missing-item" game list
         const [rows] = await db.execute(`
             SELECT list_id, title, items 
             FROM game_lists 
@@ -58,23 +57,28 @@ app.get('/api/game/start', async (req, res) => {
         `, [gameType]);
 
         if (!rows || rows.length === 0) {
-            return res.status(404).json({ message: "No game found for this type" });
+            return res.status(404).json({ message: "No game data found" });
         }
 
-        // Parse the items array and find a missing item
         let gameData = rows[0];
-        let items = JSON.parse(gameData.items);
+        let items;
 
-        // Hide one random item in the list
-        const hiddenItemIndex = items.findIndex(item => item === "null");
-        if (hiddenItemIndex === -1) {
-            return res.status(500).json({ message: "No missing item found in the list" });
+        try {
+            items = JSON.parse(gameData.items);
+        } catch (err) {
+            console.error("Error parsing JSON:", err.message);
+            return res.status(500).json({ message: "Invalid data format in database" });
         }
 
-        let hiddenItem = items[hiddenItemIndex];
-        items[hiddenItemIndex] = "???";
+        // Find the missing item
+        const hiddenItemIndex = items.findIndex(item => item === null || item === "null");
+        if (hiddenItemIndex === -1) {
+            return res.status(500).json({ message: "No missing item found" });
+        }
 
-        // Send game data
+        const hiddenItem = items[hiddenItemIndex];
+        items[hiddenItemIndex] = "???"; // Replace with placeholder
+
         res.json({
             game_id: gameData.list_id,
             title: gameData.title,
@@ -84,8 +88,8 @@ app.get('/api/game/start', async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error fetching game:", error);
-        res.status(500).json({ message: "Server error. Please try again later." });
+        console.error("Error:", error.message);
+        res.status(500).json({ message: "Server error: " + error.message });
     }
 });
 
