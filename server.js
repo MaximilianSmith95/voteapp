@@ -61,14 +61,15 @@ app.get('/api/game/start', (req, res) => {
         let items;
 
         try {
-            // Ensure items is parsed as JSON
-            items = typeof game.items === 'string' ? JSON.parse(game.items) : game.items;
+            items = JSON.parse(game.items); // Parse JSON
+            const hiddenItemIndex = items.findIndex(item => item === null); // Find the missing item
 
             res.json({
                 game_id: game.list_id,
                 title: game.title,
                 items: items,
-                hiddenItem: items[0] // Example: Hide the first item
+                hiddenItem: hiddenItemIndex >= 0 ? null : items[hiddenItemIndex],
+                hiddenIndex: hiddenItemIndex // Send index for front-end reference
             });
         } catch (parseError) {
             console.error('Error parsing items field:', parseError);
@@ -76,7 +77,6 @@ app.get('/api/game/start', (req, res) => {
         }
     });
 });
-
 
 // Route to submit a guess
 app.post('/api/game/submit', (req, res) => {
