@@ -61,19 +61,21 @@ app.get('/api/game/start', (req, res) => {
         let items;
 
         try {
-            items = JSON.parse(game.items); // Parse JSON
-           const hiddenItemIndex = items.findIndex(item => item === null);
-if (hiddenItemIndex !== -1) {
-    res.json({
-        game_id: game.list_id,
-        title: game.title,
-        items: items,
-        hiddenItem: "???",
-        hiddenIndex: hiddenItemIndex
-    });
-} else {
-    res.status(500).json({ error: 'No missing item found in the list' });
-}
+items = JSON.parse(game.items); // Parse JSON
+
+// Randomly choose an item to hide
+const hiddenItemIndex = Math.floor(Math.random() * items.length);
+const hiddenItem = items[hiddenItemIndex];
+items[hiddenItemIndex] = "???"; // Replace the value with ???
+
+// Return the game with the hidden item
+res.json({
+    game_id: game.list_id,
+    title: game.title,
+    items: items,
+    hiddenItemIndex: hiddenItemIndex,
+    originalValue: hiddenItem // Send this for reference (useful for verification on submission)
+});
 
         } catch (parseError) {
             console.error('Error parsing items field:', parseError);
