@@ -373,7 +373,6 @@ document.addEventListener("DOMContentLoaded", () => {
         activeFilterFunction = fetchAllCategories;
         currentCategoriesLimit = 15;
         fetchAllCategories(currentCategoriesLimit);
-        document.getElementById("gameContainer").style.display = "none";
     });
 
     document.getElementById("latestButton").addEventListener("click", () => {
