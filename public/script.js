@@ -288,7 +288,22 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15;
         fetchAllCategories(currentCategoriesLimit);
     });
+function fetchUserCategories() {
+    const userInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    if (userInterests.length === 0) {
+        console.log("No interests selected.");
+        return;
+    }
 
+    const interestsQuery = userInterests.join(',');
+
+    fetch(`/api/user-categories?interests=${encodeURIComponent(interestsQuery)}`)
+        .then(response => response.json())
+        .then(data => {
+            renderLimitedCategories(data); // Render categories specific to user interests
+        })
+        .catch(error => console.error('Error fetching user categories:', error));
+}
     document.getElementById("latestButton").addEventListener("click", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchLatestCategories;
