@@ -1110,6 +1110,5 @@ function renderHistory(data) {
             <p><small>${item.comment_date || ''}</small></p>
         </div>
     `;
-
     historyContainer.innerHTML += historyItem; // Ensure `historyContainer` is defined and accessible
 });
