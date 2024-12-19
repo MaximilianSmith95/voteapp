@@ -63,6 +63,61 @@ const voteLimiter = rateLimit({
     max: 100, // Limit each IP to 100 requests per minute
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
+app.get('/api/user/history', (req, res) => {
+    const userId = req.query.user_id; // Use query parameter for now; replace with JWT-based user ID.
+
+    const historyQuery = `
+        SELECT 
+            v.subject_id, s.name AS subject_name, c.name AS category_name, 
+            v.votes_count, co.comment_text, co.created_at AS comment_date
+        FROM 
+            ipvotes v
+        LEFT JOIN subjects s ON v.subject_id = s.subject_id
+        LEFT JOIN categories c ON s.category_id = c.category_id
+        LEFT JOIN comments co ON v.subject_id = co.subject_id AND co.username = (
+            SELECT username FROM users WHERE user_id = ?
+        )
+        WHERE 
+            v.user_id = ?
+        ORDER BY 
+            v.updated_at DESC;
+    `;
+
+    db.query(historyQuery, [userId, userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching history:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
+app.get('/api/user/top-votes', (req, res) => {
+    const userId = req.query.user_id;
+
+    const topVotesQuery = `
+        SELECT 
+            s.subject_id, s.name AS subject_name, COUNT(v.votes_count) AS total_votes
+        FROM 
+            ipvotes v
+        LEFT JOIN subjects s ON v.subject_id = s.subject_id
+        WHERE 
+            v.user_id = ?
+        GROUP BY 
+            s.subject_id
+        ORDER BY 
+            total_votes DESC
+        LIMIT 10;
+    `;
+
+    db.query(topVotesQuery, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching top votes:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
+
 
 // Search API
 app.get('/api/search', (req, res) => {
