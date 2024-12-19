@@ -1010,6 +1010,49 @@ function upvote(subjectId) {
         })
         .catch(error => console.error('Error upvoting:', error));
 }
+document.getElementById("historyLink").addEventListener("click", () => {
+    const token = localStorage.getItem('token'); // Auth token
+    const userId = localStorage.getItem('userId'); // Retrieve user ID
+
+fetch('/api/user/history', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Replace with your token storage logic
+    },
+})
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error fetching history:', error));
+
+function renderHistory(data) {
+    const historyContainer = document.getElementById("historyList");
+    historyContainer.innerHTML = ''; // Clear previous history
+
+  function renderHistory(data) {
+    const historyContainer = document.getElementById("historyList");
+
+    if (!historyContainer) {
+        console.error("History container not found");
+        return;
+    }
+
+    if (Array.isArray(data)) {
+        data.forEach(item => {
+            const historyItem = `
+                <div class="history-item">
+                    <p><strong>Subject:</strong> ${item.subject_name}</p>
+                    <p><strong>Category:</strong> ${item.category_name}</p>
+                    <p><strong>Votes:</strong> ${item.votes_count}</p>
+                    ${item.comment_text ? `<p><strong>Comment:</strong> ${item.comment_text}</p>` : ''}
+                    <p><small>${item.comment_date || ''}</small></p>
+                </div>
+            `;
+            historyContainer.innerHTML += historyItem;
+        });
+    } else {
+        console.error("Data is not an array or is undefined:", data);
+    }
+}
 
 // On page load, retrieve and apply stored user behavior (e.g., highlight votes)
 document.addEventListener("DOMContentLoaded", () => {
@@ -1082,46 +1125,3 @@ document.addEventListener("DOMContentLoaded", () => {
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
 });
-document.getElementById("historyLink").addEventListener("click", () => {
-    const token = localStorage.getItem('token'); // Auth token
-    const userId = localStorage.getItem('userId'); // Retrieve user ID
-
-fetch('/api/user/history', {
-    method: 'GET',
-    headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Replace with your token storage logic
-    },
-})
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error fetching history:', error));
-
-function renderHistory(data) {
-    const historyContainer = document.getElementById("historyList");
-    historyContainer.innerHTML = ''; // Clear previous history
-
-  function renderHistory(data) {
-    const historyContainer = document.getElementById("historyList");
-
-    if (!historyContainer) {
-        console.error("History container not found");
-        return;
-    }
-
-    if (Array.isArray(data)) {
-        data.forEach(item => {
-            const historyItem = `
-                <div class="history-item">
-                    <p><strong>Subject:</strong> ${item.subject_name}</p>
-                    <p><strong>Category:</strong> ${item.category_name}</p>
-                    <p><strong>Votes:</strong> ${item.votes_count}</p>
-                    ${item.comment_text ? `<p><strong>Comment:</strong> ${item.comment_text}</p>` : ''}
-                    <p><small>${item.comment_date || ''}</small></p>
-                </div>
-            `;
-            historyContainer.innerHTML += historyItem;
-        });
-    } else {
-        console.error("Data is not an array or is undefined:", data);
-    }
-}
