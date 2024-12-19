@@ -1100,15 +1100,28 @@ function renderHistory(data) {
     const historyContainer = document.getElementById("historyList");
     historyContainer.innerHTML = ''; // Clear previous history
 
-  data.forEach(item => {
-    const historyItem = `
-        <div class="history-item">
-            <p><strong>Subject:</strong> ${item.subject_name}</p>
-            <p><strong>Category:</strong> ${item.category_name}</p>
-            <p><strong>Votes:</strong> ${item.votes_count}</p>
-            ${item.comment_text ? `<p><strong>Comment:</strong> ${item.comment_text}</p>` : ''}
-            <p><small>${item.comment_date || ''}</small></p>
-        </div>
-    `;
-    historyContainer.innerHTML += historyItem; // Ensure `historyContainer` is defined and accessible
-});
+  function renderHistory(data) {
+    const historyContainer = document.getElementById("historyList");
+
+    if (!historyContainer) {
+        console.error("History container not found");
+        return;
+    }
+
+    if (Array.isArray(data)) {
+        data.forEach(item => {
+            const historyItem = `
+                <div class="history-item">
+                    <p><strong>Subject:</strong> ${item.subject_name}</p>
+                    <p><strong>Category:</strong> ${item.category_name}</p>
+                    <p><strong>Votes:</strong> ${item.votes_count}</p>
+                    ${item.comment_text ? `<p><strong>Comment:</strong> ${item.comment_text}</p>` : ''}
+                    <p><small>${item.comment_date || ''}</small></p>
+                </div>
+            `;
+            historyContainer.innerHTML += historyItem;
+        });
+    } else {
+        console.error("Data is not an array or is undefined:", data);
+    }
+}
