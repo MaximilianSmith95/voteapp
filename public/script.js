@@ -1086,13 +1086,15 @@ document.getElementById("historyLink").addEventListener("click", () => {
     const token = localStorage.getItem('token'); // Auth token
     const userId = localStorage.getItem('userId'); // Retrieve user ID
 
-    fetch(`/api/user/history`, {
-        headers: { Authorization: `Bearer ${token}` }
-    })
-        .then(response => response.json())
-        .then(data => renderHistory(data))
-        .catch(error => console.error('Error fetching history:', error));
-});
+fetch('/api/user/history', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Replace with your token storage logic
+    },
+})
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error fetching history:', error));
 
 function renderHistory(data) {
     const historyContainer = document.getElementById("historyList");
