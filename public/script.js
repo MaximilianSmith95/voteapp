@@ -170,18 +170,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // New function to fetch user categories
-    function fetchUserCategories() {
-        const userInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-        const interestsQuery = userInterests.join(',');
-
-        fetch(`/api/user-categories?interests=${encodeURIComponent(interestsQuery)}`)
-            .then(response => response.json())
-            .then(data => {
-                renderLimitedCategories(data); // Render categories specific to user interests
-            })
-            .catch(error => console.error('Error fetching user categories:', error));
+   function fetchUserCategories() {
+    const userInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    if (!userInterests.length) {
+        console.log("No interests selected.");
+        return;
     }
-});
+    const interestsQuery = userInterests.join(',');
+
+    fetch(`/api/user-categories?interests=${encodeURIComponent(interestsQuery)}`)
+        .then(response => response.json())
+        .then(data => {
+            renderLimitedCategories(data); // Render categories based on the data
+        })
+        .catch(error => console.error('Error fetching user categories:', error));
+}
 
 
     // Handle Login/Logout button functionality
