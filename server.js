@@ -546,6 +546,24 @@ app.get('/api/totalVotes', (req, res) => {
         }
     });
 });
+app.get('/api/user-categories', (req, res) => {
+    const { interests } = req.query; // Expecting interests as a comma-separated string
+
+    const interestArray = interests ? interests.split(',') : [];
+    const query = `
+        SELECT *
+        FROM categories
+        WHERE interest IN (?)
+    `;
+
+    db.query(query, [interestArray], (err, results) => {
+        if (err) {
+            console.error('Error fetching user categories:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
 
 const PORT = process.env.PORT || 3500;
 app.listen(PORT, () => {
