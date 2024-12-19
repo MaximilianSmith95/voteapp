@@ -319,66 +319,57 @@ app.get('/api/categories', (req, res) => {
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
+    const userId = req.user ? req.user.id : null; // User ID from authenticated session/JWT
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-    const checkQuery = `
-        SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
-    `;
-
-    db.query(checkQuery, [userIp, subjectId], (err, results) => {
-        if (err) {
-            console.error('Error checking IP votes:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        const currentVotes = results[0]?.votes_count || 0;
-
-        if (currentVotes >= 200) {
-            return res.status(403).json({ error: 'Wow you love it! Vote limit reached' });
-        }
-
-        const incrementQuery = `
-            INSERT INTO IpVotes (ip_address, subject_id, votes_count)
-            VALUES (?, ?, 1)
-            ON DUPLICATE KEY UPDATE votes_count = votes_count + 1
+    // If user is logged in, track votes in user_votes
+    if (userId) {
+        const categoryQuery = `
+            SELECT category_id FROM subjects WHERE subject_id = ?;
         `;
 
-        db.query(incrementQuery, [userIp, subjectId], (err) => {
+        db.query(categoryQuery, [subjectId], (err, results) => {
             if (err) {
-                console.error('Error incrementing IP votes:', err);
+                console.error('Error fetching category ID:', err);
                 return res.status(500).json({ error: 'Database error' });
             }
 
-            const updateVotesQuery = `
-                UPDATE Subjects SET votes = votes + 1 WHERE subject_id = ?
+            const categoryId = results[0]?.category_id;
+
+            const userVoteQuery = `
+                INSERT INTO user_votes (user_id, subject_id, category_id, votes_count)
+                VALUES (?, ?, ?, 1)
+                ON DUPLICATE KEY UPDATE votes_count = votes_count + 1;
             `;
 
-            db.query(updateVotesQuery, [subjectId], (err) => {
+            db.query(userVoteQuery, [userId, subjectId, categoryId], (err) => {
                 if (err) {
-                    console.error('Error updating votes:', err);
-                    return res.status(500).json({ error: 'Failed to update votes' });
+                    console.error('Error recording user vote:', err);
+                    return res.status(500).json({ error: 'Database error' });
                 }
 
-                const query = 'SELECT category_id FROM Subjects WHERE subject_id = ?';
-                db.query(query, [subjectId], (err, results) => {
-                    if (err) {
-                        console.error('Error fetching category ID:', err);
-                    }
-
-                    const categoryId = results[0]?.category_id;
-                    if (categoryId) {
-                        const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-                        preferences[categoryId] = (preferences[categoryId] || 0) + 1;
-
-                        res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
-                    }
-
-                    res.json({ success: true });
-                });
+                return res.json({ success: true, message: 'User vote recorded' });
             });
         });
-    });
+    } else {
+        // Fallback to IP-based tracking for non-logged-in users
+        const ipVoteQuery = `
+            INSERT INTO ipvotes (ip_address, subject_id, votes_count)
+            VALUES (?, ?, 1)
+            ON DUPLICATE KEY UPDATE votes_count = votes_count + 1;
+        `;
+
+        db.query(ipVoteQuery, [userIp, subjectId], (err) => {
+            if (err) {
+                console.error('Error recording IP vote:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            return res.json({ success: true, message: 'IP vote recorded' });
+        });
+    }
 });
+
 
 // POST: Sign up route
 // POST: Sign up route
