@@ -50,7 +50,24 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 
-    
+// Function to fetch personalized categories based on user interests
+function fetchUserCategories() {
+    const userInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    if (userInterests.length === 0) {
+        console.log("No interests selected.");
+        return;
+    }
+
+    const interestsQuery = userInterests.join(',');
+
+    fetch(`/api/user-categories?interests=${encodeURIComponent(interestsQuery)}`)
+        .then(response => response.json())
+        .then(data => {
+            renderLimitedCategories(data); // Render categories specific to user interests
+        })
+        .catch(error => console.error('Error fetching user categories:', error));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Get the token and username from localStorage
     const token = localStorage.getItem("token");
@@ -108,8 +125,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
                 updateInterestButton(button, interest); // Update the button state
             }
+
+            // Fetch personalized categories whenever interests are updated
+            fetchUserCategories();
         });
     });
+
+    // Handle interest removal
+    function removeInterest(interest) {
+        selectedInterests = selectedInterests.filter(item => item !== interest);
+        localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+    }
+
+    // Handle "My Feed" button to show personalized categories
+    const feedButton = document.getElementById("feedButton");
+    feedButton.addEventListener("click", () => {
+        fetchUserCategories(); // Fetch categories based on user's selected interests
+    });
+
+    // Set up default filters and infinite scroll
+    setupExploreMoreButton();
+    enableInfiniteScrolling();
+});
+
 
     // Handle interest removal
     function removeInterest(interest) {
@@ -156,6 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Toggle the visibility of the interest buttons when My Feed button is clicked
     feedButton.addEventListener("click", () => {
+    fetchUserCategories(); // Fetch personalized categories
+});
+
         if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
             interestButtonsSection.style.display = "block";
         } else {
