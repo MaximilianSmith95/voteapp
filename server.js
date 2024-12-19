@@ -64,7 +64,7 @@ const voteLimiter = rateLimit({
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
 app.get('/api/user/history', (req, res) => {
-    const userId = req.query.user_id; // Use query parameter for now; replace with JWT-based user ID.
+    const userId = req.query.user_id;
 
     const historyQuery = `
         SELECT 
