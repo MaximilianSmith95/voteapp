@@ -1083,34 +1083,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 document.getElementById("historyLink").addEventListener("click", () => {
-    const userId = localStorage.getItem('userId'); // Retrieve user ID from local storage or authentication
+    const token = localStorage.getItem('token'); // Auth token
+    const userId = localStorage.getItem('userId'); // Retrieve user ID
 
-    // Toggle visibility of the history container
-    const historyContainer = document.getElementById("historyContainer");
-    historyContainer.classList.toggle("hidden");
-
-    // Fetch and display user history if the container is now visible
-    if (!historyContainer.classList.contains("hidden")) {
-        // Fetch user history
-        fetch(`/api/user/history?user_id=${userId}`)
-            .then(response => response.json())
-            .then(data => renderHistory(data))
-            .catch(error => console.error('Error fetching history:', error));
-
-        // Fetch top voted subjects
-        fetch(`/api/user/top-votes?user_id=${userId}`)
-            .then(response => response.json())
-            .then(data => renderTopVotes(data))
-            .catch(error => console.error('Error fetching top votes:', error));
-    }
+    fetch(`/api/user/history`, {
+        headers: { Authorization: `Bearer ${token}` }
+    })
+        .then(response => response.json())
+        .then(data => renderHistory(data))
+        .catch(error => console.error('Error fetching history:', error));
 });
 
-// Function to render voting & comment history
-function renderHistory(historyData) {
-    const historyList = document.getElementById("historyList");
-    historyList.innerHTML = ''; // Clear previous history data
+function renderHistory(data) {
+    const historyContainer = document.getElementById("historyList");
+    historyContainer.innerHTML = ''; // Clear previous history
 
-    historyData.forEach(item => {
+    data.forEach(item => {
         const historyItem = `
             <div class="history-item">
                 <p><strong>Subject:</strong> ${item.subject_name}</p>
@@ -1120,22 +1108,6 @@ function renderHistory(historyData) {
                 <p><small>${item.comment_date || ''}</small></p>
             </div>
         `;
-        historyList.innerHTML += historyItem;
-    });
-}
-
-// Function to render top voted subjects
-function renderTopVotes(topVotesData) {
-    const topVotesList = document.getElementById("topVotesList");
-    topVotesList.innerHTML = ''; // Clear previous top votes data
-
-    topVotesData.forEach(item => {
-        const topVoteItem = `
-            <div class="top-vote-item">
-                <p><strong>Subject:</strong> ${item.subject_name}</p>
-                <p><strong>Total Votes:</strong> ${item.total_votes}</p>
-            </div>
-        `;
-        topVotesList.innerHTML += topVoteItem;
+        historyContainer.innerHTML += historyItem;
     });
 }
