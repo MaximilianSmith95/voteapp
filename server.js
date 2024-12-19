@@ -64,44 +64,48 @@ const voteLimiter = rateLimit({
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
 app.get('/api/user/history', (req, res) => {
-    const userId = req.query.user_id;
+    const userId = req.user.id;
 
     const historyQuery = `
         SELECT 
-            v.subject_id, s.name AS subject_name, c.name AS category_name, 
-            v.votes_count, co.comment_text, co.created_at AS comment_date
+            uv.subject_id,
+            s.name AS subject_name,
+            c.name AS category_name,
+            uv.votes_count,
+            cm.comment_text,
+            cm.created_at AS comment_date
         FROM 
-            ipvotes v
-        LEFT JOIN subjects s ON v.subject_id = s.subject_id
-        LEFT JOIN categories c ON s.category_id = c.category_id
-        LEFT JOIN comments co ON v.subject_id = co.subject_id AND co.username = (
-            SELECT username FROM users WHERE user_id = ?
-        )
+            user_votes uv
+        LEFT JOIN subjects s ON uv.subject_id = s.subject_id
+        LEFT JOIN categories c ON uv.category_id = c.category_id
+        LEFT JOIN comments cm ON uv.subject_id = cm.subject_id AND cm.user_id = uv.user_id
         WHERE 
-            v.user_id = ?
+            uv.user_id = ?
         ORDER BY 
-            v.updated_at DESC;
+            uv.created_at DESC;
     `;
 
-    db.query(historyQuery, [userId, userId], (err, results) => {
+    db.query(historyQuery, [userId], (err, results) => {
         if (err) {
-            console.error('Error fetching history:', err);
+            console.error('Error fetching user history:', err);
             return res.status(500).json({ error: 'Database error' });
         }
         res.json(results);
     });
 });
 app.get('/api/user/top-votes', (req, res) => {
-    const userId = req.query.user_id;
+    const userId = req.user.id;
 
     const topVotesQuery = `
         SELECT 
-            s.subject_id, s.name AS subject_name, COUNT(v.votes_count) AS total_votes
+            s.subject_id,
+            s.name AS subject_name,
+            COUNT(uv.votes_count) AS total_votes
         FROM 
-            ipvotes v
-        LEFT JOIN subjects s ON v.subject_id = s.subject_id
+            user_votes uv
+        LEFT JOIN subjects s ON uv.subject_id = s.subject_id
         WHERE 
-            v.user_id = ?
+            uv.user_id = ?
         GROUP BY 
             s.subject_id
         ORDER BY 
@@ -117,6 +121,7 @@ app.get('/api/user/top-votes', (req, res) => {
         res.json(results);
     });
 });
+
 
 
 // Search API
