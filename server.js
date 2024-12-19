@@ -116,7 +116,24 @@ app.get('/api/search', (req, res) => {
         res.json(categories);
     });
 });
+app.get('/api/user-categories', (req, res) => {
+    const { interests } = req.query; // Expecting interests as a comma-separated string
 
+    const interestArray = interests ? interests.split(',') : [];
+    const query = `
+        SELECT *
+        FROM categories
+        WHERE interest IN (?)
+    `;
+
+    db.query(query, [interestArray], (err, results) => {
+        if (err) {
+            console.error('Error fetching user categories:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
@@ -544,24 +561,6 @@ app.get('/api/totalVotes', (req, res) => {
         } else {
             res.json({ totalVotes: results[0]?.totalVotes || 0 });
         }
-    });
-});
-app.get('/api/user-categories', (req, res) => {
-    const { interests } = req.query; // Expecting interests as a comma-separated string
-
-    const interestArray = interests ? interests.split(',') : [];
-    const query = `
-        SELECT *
-        FROM categories
-        WHERE interest IN (?)
-    `;
-
-    db.query(query, [interestArray], (err, results) => {
-        if (err) {
-            console.error('Error fetching user categories:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-        res.json(results);
     });
 });
 
