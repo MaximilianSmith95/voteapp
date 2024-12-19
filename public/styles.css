@@ -1,3 +1,31 @@
+#historyContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.history-item, .top-vote-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.history-item p, .top-vote-item p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.hidden {
+    display: none;
+}
+
 #gameContainer {
     padding: 20px;
     background-color: #f9f9f9;
