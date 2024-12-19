@@ -8,6 +8,105 @@ function renderLimitedCategories(categories, limit = 15) {
     const limitedCategories = categories.slice(0, limit);
     renderCategories(limitedCategories); // Reuse existing render logic
 }
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("nerdgoGameButton").addEventListener("click", startNewGame);
+});
+function resetSections() {
+    // Hide all sections and game container initially
+    document.querySelectorAll('.section').forEach(section => {
+        section.style.display = 'none';
+    });
+    const gameContainer = document.getElementById('gameContainer');
+    if (gameContainer) gameContainer.style.display = 'none';
+
+    // Show categories and main content by default
+    const mainContent = document.getElementById('categories'); // Categories section ID
+    if (mainContent) mainContent.style.display = 'block';
+}
+
+
+function startNewGame() {
+    // Hide all main sections first
+    document.getElementById("categories").style.display = "none"; // Hide categories
+    document.getElementById("gameContainer").style.display = "block"; // Show game container
+
+    // Fetch and render game content
+    const gameContainer = document.getElementById("gameContainer");
+    const gameInstructions = document.getElementById("gameInstructions");
+    const gameList = document.getElementById("gameList");
+    const feedbackMessage = document.getElementById("feedbackMessage");
+    const revealAnswerButton = document.getElementById("revealAnswer");
+
+    const gameType = 'missing-item';
+    let attempts = 0;
+    let currentGameData = null;
+
+    fetch('/api/game/start?type=missing-item')
+        .then(response => {
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Game data loaded:", data);
+            currentGameData = data;
+
+            // Update UI
+            gameInstructions.textContent = `Guess the missing item in: ${data.title}`;
+            gameList.innerHTML = "";
+
+            data.items.forEach((item, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = item || `Item ${index + 1}: [???]`;
+                gameList.appendChild(listItem);
+            });
+
+            document.getElementById("submitGuess").onclick = () => {
+                const guess = document.getElementById("guessInput").value.trim();
+                if (!guess) return alert("Please enter a guess.");
+                attempts++;
+
+                fetch('/api/game/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: 1,
+                        game_id: currentGameData.game_id,
+                        guess: guess,
+                        attempts: attempts,
+                        type: gameType
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        feedbackMessage.textContent = `Correct! Your score: ${result.score}`;
+                        feedbackMessage.style.color = "green";
+                        revealAnswerButton.style.display = "none";
+                    } else {
+                        feedbackMessage.textContent = result.message;
+                        feedbackMessage.style.color = "red";
+                        if (attempts >= 4) {
+                            feedbackMessage.textContent += ` The correct answer was: ${currentGameData.hiddenItem}`;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error submitting guess:", error);
+                    feedbackMessage.textContent = "Error submitting guess. Please try again.";
+                });
+            };
+
+            revealAnswerButton.onclick = () => {
+                alert(`The correct answer is: ${currentGameData.hiddenItem}`);
+            };
+            revealAnswerButton.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error fetching game:", error);
+            feedbackMessage.textContent = "Error loading game. Please try again.";
+        });
+}
+
 
 // Function to set up "Explore More" button
 function setupExploreMoreButton() {
@@ -279,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchForYouCategories;
         currentCategoriesLimit = 15;
+        resetSections(); // Reset all sections
         fetchForYouCategories(currentCategoriesLimit);
     });
 
@@ -286,6 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchAllCategories;
         currentCategoriesLimit = 15;
+        resetSections(); // Reset all sections
         fetchAllCategories(currentCategoriesLimit);
     });
 
@@ -293,6 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true;
         activeFilterFunction = fetchLatestCategories;
         currentCategoriesLimit = 15;
+        resetSections(); // Reset all sections
         fetchLatestCategories(currentCategoriesLimit);
     });
 
@@ -307,6 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
         infiniteScrollEnabled = true; // Enable infinite scroll
         activeFilterFunction = fetchNearMeCategories;
         currentCategoriesLimit = 15; // Reset limit
+        resetSections(); // Reset all sections
         fetchNearMeCategories(currentCategoriesLimit);
     });
 
@@ -1009,49 +1112,6 @@ function upvote(subjectId) {
             }
         })
         .catch(error => console.error('Error upvoting:', error));
-}
-document.getElementById("historyLink").addEventListener("click", () => {
-    const token = localStorage.getItem('token'); // Auth token
-    const userId = localStorage.getItem('userId'); // Retrieve user ID
-
-fetch('/api/user/history', {
-    method: 'GET',
-    headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Replace with your token storage logic
-    },
-})
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error fetching history:', error));
-
-function renderHistory(data) {
-    const historyContainer = document.getElementById("historyList");
-    historyContainer.innerHTML = ''; // Clear previous history
-
-  function renderHistory(data) {
-    const historyContainer = document.getElementById("historyList");
-
-    if (!historyContainer) {
-        console.error("History container not found");
-        return;
-    }
-
-    if (Array.isArray(data)) {
-        data.forEach(item => {
-            const historyItem = `
-                <div class="history-item">
-                    <p><strong>Subject:</strong> ${item.subject_name}</p>
-                    <p><strong>Category:</strong> ${item.category_name}</p>
-                    <p><strong>Votes:</strong> ${item.votes_count}</p>
-                    ${item.comment_text ? `<p><strong>Comment:</strong> ${item.comment_text}</p>` : ''}
-                    <p><small>${item.comment_date || ''}</small></p>
-                </div>
-            `;
-            historyContainer.innerHTML += historyItem;
-        });
-    } else {
-        console.error("Data is not an array or is undefined:", data);
-    }
 }
 
 // On page load, retrieve and apply stored user behavior (e.g., highlight votes)
