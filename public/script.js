@@ -195,15 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Toggle the visibility of the interest buttons when My Feed button is clicked
     feedButton.addEventListener("click", () => {
     fetchUserCategories(); // Fetch personalized categories
+
+    if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
+        interestButtonsSection.style.display = "block";
+    } else {
+        interestButtonsSection.style.display = "none";
+    }
 });
-
-        if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
-            interestButtonsSection.style.display = "block";
-        } else {
-            interestButtonsSection.style.display = "none";
-        }
-    });
-
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
 
