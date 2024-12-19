@@ -43,6 +43,25 @@ db.connect(err => {
     if (err) throw err;
     console.log('Connected to MySQL Database');
 });
+// Authentication Middleware
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization']; // Get the Authorization header
+    const token = authHeader && authHeader.split(' ')[1]; // Extract the token
+
+    if (!token) {
+        return res.status(401).json({ error: 'Access token missing or invalid' });
+    }
+
+    // Verify the token
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: 'Invalid or expired token' });
+        }
+
+        req.user = user; // Attach the decoded user info to req.user
+        next(); // Proceed to the next middleware or route handler
+    });
+}
 
 // Haversine formula for distance calculation
 const haversine = (lat1, lon1, lat2, lon2) => {
@@ -63,7 +82,12 @@ const voteLimiter = rateLimit({
     max: 100, // Limit each IP to 100 requests per minute
     message: { error: 'Too many requests. Please try again later.' } // Custom message
 });
-app.get('/api/user/history', (req, res) => {
+app.get('/api/user/history', authenticateToken, (req, res) => {
+    // Check if req.user is defined
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     const userId = req.user.id;
 
     const historyQuery = `
@@ -93,7 +117,13 @@ app.get('/api/user/history', (req, res) => {
         res.json(results);
     });
 });
-app.get('/api/user/top-votes', (req, res) => {
+
+app.get('/api/user/top-votes', authenticateToken, (req, res) => {
+    // Check if req.user is defined
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     const userId = req.user.id;
 
     const topVotesQuery = `
