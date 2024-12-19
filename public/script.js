@@ -150,8 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         profileSection.classList.add("hidden");
     }
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Existing variables and elements
+    // Get the feed button and the interest buttons section
     const feedButton = document.getElementById("feedButton");
     const interestButtonsSection = document.getElementById("interestButtons");
 
@@ -163,29 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
             interestButtonsSection.style.display = "none";
         }
     });
-
-    // New event listener for interest button clicks
-    document.getElementById("interestButtons").addEventListener("click", () => {
-        fetchUserCategories(); // Fetch categories after interests are updated
-    });
-
-    // New function to fetch user categories
-   function fetchUserCategories() {
-    const userInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    if (!userInterests.length) {
-        console.log("No interests selected.");
-        return;
-    }
-    const interestsQuery = userInterests.join(',');
-
-    fetch(`/api/user-categories?interests=${encodeURIComponent(interestsQuery)}`)
-        .then(response => response.json())
-        .then(data => {
-            renderLimitedCategories(data); // Render categories based on the data
-        })
-        .catch(error => console.error('Error fetching user categories:', error));
-}
-
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
