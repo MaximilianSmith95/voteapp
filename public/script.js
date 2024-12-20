@@ -50,64 +50,6 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 
-function enableInfiniteScrolling() {
-    window.addEventListener("scroll", () => {
-        if (!infiniteScrollEnabled) return;
-
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
-            if (activeFilterFunction) {
-                currentCategoriesLimit += 15; // Increment the limit
-                activeFilterFunction(currentCategoriesLimit); // Fetch and render more
-            }
-        }
-    });
-}
-
-// Fetch the categories when My Feed button is clicked, considering user interests
-// Handle the MyFeed button click event to show categories matching the selected interests
-document.getElementById('feedButton').addEventListener('click', () => {
-    const selectedInterests = JSON.parse(localStorage.getItem('selectedInterests')) || [];
-    const type = "interested"; // Fetch categories that match the user's interests
-
-    // Fetch categories from the server
-    fetch(`/api/categories?type=${type}`)
-        .then(response => response.json())
-        .then(categories => {
-            // Render categories based on the response
-            renderCategories(categories);
-        })
-        .catch(error => {
-            console.error('Error fetching categories:', error);
-        });
-});
-
-// Function to render categories based on the fetched data
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById('categoriesContainer');
-    categoriesContainer.innerHTML = ''; // Clear the existing content
-    categories.forEach(category => {
-        const categoryElement = document.createElement('div');
-        categoryElement.classList.add('category');
-        categoryElement.innerHTML = `
-            <h3>${category.name}</h3>
-            <p>Interests: ${category.interest}</p>
-        `;
-        categoriesContainer.appendChild(categoryElement);
-    });
-}
-
-// Infinite scrolling logic for loading more categories
-window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-        loadMoreCategories();
-    }
-});
-
-function loadMoreCategories() {
-    // Implement logic for fetching and appending more categories here
-}
-
     
 document.addEventListener("DOMContentLoaded", () => {
     // Get the token and username from localStorage
@@ -367,22 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
-document.getElementById("feedButton").addEventListener("click", () => {
-    // Get the selected interests from localStorage (or wherever you store them)
-    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-
-    // Create the query parameter to send to the backend (type=interested)
-    const type = "interested";
-
-    // Fetch categories based on the selected interests
-    fetch(`/api/categories?type=${type}`)
-        .then(response => response.json())
-        .then(data => {
-            // Assuming you have a renderCategories function to display categories
-            renderCategories(data); // Render the categories that match the user's interests
-        })
-        .catch(error => console.error('Error fetching categories for interests:', error));
-});
 
 // Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
 // CSS should hide elements with `.hidden` class and show them with `.visible` class
@@ -435,13 +361,13 @@ function fetchAllCategories(limit) {
 
 function fetchForYouCategories(limit) {
     fetchAndRenderCategories(`/api/categories?type=for-you`, limit, (data) => {
+        // Prioritize "For You" logic, ensuring randomized fallback categories are also displayed
         if (data.length === 0) {
-            return shuffleArray(data);  // Randomize if no categories match
+            return shuffleArray(data);
         }
         return data;
     });
 }
-
 
 // Infinite scrolling integration
 enableInfiniteScrolling();
@@ -568,7 +494,6 @@ function toggleComments(subjectId) {
     toggleButton.textContent = commentsContainer.classList.contains('hidden') ? '▼' : '▲';
 }
 
-// Sanitize Input: Remove URLs from the comment
 // Sanitize Input
 function sanitizeInput(input) {
     return input.replace(/https?:\/\/[^\s]+/g, ''); // Remove URLs
@@ -741,13 +666,30 @@ window.toggleComments = function (subjectId) {
     }
 };
 
+// Function to create and return a comment HTML element
+function createCommentElement(commentData) {
+    const commentElement = document.createElement('div');
+    commentElement.classList.add('comment');
+    commentElement.innerHTML = `
+        <strong>${commentData.username}:</strong> ${escapeHTML(commentData.text)}
+        <span class="comment-time">${new Date(commentData.createdAt).toLocaleString()}</span>
+    `;
+    return commentElement;
+}
 
-// Function to add a comment to a subject
+function getUsernameFromCookie() {
+    return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
+}
+
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-   const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
+    const username = getUsernameFromCookie();
 
+    if (!username) {
+        alert("You need to sign in to leave a comment.");
+        return;
+    }
 
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
@@ -769,6 +711,7 @@ function addComment(subjectId) {
         .catch(error => console.error('Error posting comment:', error));
     }
 }
+
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
     let currentPage = 1;
@@ -854,6 +797,7 @@ function createCommentElement(comment) {
 
     return commentElement;
 }
+
 
 
 // // Function to start recording voice reviews
