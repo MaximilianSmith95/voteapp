@@ -36,7 +36,6 @@ function enableInfiniteScrolling() {
 }
 
 // Function to fetch and render categories with a given limit
-// Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
         .then(response => response.json())
@@ -66,18 +65,48 @@ function enableInfiniteScrolling() {
 }
 
 // Fetch the categories when My Feed button is clicked, considering user interests
-document.getElementById("feedButton").addEventListener("click", () => {
-    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    const type = "interested"; // Use this type for fetching based on interests
+// Handle the MyFeed button click event to show categories matching the selected interests
+document.getElementById('feedButton').addEventListener('click', () => {
+    const selectedInterests = JSON.parse(localStorage.getItem('selectedInterests')) || [];
+    const type = "interested"; // Fetch categories that match the user's interests
 
-    // Send the request to the backend
+    // Fetch categories from the server
     fetch(`/api/categories?type=${type}`)
         .then(response => response.json())
-        .then(data => {
-            renderCategories(data); // Render the categories
+        .then(categories => {
+            // Render categories based on the response
+            renderCategories(categories);
         })
-        .catch(error => console.error('Error fetching categories for interests:', error));
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
 });
+
+// Function to render categories based on the fetched data
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    categoriesContainer.innerHTML = ''; // Clear the existing content
+    categories.forEach(category => {
+        const categoryElement = document.createElement('div');
+        categoryElement.classList.add('category');
+        categoryElement.innerHTML = `
+            <h3>${category.name}</h3>
+            <p>Interests: ${category.interest}</p>
+        `;
+        categoriesContainer.appendChild(categoryElement);
+    });
+}
+
+// Infinite scrolling logic for loading more categories
+window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        loadMoreCategories();
+    }
+});
+
+function loadMoreCategories() {
+    // Implement logic for fetching and appending more categories here
+}
 
     
 document.addEventListener("DOMContentLoaded", () => {
