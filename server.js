@@ -120,12 +120,11 @@ app.get('/api/search', (req, res) => {
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
+    const selectedInterests = preferences.selectedInterests || [];  // User's selected interests
 
-    // Base query for all categories and their subjects
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
-               s.subject_id, s.name AS subject_name, s.votes, s.link
+               s.subject_id, s.name AS subject_name, s.votes, s.link, c.interest
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
@@ -136,7 +135,6 @@ app.get('/api/categories', (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
-        // Reduce results into structured categories
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
@@ -145,6 +143,7 @@ app.get('/api/categories', (req, res) => {
                     name: row.category_name,
                     latitude: row.latitude,
                     longitude: row.longitude,
+                    interest: row.interest, // Store interest for sorting later
                     subjects: []
                 };
                 acc.push(category);
@@ -160,12 +159,25 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        // Handle "near me" feature if latitude and longitude are provided
+        // Handle "For You" functionality (fetching based on user interests)
+        if (type === "for-you") {
+            const filteredCategories = categories.filter(category => 
+                selectedInterests.includes(category.interest) // Filter categories based on selected interests
+            );
+
+            // If no "For You" categories found, fallback to randomizing categories
+            if (filteredCategories.length === 0) {
+                return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
+            }
+
+            return res.json(filteredCategories); // Send the filtered categories
+        }
+
+        // Handle "near me" functionality if latitude and longitude are provided
         if (latitude && longitude) {
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
 
-            // Calculate distance using Haversine formula
             const calculateDistance = (lat1, lon1, lat2, lon2) => {
                 const R = 6371; // Earth's radius in km
                 const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -178,7 +190,6 @@ app.get('/api/categories', (req, res) => {
                 return R * c;
             };
 
-            // Add distance to each category and sort by proximity
             const categoriesWithDistance = categories.map(category => ({
                 ...category,
                 distance: category.latitude && category.longitude
@@ -186,11 +197,15 @@ app.get('/api/categories', (req, res) => {
                     : Infinity // Default to a large value if no coordinates
             }));
 
-            // Sort by distance (nearest first)
             const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
-
             return res.json(sortedCategories);
         }
+
+        // Default: Return all categories without sorting
+        res.json(categories);
+    });
+});
+
 
         // Handle "For You" functionality
         if (type === "for-you") {
