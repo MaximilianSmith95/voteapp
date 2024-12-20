@@ -204,8 +204,7 @@ app.get('/api/categories', (req, res) => {
         // Default: Return all categories without sorting
         res.json(categories);
     });
-});
-
+}); // <-- Ensure this closing brace is properly matched with the opening app.get().
 
         // Handle "For You" functionality
         if (type === "for-you") {
