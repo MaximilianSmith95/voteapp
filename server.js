@@ -191,6 +191,18 @@ app.get('/api/categories', (req, res) => {
 
             return res.json(sortedCategories);
         }
+    
+const selectedInterests = req.cookies.selectedInterests || [];  // Get selected interests from cookies (or localStorage in the frontend)
+
+// Sort categories based on user interests
+const sortedCategories = results.sort((a, b) => {
+    // If category interest matches user interest, put it at the top
+    if (selectedInterests.includes(a.interest)) return -1;
+    if (selectedInterests.includes(b.interest)) return 1;
+    return 0;
+});
+
+res.json(sortedCategories); // Send back the sorted categories
 
         // Handle "For You" functionality
         if (type === "for-you") {
