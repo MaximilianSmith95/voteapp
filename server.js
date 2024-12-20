@@ -120,11 +120,12 @@ app.get('/api/search', (req, res) => {
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-    const selectedInterests = preferences.selectedInterests || [];  // User's selected interests
+    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
 
+    // Base query for all categories and their subjects
     const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
-               s.subject_id, s.name AS subject_name, s.votes, s.link, c.interest
+               s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
@@ -135,6 +136,7 @@ app.get('/api/categories', (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
+        // Reduce results into structured categories
         const categories = results.reduce((acc, row) => {
             let category = acc.find(cat => cat.category_id === row.category_id);
             if (!category) {
@@ -143,7 +145,6 @@ app.get('/api/categories', (req, res) => {
                     name: row.category_name,
                     latitude: row.latitude,
                     longitude: row.longitude,
-                    interest: row.interest, // Store interest for sorting later
                     subjects: []
                 };
                 acc.push(category);
@@ -159,26 +160,12 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        // Handle "Interested" functionality (fetching based on user interests)
-        if (type === "interested") {
-            // Filter categories based on selected interests
-            const filteredCategories = categories.filter(category => 
-                selectedInterests.some(interest => category.interest.split(',').includes(interest))
-            );
-
-            // If no "Interested" categories found, fallback to randomizing categories
-            if (filteredCategories.length === 0) {
-                return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
-            }
-
-            return res.json(filteredCategories); // Send the filtered categories
-        }
-
-        // Handle "near me" functionality if latitude and longitude are provided
+        // Handle "near me" feature if latitude and longitude are provided
         if (latitude && longitude) {
             const userLat = parseFloat(latitude);
             const userLon = parseFloat(longitude);
 
+            // Calculate distance using Haversine formula
             const calculateDistance = (lat1, lon1, lat2, lon2) => {
                 const R = 6371; // Earth's radius in km
                 const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -191,6 +178,7 @@ app.get('/api/categories', (req, res) => {
                 return R * c;
             };
 
+            // Add distance to each category and sort by proximity
             const categoriesWithDistance = categories.map(category => ({
                 ...category,
                 distance: category.latitude && category.longitude
@@ -198,12 +186,56 @@ app.get('/api/categories', (req, res) => {
                     : Infinity // Default to a large value if no coordinates
             }));
 
+            // Sort by distance (nearest first)
             const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
+
             return res.json(sortedCategories);
         }
 
-        // Default: Return all categories without sorting
-        res.json(categories);
+        // Handle "For You" functionality
+        if (type === "for-you") {
+            const relatedCategoriesQuery = `
+                SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
+                FROM Subjects s1
+                INNER JOIN Subjects s2 ON s1.name = s2.name AND s1.category_id != s2.category_id
+                WHERE s1.category_id IN (
+                    SELECT category_id FROM UserPreferences WHERE device_id = ?
+                )
+                GROUP BY s1.category_id, s2.category_id
+                ORDER BY shared_subjects DESC;
+            `;
+
+            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
+                if (relatedErr) {
+                    console.error('Error fetching related categories:', relatedErr);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+
+                const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
+
+                const forYouCategoryIds = new Set([
+                    ...Object.keys(preferences).map(Number), // User-preferred categories
+                    ...relatedCategoryIds // Related categories
+                ]);
+
+                let forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
+
+                // If no "For You" categories found, fallback to randomizing categories
+                if (forYouCategories.length === 0) {
+                    forYouCategories = categories.sort(() => 0.5 - Math.random());
+                }
+
+                // Sort by user preference weight
+                const sortedCategories = forYouCategories.sort((a, b) => {
+                    return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
+                });
+
+                res.json(sortedCategories);
+            });
+        } else {
+            // Default: Return all categories without sorting
+            res.json(categories);
+        }
     });
 });
 
