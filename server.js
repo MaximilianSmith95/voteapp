@@ -160,20 +160,19 @@ app.get('/api/categories', (req, res) => {
         }, []);
 
         // Handle "Interested" functionality (fetching based on user interests)
-        // Handle "Interested" functionality (fetching based on user interests)
-if (type === "interested") {
-    const filteredCategories = categories.filter(category => 
-        selectedInterests.includes(category.interest) // Filter categories based on selected interests
-    );
+        if (type === "interested") {
+            // Filter categories based on selected interests
+            const filteredCategories = categories.filter(category => 
+                selectedInterests.some(interest => category.interest.split(',').includes(interest))
+            );
 
-    // If no "Interested" categories found, fallback to randomizing categories
-    if (filteredCategories.length === 0) {
-        return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
-    }
+            // If no "Interested" categories found, fallback to randomizing categories
+            if (filteredCategories.length === 0) {
+                return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
+            }
 
-    return res.json(filteredCategories); // Send the filtered categories
-}
-
+            return res.json(filteredCategories); // Send the filtered categories
+        }
 
         // Handle "near me" functionality if latitude and longitude are provided
         if (latitude && longitude) {
@@ -203,54 +202,10 @@ if (type === "interested") {
             return res.json(sortedCategories);
         }
 
-        // Handle "For You" functionality
-        if (type === "for-you") {
-            const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
-
-            const relatedCategoriesQuery = `
-                SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
-                FROM Subjects s1
-                INNER JOIN Subjects s2 ON s1.name = s2.name AND s1.category_id != s2.category_id
-                WHERE s1.category_id IN (
-                    SELECT category_id FROM UserPreferences WHERE device_id = ?
-                )
-                GROUP BY s1.category_id, s2.category_id
-                ORDER BY shared_subjects DESC;
-            `;
-
-            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
-                if (relatedErr) {
-                    console.error('Error fetching related categories:', relatedErr);
-                    return res.status(500).json({ error: 'Database error' });
-                }
-
-                const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
-
-                const forYouCategoryIds = new Set([
-                    ...Object.keys(preferences).map(Number), // User-preferred categories
-                    ...relatedCategoryIds // Related categories
-                ]);
-
-                let forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
-
-                // If no "For You" categories found, fallback to randomizing categories
-                if (forYouCategories.length === 0) {
-                    forYouCategories = categories.sort(() => 0.5 - Math.random());
-                }
-
-                // Sort by user preference weight
-                const sortedCategories = forYouCategories.sort((a, b) => {
-                    return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
-                });
-
-                res.json(sortedCategories);
-            });
-        } else {
-            // Default: Return all categories without sorting
-            res.json(categories);
-        }
-    }); // <-- This closing brace correctly closes the db.query callback function
-}); // <-- This closing brace correctly closes the app.get() route handler
+        // Default: Return all categories without sorting
+        res.json(categories);
+    });
+});
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
