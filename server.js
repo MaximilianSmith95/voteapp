@@ -160,18 +160,20 @@ app.get('/api/categories', (req, res) => {
         }, []);
 
         // Handle "Interested" functionality (fetching based on user interests)
-        if (type === "interested") {
-            const filteredCategories = categories.filter(category => 
-                selectedInterests.includes(category.interest) // Filter categories based on selected interests
-            );
+        // Handle "Interested" functionality (fetching based on user interests)
+if (type === "interested") {
+    const filteredCategories = categories.filter(category => 
+        selectedInterests.includes(category.interest) // Filter categories based on selected interests
+    );
 
-            // If no "Interested" categories found, fallback to randomizing categories
-            if (filteredCategories.length === 0) {
-                return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
-            }
+    // If no "Interested" categories found, fallback to randomizing categories
+    if (filteredCategories.length === 0) {
+        return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
+    }
 
-            return res.json(filteredCategories); // Send the filtered categories
-        }
+    return res.json(filteredCategories); // Send the filtered categories
+}
+
 
         // Handle "near me" functionality if latitude and longitude are provided
         if (latitude && longitude) {
