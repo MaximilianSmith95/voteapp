@@ -309,6 +309,22 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoriesLimit = 15; // Reset limit
         fetchNearMeCategories(currentCategoriesLimit);
     });
+document.getElementById("feedButton").addEventListener("click", () => {
+    // Get the selected interests from localStorage (or wherever you store them)
+    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+
+    // Create the query parameter to send to the backend (type=interested)
+    const type = "interested";
+
+    // Fetch categories based on the selected interests
+    fetch(`/api/categories?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+            // Assuming you have a renderCategories function to display categories
+            renderCategories(data); // Render the categories that match the user's interests
+        })
+        .catch(error => console.error('Error fetching categories for interests:', error));
+});
 
 // Ensure the modal visibility toggle works properly using `hidden` and `visible` CSS classes
 // CSS should hide elements with `.hidden` class and show them with `.visible` class
