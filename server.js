@@ -129,82 +129,82 @@ app.get('/api/categories', (req, res) => {
         LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
 
-    db.query(baseQuery, (err, results) => {
-        if (err) {
-            console.error('Error fetching categories:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
+   db.query(baseQuery, (err, results) => {
+    if (err) {
+        console.error('Error fetching categories:', err);
+        return res.status(500).json({ error: 'Database error' });
+    }
 
-        const categories = results.reduce((acc, row) => {
-            let category = acc.find(cat => cat.category_id === row.category_id);
-            if (!category) {
-                category = {
-                    category_id: row.category_id,
-                    name: row.category_name,
-                    latitude: row.latitude,
-                    longitude: row.longitude,
-                    interest: row.interest, // Store interest for sorting later
-                    subjects: []
-                };
-                acc.push(category);
-            }
-            if (row.subject_id) {
-                category.subjects.push({
-                    subject_id: row.subject_id,
-                    name: row.subject_name,
-                    votes: row.votes,
-                    link: row.link
-                });
-            }
-            return acc;
-        }, []);
-
-        // Handle "Interested" functionality (fetching based on user interests)
-        if (type === "interested") {
-            const filteredCategories = categories.filter(category => 
-                selectedInterests.includes(category.interest) // Filter categories based on selected interests
-            );
-
-            // If no "Interested" categories found, fallback to randomizing categories
-            if (filteredCategories.length === 0) {
-                return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
-            }
-
-            return res.json(filteredCategories); // Send the filtered categories
-        }
-
-        // Handle "near me" functionality if latitude and longitude are provided
-        if (latitude && longitude) {
-            const userLat = parseFloat(latitude);
-            const userLon = parseFloat(longitude);
-
-            const calculateDistance = (lat1, lon1, lat2, lon2) => {
-                const R = 6371; // Earth's radius in km
-                const dLat = ((lat2 - lat1) * Math.PI) / 180;
-                const dLon = ((lon2 - lon1) * Math.PI) / 180;
-                const a =
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                return R * c;
+    const categories = results.reduce((acc, row) => {
+        let category = acc.find(cat => cat.category_id === row.category_id);
+        if (!category) {
+            category = {
+                category_id: row.category_id,
+                name: row.category_name,
+                latitude: row.latitude,
+                longitude: row.longitude,
+                interest: row.interest, // Store interest for sorting later
+                subjects: []
             };
+            acc.push(category);
+        }
+        if (row.subject_id) {
+            category.subjects.push({
+                subject_id: row.subject_id,
+                name: row.subject_name,
+                votes: row.votes,
+                link: row.link
+            });
+        }
+        return acc;
+    }, []);
 
-            const categoriesWithDistance = categories.map(category => ({
-                ...category,
-                distance: category.latitude && category.longitude
-                    ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
-                    : Infinity // Default to a large value if no coordinates
-            }));
+    // Handle "Interested" functionality (fetching based on user interests)
+    if (type === "interested") {
+        const filteredCategories = categories.filter(category => 
+            selectedInterests.includes(category.interest) // Filter categories based on selected interests
+        );
 
-            const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
-            return res.json(sortedCategories);
+        // If no "Interested" categories found, fallback to randomizing categories
+        if (filteredCategories.length === 0) {
+            return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
         }
 
-        // Default: Return all categories without sorting
-        res.json(categories);
-    });
-}); // <-- Ensure this closing brace is properly matched with the opening app.get().
+        return res.json(filteredCategories); // Send the filtered categories
+    }
+
+    // Handle "near me" functionality if latitude and longitude are provided
+    if (latitude && longitude) {
+        const userLat = parseFloat(latitude);
+        const userLon = parseFloat(longitude);
+
+        const calculateDistance = (lat1, lon1, lat2, lon2) => {
+            const R = 6371; // Earth's radius in km
+            const dLat = ((lat2 - lat1) * Math.PI) / 180;
+            const dLon = ((lon2 - lon1) * Math.PI) / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        };
+
+        const categoriesWithDistance = categories.map(category => ({
+            ...category,
+            distance: category.latitude && category.longitude
+                ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
+                : Infinity // Default to a large value if no coordinates
+        }));
+
+        const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
+        return res.json(sortedCategories);
+    }
+
+    // Default: Return all categories without sorting
+    res.json(categories);
+}); // <-- This closing brace should match the app.get() opening brace
+
 
         // Handle "For You" functionality
         if (type === "for-you") {
