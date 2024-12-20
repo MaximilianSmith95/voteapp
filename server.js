@@ -250,7 +250,6 @@ app.get('/api/categories', (req, res) => {
         } else {
             // Default: Return all categories without sorting
             res.json(categories);
-        }
     });
 });
 
