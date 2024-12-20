@@ -406,13 +406,13 @@ function fetchAllCategories(limit) {
 
 function fetchForYouCategories(limit) {
     fetchAndRenderCategories(`/api/categories?type=for-you`, limit, (data) => {
-        // Prioritize "For You" logic, ensuring randomized fallback categories are also displayed
         if (data.length === 0) {
-            return shuffleArray(data);
+            return shuffleArray(data);  // Randomize if no categories match
         }
         return data;
     });
 }
+
 
 // Infinite scrolling integration
 enableInfiniteScrolling();
