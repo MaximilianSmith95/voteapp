@@ -36,6 +36,7 @@ function enableInfiniteScrolling() {
 }
 
 // Function to fetch and render categories with a given limit
+// Function to fetch and render categories with a given limit
 function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
     fetch(url)
         .then(response => response.json())
@@ -49,6 +50,34 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
+
+function enableInfiniteScrolling() {
+    window.addEventListener("scroll", () => {
+        if (!infiniteScrollEnabled) return;
+
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 10) { // Near bottom
+            if (activeFilterFunction) {
+                currentCategoriesLimit += 15; // Increment the limit
+                activeFilterFunction(currentCategoriesLimit); // Fetch and render more
+            }
+        }
+    });
+}
+
+// Fetch the categories when My Feed button is clicked, considering user interests
+document.getElementById("feedButton").addEventListener("click", () => {
+    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    const type = "interested"; // Use this type for fetching based on interests
+
+    // Send the request to the backend
+    fetch(`/api/categories?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+            renderCategories(data); // Render the categories
+        })
+        .catch(error => console.error('Error fetching categories for interests:', error));
+});
 
     
 document.addEventListener("DOMContentLoaded", () => {
