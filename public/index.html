@@ -49,11 +49,7 @@
         </div>
     </div>
 </div>
-<!-- Section for Selected Interests (initially hidden) -->
-<div id="editInterestsSection" class="hidden">
-    <h3>Edit Your Interests</h3>
-    <div id="selectedInterestsList"></div> <!-- This will hold selected interests -->
-</div>
+
 
 </div>
     <meta charset="UTF-8">
@@ -73,7 +69,7 @@
     </div>
     <header>
         <h1>?NerdGoo?</h1>
-          <p class="slogan">NDB (Nerd Database)</p>
+          <p class="slogan">Your opinion matters!</p>
        <style>
         /* General Reset for Margin and Padding */
         * {
@@ -218,41 +214,11 @@
 <nav>
 <!--     <button id="personalizedButton">Show Personalized Categories</button> -->
     <button id="feedButton" style="display: none;">MyFeed</button>
-    <!-- Button for My Feed -->
-<!-- Interest Buttons Section (Initially hidden) -->
-<div id="interestButtons" style="display:none; margin-top: 20px;">
-    <h3>Select Your Interests</h3>
-    <button class="interestBtn">Film</button>
-    <button class="interestBtn">Music</button>
-    <button class="interestBtn">Technology</button>
-    <button class="interestBtn">Travel</button>
-    <button class="interestBtn">Books</button>
-    <button class="interestBtn">Science</button>
-    <button class="interestBtn">Sports</button>
-    <button class="interestBtn">Art</button>
-    <button class="interestBtn">Food</button>
-    <button class="interestBtn">History</button>
-    <button class="interestBtn">Fashion</button>
-    <button class="interestBtn">Fitness</button>
-    <button class="interestBtn">Nature</button>
-    <button class="interestBtn">Politics</button>
-    <button class="interestBtn">Gaming</button>
-    <button class="interestBtn">Photography</button>
-    <button class="interestBtn">Poetry</button>
-    <button class="interestBtn">Philosophy</button>
-    <button class="interestBtn">Business</button>
-    <button class="interestBtn">Health</button>
-    <button class="interestBtn">Movies</button>
-    <button class="interestBtn">Education</button>
-    <button class="interestBtn">Technology</button>
-    <button class="interestBtn">Space</button>
-    <button class="interestBtn">Music Festivals</button>
-    <button class="interestBtn">Environment</button>
-    <button class="interestBtn">Literature</button>
-    <button class="interestBtn">Politics</button>
-    <button class="interestBtn">Cryptocurrency</button>
+    <div id="myFeedSection" class="hidden">
+    <h3>Select your interests:</h3>
+    <div id="interestButtonsContainer"></div>
+    <button id="doneButton">Done</button>
 </div>
-
     <button id="forYouButton">Vote Again</button>
     <button id="allButton">Discover</button>
 <!--     <button id="trendingButton">Trending</button> -->
@@ -261,13 +227,8 @@
     <button id="coldButton">Cold Topics</button> -->
     
 </nav>
-<div id="historyContainer" class="hidden">
-    <h3>Your Voting & Commenting History</h3>
-    <div id="historyList"></div>
-    <h3>Your Top Voted Subjects</h3>
-    <div id="topVotesList"></div>
-</div>
 
+        
 
     <main id="categories"></main>
 <button id="exploreMoreButton" class="explore-more">Explore More</button>
@@ -309,9 +270,6 @@
     </p>
 </footer>
 
-
-
-</html>
 
 
 </html>
