@@ -120,7 +120,8 @@ app.get('/api/search', (req, res) => {
 app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
-    const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
+    const deviceId = req.cookies.device_id;
+    const selectedInterests = JSON.parse(req.headers['selected-interests'] || '[]'); // Get selected interests from the request
 
     // Base query for all categories and their subjects
     const baseQuery = `
@@ -183,7 +184,7 @@ app.get('/api/categories', (req, res) => {
                 ...category,
                 distance: category.latitude && category.longitude
                     ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
-                    : Infinity // Default to a large value if no coordinates
+                    : Infinity
             }));
 
             // Sort by distance (nearest first)
@@ -191,65 +192,27 @@ app.get('/api/categories', (req, res) => {
 
             return res.json(sortedCategories);
         }
-    
-const selectedInterests = req.cookies.selectedInterests || [];  // Get selected interests from cookies (or localStorage in the frontend)
 
-// Sort categories based on user interests
-const sortedCategories = results.sort((a, b) => {
-    // If category interest matches user interest, put it at the top
-    if (selectedInterests.includes(a.interest)) return -1;
-    if (selectedInterests.includes(b.interest)) return 1;
-    return 0;
-});
+        // Sort categories based on user interests
+        const sortedCategories = categories.sort((a, b) => {
+            const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
+            const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
 
-res.json(sortedCategories); // Send back the sorted categories
+            if (aHasInterest && !bHasInterest) return -1;
+            if (!aHasInterest && bHasInterest) return 1;
+            return 0;
+        });
 
-        // Handle "For You" functionality
+        // Handle "For You" functionality if needed
         if (type === "for-you") {
-            const relatedCategoriesQuery = `
-                SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
-                FROM Subjects s1
-                INNER JOIN Subjects s2 ON s1.name = s2.name AND s1.category_id != s2.category_id
-                WHERE s1.category_id IN (
-                    SELECT category_id FROM UserPreferences WHERE device_id = ?
-                )
-                GROUP BY s1.category_id, s2.category_id
-                ORDER BY shared_subjects DESC;
-            `;
-
-            db.query(relatedCategoriesQuery, [deviceId], (relatedErr, relatedResults) => {
-                if (relatedErr) {
-                    console.error('Error fetching related categories:', relatedErr);
-                    return res.status(500).json({ error: 'Database error' });
-                }
-
-                const relatedCategoryIds = relatedResults.map(row => row.category_id_2);
-
-                const forYouCategoryIds = new Set([
-                    ...Object.keys(preferences).map(Number), // User-preferred categories
-                    ...relatedCategoryIds // Related categories
-                ]);
-
-                let forYouCategories = categories.filter(cat => forYouCategoryIds.has(cat.category_id));
-
-                // If no "For You" categories found, fallback to randomizing categories
-                if (forYouCategories.length === 0) {
-                    forYouCategories = categories.sort(() => 0.5 - Math.random());
-                }
-
-                // Sort by user preference weight
-                const sortedCategories = forYouCategories.sort((a, b) => {
-                    return (preferences[b.category_id] || 0) - (preferences[a.category_id] || 0);
-                });
-
-                res.json(sortedCategories);
-            });
+            // Implement "For You" functionality if needed
         } else {
-            // Default: Return all categories without sorting
-            res.json(categories);
+            // Default: Return sorted categories
+            res.json(sortedCategories);
         }
     });
 });
+
 
 // Vote for a subject
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
