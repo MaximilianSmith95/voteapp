@@ -494,7 +494,6 @@ function toggleComments(subjectId) {
     toggleButton.textContent = commentsContainer.classList.contains('hidden') ? '▼' : '▲';
 }
 
-// Sanitize Input: Remove URLs from the comment
 // Sanitize Input
 function sanitizeInput(input) {
     return input.replace(/https?:\/\/[^\s]+/g, ''); // Remove URLs
@@ -667,13 +666,30 @@ window.toggleComments = function (subjectId) {
     }
 };
 
+// Function to create and return a comment HTML element
+function createCommentElement(commentData) {
+    const commentElement = document.createElement('div');
+    commentElement.classList.add('comment');
+    commentElement.innerHTML = `
+        <strong>${commentData.username}:</strong> ${escapeHTML(commentData.text)}
+        <span class="comment-time">${new Date(commentData.createdAt).toLocaleString()}</span>
+    `;
+    return commentElement;
+}
 
-// Function to add a comment to a subject
+function getUsernameFromCookie() {
+    return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
+}
+
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-   const username = localStorage.getItem("username") || `User${Math.floor(Math.random() * 1000)}`;
+    const username = getUsernameFromCookie();
 
+    if (!username) {
+        alert("You need to sign in to leave a comment.");
+        return;
+    }
 
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
@@ -695,6 +711,7 @@ function addComment(subjectId) {
         .catch(error => console.error('Error posting comment:', error));
     }
 }
+
 function enableCommentInfiniteScroll(subjectId) {
     const commentsContainer = document.getElementById(`comment-section-${subjectId}`);
     let currentPage = 1;
@@ -780,6 +797,7 @@ function createCommentElement(comment) {
 
     return commentElement;
 }
+
 
 
 // // Function to start recording voice reviews
