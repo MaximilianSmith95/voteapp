@@ -159,13 +159,13 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-        // Handle "For You" functionality (fetching based on user interests)
-        if (type === "for-you") {
+        // Handle "Interested" functionality (fetching based on user interests)
+        if (type === "interested") {
             const filteredCategories = categories.filter(category => 
                 selectedInterests.includes(category.interest) // Filter categories based on selected interests
             );
 
-            // If no "For You" categories found, fallback to randomizing categories
+            // If no "Interested" categories found, fallback to randomizing categories
             if (filteredCategories.length === 0) {
                 return res.json(categories.sort(() => 0.5 - Math.random())); // Random order if no matches
             }
