@@ -80,6 +80,7 @@ fetch('/api/categories', {
 })
 .catch(error => console.log(error));
 
+// Function to update the interest button (add/remove 'X' for removal)
 function updateInterestButton(interestButton, interest) {
     // Check if the interest is in the selected interests
     if (selectedInterests.includes(interest)) {
@@ -93,45 +94,39 @@ function updateInterestButton(interestButton, interest) {
         removeButton.addEventListener("click", (e) => {
             e.stopPropagation(); // Prevent the main button click
             removeInterest(interest); // Remove the interest when "X" is clicked
-            updateInterestButton(interestButton, interest); // Update the button state
+            updateInterestButton(interestButton, interest); // Update the button state after removal
         });
     }
 }
 
+// Function to handle interest selection (add/remove from the list)
+const interestButtons = document.querySelectorAll(".interestBtn");
+interestButtons.forEach(button => {
+    const interest = button.textContent.trim();
+    // Initially update the button based on whether it's selected
+    updateInterestButton(button, interest);
+
+    button.addEventListener("click", () => {
+        if (selectedInterests.includes(interest)) {
+            // If the interest is already selected, remove it
+            removeInterest(interest);
+            updateInterestButton(button, interest); // Update the button state after removal
+        } else {
+            // If the interest is not selected, add it
+            selectedInterests.push(interest);
+            localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+            updateInterestButton(button, interest); // Update the button state after adding
+        }
+    });
+});
+
+// Function to remove the interest
 function removeInterest(interest) {
+    // Remove the interest from the array of selected interests
     selectedInterests = selectedInterests.filter(item => item !== interest);
+    // Update the localStorage with the new array of selected interests
     localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
 }
-
-
-    // Handle interest selection (adds the interest to the list)
-    const interestButtons = document.querySelectorAll(".interestBtn");
-    interestButtons.forEach(button => {
-        const interest = button.textContent.trim();
-        // Initially update the button based on whether it's selected
-        updateInterestButton(button, interest);
-
-        button.addEventListener("click", () => {
-            if (selectedInterests.includes(interest)) {
-                // Remove the interest from the list if it's already selected
-                removeInterest(interest);
-                updateInterestButton(button, interest); // Update button state
-            } else {
-                // Add the interest to the list if it's not already selected
-                selectedInterests.push(interest);
-                localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-                updateInterestButton(button, interest); // Update the button state
-            }
-        });
-    });
-
-    // Handle interest removal
-    function removeInterest(interest) {
-        // Remove the interest from the array
-        selectedInterests = selectedInterests.filter(item => item !== interest);
-        // Update the localStorage with the new array of selected interests
-        localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-    }
 
     // Handle the profile section visibility and dropdown toggle
     if (token && username) {
