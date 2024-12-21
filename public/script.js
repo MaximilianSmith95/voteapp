@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("username");
 
 // Declare selectedInterests only once
+// Declare selectedInterests only once
 let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
 // Function to update the interest button (add/remove 'X' for removal)
@@ -105,27 +106,49 @@ interestButtons.forEach(button => {
 
 // Function to remove the interest
 function removeInterest(interest) {
-    // Remove the interest from the array of selected interests
+    // Remove the interest from the array
     selectedInterests = selectedInterests.filter(item => item !== interest);
     // Update the localStorage with the new array of selected interests
     localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
 }
 
-// Initialize selected interests from localStorage (if any)
-const selectedInterestsList = document.getElementById("selectedInterestsList");
-const profileSection = document.getElementById("profileSection");
-const usernameDisplay = document.getElementById("usernameDisplay");
-const profileDropdown = document.getElementById("profileDropdown");
-const editInterestsSection = document.getElementById("editInterestsSection");
+// Function to fetch and render categories with a given limit
+function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            allCategoriesData = data; // Store the data globally
+            let filteredData = allCategoriesData;
+            if (transformFn) {
+                filteredData = transformFn(allCategoriesData); // Apply transformation function if provided
+            }
+            renderLimitedCategories(filteredData, limit); // Render limited categories
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
 
-// Update the selected interests list in the profile section
-function updateSelectedInterests() {
-    selectedInterestsList.innerHTML = ""; // Clear existing list
+// Function to render categories (as an example)
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear existing categories
 
-    selectedInterests.forEach(interest => {
-        const interestItem = document.createElement("li");
-        interestItem.textContent = interest;
-        selectedInterestsList.appendChild(interestItem);
+    categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.textContent = category.name;
+        categoriesContainer.appendChild(categoryDiv);
+    });
+}
+
+// Function to render limited categories (with a limit)
+function renderLimitedCategories(categories, limit) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear existing categories
+
+    const limitedCategories = categories.slice(0, limit);
+    limitedCategories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.textContent = category.name;
+        categoriesContainer.appendChild(categoryDiv);
     });
 }
 
@@ -143,17 +166,12 @@ fetch('/api/categories', {
 })
 .catch(error => console.log(error));
 
-// Function to render categories (as an example, make sure you define renderCategories elsewhere)
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear existing categories
+// When the page is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    // Fetch and render categories when the page loads
+    fetchAndRenderCategories('/api/categories', 15); // Limit the categories to 15
+});
 
-    categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.textContent = category.name;
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
 
     // Handle the profile section visibility and dropdown toggle
     if (token && username) {
