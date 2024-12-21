@@ -118,7 +118,7 @@ app.get('/api/search', (req, res) => {
 });
 
 app.get('/api/categories', (req, res) => {
-    const { latitude, longitude, type } = req.query;
+    const { latitude, longitude, type, limit = 15 } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id;
     const selectedInterests = JSON.parse(req.headers['selected-interests'] || '[]'); // Get selected interests from the request
