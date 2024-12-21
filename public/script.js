@@ -81,6 +81,10 @@ fetch('/api/categories', {
 .catch(error => console.log(error));
 
 // Function to update the interest button (add/remove 'X' for removal)
+// Ensure selectedInterests is mutable
+let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || []; 
+
+// Function to update the interest button (add/remove 'X' for removal)
 function updateInterestButton(interestButton, interest) {
     // Check if the interest is in the selected interests
     if (selectedInterests.includes(interest)) {
@@ -91,11 +95,15 @@ function updateInterestButton(interestButton, interest) {
 
     const removeButton = interestButton.querySelector(".remove-btn");
     if (removeButton) {
-        removeButton.addEventListener("click", (e) => {
-            e.stopPropagation(); // Prevent the main button click
-            removeInterest(interest); // Remove the interest when "X" is clicked
-            updateInterestButton(interestButton, interest); // Update the button state after removal
-        });
+        // Ensure the event listener is only added once
+        removeButton.removeEventListener("click", handleRemoveClick);
+        removeButton.addEventListener("click", handleRemoveClick);
+    }
+
+    function handleRemoveClick(e) {
+        e.stopPropagation(); // Prevent the main button click
+        removeInterest(interest); // Remove the interest when "X" is clicked
+        updateInterestButton(interestButton, interest); // Update the button state after removal
     }
 }
 
@@ -127,6 +135,7 @@ function removeInterest(interest) {
     // Update the localStorage with the new array of selected interests
     localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
 }
+
 
     // Handle the profile section visibility and dropdown toggle
     if (token && username) {
