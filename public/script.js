@@ -80,29 +80,29 @@ fetch('/api/categories', {
 })
 .catch(error => console.log(error));
 
-    // Function to update the "X" button and mark selected interests
-    function updateInterestButton(interestButton, interest) {
-        // Check if the interest is in the selected interests
-        if (selectedInterests.includes(interest)) {
-            // Add the "X" button to the interest button
-            interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
-        } else {
-            // Reset the interest button to its original state (no "X")
-            interestButton.innerHTML = `${interest}`;
-        }
-
-        // Add event listener to the "X" button for removal
-        const removeButton = interestButton.querySelector(".remove-btn");
-        if (removeButton) {
-            removeButton.addEventListener("click", (e) => {
-                // Prevent bubbling to avoid triggering the main button click
-                e.stopPropagation();
-                // Remove the interest when "X" is clicked
-                removeInterest(interest);
-                updateInterestButton(interestButton, interest); // Update the button state
-            });
-        }
+function updateInterestButton(interestButton, interest) {
+    // Check if the interest is in the selected interests
+    if (selectedInterests.includes(interest)) {
+        interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
+    } else {
+        interestButton.innerHTML = `${interest}`;
     }
+
+    const removeButton = interestButton.querySelector(".remove-btn");
+    if (removeButton) {
+        removeButton.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent the main button click
+            removeInterest(interest); // Remove the interest when "X" is clicked
+            updateInterestButton(interestButton, interest); // Update the button state
+        });
+    }
+}
+
+function removeInterest(interest) {
+    selectedInterests = selectedInterests.filter(item => item !== interest);
+    localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+}
+
 
     // Handle interest selection (adds the interest to the list)
     const interestButtons = document.querySelectorAll(".interestBtn");
