@@ -56,33 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
-    // Profile Section Handling (visible only when logged in)
-    const profileSection = document.getElementById("profileSection");
-    const usernameDisplay = document.getElementById("usernameDisplay");
-    const profileDropdown = document.getElementById("profileDropdown");
-    const editInterestsSection = document.getElementById("editInterestsSection");
-    const selectedInterestsList = document.getElementById("selectedInterestsList");
-
-    // Initialize selected interests from localStorage (if any)
-    // Frontend (JavaScript)
-const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-    }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories
-    renderCategories(data);
-})
-.catch(error => console.log(error));
-
-// Function to update the interest button (add/remove 'X' for removal)
-// Ensure selectedInterests is mutable
-let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || []; 
+// Declare selectedInterests only once
+let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
 // Function to update the interest button (add/remove 'X' for removal)
 function updateInterestButton(interestButton, interest) {
@@ -136,6 +111,49 @@ function removeInterest(interest) {
     localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
 }
 
+// Initialize selected interests from localStorage (if any)
+const selectedInterestsList = document.getElementById("selectedInterestsList");
+const profileSection = document.getElementById("profileSection");
+const usernameDisplay = document.getElementById("usernameDisplay");
+const profileDropdown = document.getElementById("profileDropdown");
+const editInterestsSection = document.getElementById("editInterestsSection");
+
+// Update the selected interests list in the profile section
+function updateSelectedInterests() {
+    selectedInterestsList.innerHTML = ""; // Clear existing list
+
+    selectedInterests.forEach(interest => {
+        const interestItem = document.createElement("li");
+        interestItem.textContent = interest;
+        selectedInterestsList.appendChild(interestItem);
+    });
+}
+
+// Fetch categories with the selected interests
+fetch('/api/categories', {
+    method: 'GET',
+    headers: {
+        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+    }
+})
+.then(response => response.json())
+.then(data => {
+    // Handle the sorted categories
+    renderCategories(data); // Assume you have a renderCategories function
+})
+.catch(error => console.log(error));
+
+// Function to render categories (as an example, make sure you define renderCategories elsewhere)
+function renderCategories(categories) {
+    const categoriesContainer = document.getElementById("categories");
+    categoriesContainer.innerHTML = ""; // Clear existing categories
+
+    categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.textContent = category.name;
+        categoriesContainer.appendChild(categoryDiv);
+    });
+}
 
     // Handle the profile section visibility and dropdown toggle
     if (token && username) {
