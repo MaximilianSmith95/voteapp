@@ -112,21 +112,6 @@ function removeInterest(interest) {
     localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
 }
 
-// Function to fetch and render categories with a given limit
-function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            allCategoriesData = data; // Store the data globally
-            let filteredData = allCategoriesData;
-            if (transformFn) {
-                filteredData = transformFn(allCategoriesData); // Apply transformation function if provided
-            }
-            renderLimitedCategories(filteredData, limit); // Render limited categories
-        })
-        .catch(error => console.error('Error fetching categories:', error));
-}
-
 // Function to render categories (as an example)
 function renderCategories(categories) {
     const categoriesContainer = document.getElementById("categories");
@@ -144,13 +129,33 @@ function renderLimitedCategories(categories, limit) {
     const categoriesContainer = document.getElementById("categories");
     categoriesContainer.innerHTML = ""; // Clear existing categories
 
-    const limitedCategories = categories.slice(0, limit);
+    const limitedCategories = categories.slice(0, limit); // Limit the number of categories to 'limit'
     limitedCategories.forEach(category => {
         const categoryDiv = document.createElement("div");
         categoryDiv.textContent = category.name;
         categoriesContainer.appendChild(categoryDiv);
     });
 }
+
+// Function to fetch and render categories with a given limit
+function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            let filteredData = data;
+            if (transformFn) {
+                filteredData = transformFn(data); // Apply transformation function if provided
+            }
+            renderLimitedCategories(filteredData, limit); // Render limited categories
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+// When the page is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    // Fetch and render categories when the page loads
+    fetchAndRenderCategories('/api/categories', 15); // Limit the categories to 15
+});
 
 // Fetch categories with the selected interests
 fetch('/api/categories', {
@@ -161,17 +166,10 @@ fetch('/api/categories', {
 })
 .then(response => response.json())
 .then(data => {
-    // Handle the sorted categories
-    renderCategories(data); // Assume you have a renderCategories function
+    // Handle the sorted categories based on selected interests
+    renderCategories(data); // Assuming you want to render all categories here
 })
 .catch(error => console.log(error));
-
-// When the page is loaded
-document.addEventListener("DOMContentLoaded", () => {
-    // Fetch and render categories when the page loads
-    fetchAndRenderCategories('/api/categories', 15); // Limit the categories to 15
-});
-
 
     // Handle the profile section visibility and dropdown toggle
     if (token && username) {
