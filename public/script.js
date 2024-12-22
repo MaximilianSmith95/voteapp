@@ -56,120 +56,68 @@ document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
-// Declare selectedInterests only once
-// Declare selectedInterests only once
-let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    // Profile Section Handling (visible only when logged in)
+    const profileSection = document.getElementById("profileSection");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const profileDropdown = document.getElementById("profileDropdown");
+    const editInterestsSection = document.getElementById("editInterestsSection");
+    const selectedInterestsList = document.getElementById("selectedInterestsList");
 
-// Function to update the interest button (add/remove 'X' for removal)
-function updateInterestButton(interestButton, interest) {
-    // Check if the interest is in the selected interests
-    if (selectedInterests.includes(interest)) {
-        interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
-    } else {
-        interestButton.innerHTML = `${interest}`;
-    }
+    // Initialize selected interests from localStorage (if any)
+    let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-    const removeButton = interestButton.querySelector(".remove-btn");
-    if (removeButton) {
-        // Ensure the event listener is only added once
-        removeButton.removeEventListener("click", handleRemoveClick);
-        removeButton.addEventListener("click", handleRemoveClick);
-    }
-
-    function handleRemoveClick(e) {
-        e.stopPropagation(); // Prevent the main button click
-        removeInterest(interest); // Remove the interest when "X" is clicked
-        updateInterestButton(interestButton, interest); // Update the button state after removal
-    }
-}
-
-// Function to handle interest selection (add/remove from the list)
-const interestButtons = document.querySelectorAll(".interestBtn");
-interestButtons.forEach(button => {
-    const interest = button.textContent.trim();
-    // Initially update the button based on whether it's selected
-    updateInterestButton(button, interest);
-
-    button.addEventListener("click", () => {
+    // Function to update the "X" button and mark selected interests
+    function updateInterestButton(interestButton, interest) {
+        // Check if the interest is in the selected interests
         if (selectedInterests.includes(interest)) {
-            // If the interest is already selected, remove it
-            removeInterest(interest);
-            updateInterestButton(button, interest); // Update the button state after removal
+            // Add the "X" button to the interest button
+            interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
         } else {
-            // If the interest is not selected, add it
-            selectedInterests.push(interest);
-            localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-            updateInterestButton(button, interest); // Update the button state after adding
+            // Reset the interest button to its original state (no "X")
+            interestButton.innerHTML = `${interest}`;
         }
-    });
-});
 
-// Function to remove the interest
-function removeInterest(interest) {
-    // Remove the interest from the array
-    selectedInterests = selectedInterests.filter(item => item !== interest);
-    // Update the localStorage with the new array of selected interests
-    localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-}
-
-// Function to render categories (as an example)
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear existing categories
-
-    categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.textContent = category.name;
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-// Function to render limited categories (with a limit)
-function renderLimitedCategories(categories, limit) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear existing categories
-
-    const limitedCategories = categories.slice(0, limit); // Limit the number of categories to 'limit'
-    limitedCategories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.textContent = category.name;
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-// Function to fetch and render categories with a given limit
-function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            let filteredData = data;
-            if (transformFn) {
-                filteredData = transformFn(data); // Apply transformation function if provided
-            }
-            renderLimitedCategories(filteredData, limit); // Render limited categories
-        })
-        .catch(error => console.error('Error fetching categories:', error));
-}
-
-// When the page is loaded
-document.addEventListener("DOMContentLoaded", () => {
-    // Fetch and render categories when the page loads
-    fetchAndRenderCategories('/api/categories', 15); // Limit the categories to 15
-});
-
-// Fetch categories with the selected interests
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+        // Add event listener to the "X" button for removal
+        const removeButton = interestButton.querySelector(".remove-btn");
+        if (removeButton) {
+            removeButton.addEventListener("click", (e) => {
+                // Prevent bubbling to avoid triggering the main button click
+                e.stopPropagation();
+                // Remove the interest when "X" is clicked
+                removeInterest(interest);
+                updateInterestButton(interestButton, interest); // Update the button state
+            });
+        }
     }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories based on selected interests
-    renderCategories(data); // Assuming you want to render all categories here
-})
-.catch(error => console.log(error));
+
+    // Handle interest selection (adds the interest to the list)
+    const interestButtons = document.querySelectorAll(".interestBtn");
+    interestButtons.forEach(button => {
+        const interest = button.textContent.trim();
+        // Initially update the button based on whether it's selected
+        updateInterestButton(button, interest);
+
+        button.addEventListener("click", () => {
+            if (selectedInterests.includes(interest)) {
+                // Remove the interest from the list if it's already selected
+                removeInterest(interest);
+                updateInterestButton(button, interest); // Update button state
+            } else {
+                // Add the interest to the list if it's not already selected
+                selectedInterests.push(interest);
+                localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+                updateInterestButton(button, interest); // Update the button state
+            }
+        });
+    });
+
+    // Handle interest removal
+    function removeInterest(interest) {
+        // Remove the interest from the array
+        selectedInterests = selectedInterests.filter(item => item !== interest);
+        // Update the localStorage with the new array of selected interests
+        localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+    }
 
     // Handle the profile section visibility and dropdown toggle
     if (token && username) {
