@@ -188,11 +188,8 @@ app.get('/api/categories', (req, res) => {
             }));
 
             // Sort by distance (nearest first)
-            const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
-
-            return res.json(sortedCategories);
-        }
-            const sortedCategories = categories.sort((a, b) => {
+        // Sort categories based on user interests
+        const sortedCategories = categories.sort((a, b) => {
             const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
             const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
 
@@ -200,7 +197,8 @@ app.get('/api/categories', (req, res) => {
             if (!aHasInterest && bHasInterest) return 1;
             return 0;
         });
-        // Handle "For You" functionality
+
+        // Handle "For You" functionality if needed
         if (type === "for-you") {
             // Implement "For You" functionality if needed
         } else {
