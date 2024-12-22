@@ -121,7 +121,6 @@ app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
-    const selectedInterests = JSON.parse(req.headers['selected-interests'] || '[]'); // Get selected interests from the request
 
     // Base query for all categories and their subjects
     const baseQuery = `
@@ -161,62 +160,40 @@ app.get('/api/categories', (req, res) => {
             return acc;
         }, []);
 
-// Handle "near me" feature if latitude and longitude are provided
-if (latitude && longitude) {
-    const userLat = parseFloat(latitude);
-    const userLon = parseFloat(longitude);
+        // Handle "near me" feature if latitude and longitude are provided
+        if (latitude && longitude) {
+            const userLat = parseFloat(latitude);
+            const userLon = parseFloat(longitude);
 
-    // Calculate distance using Haversine formula
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; // Earth's radius in km
-        const dLat = ((lat2 - lat1) * Math.PI) / 180;
-        const dLon = ((lon2 - lon1) * Math.PI) / 180;
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    };
+            // Calculate distance using Haversine formula
+            const calculateDistance = (lat1, lon1, lat2, lon2) => {
+                const R = 6371; // Earth's radius in km
+                const dLat = ((lat2 - lat1) * Math.PI) / 180;
+                const dLon = ((lon2 - lon1) * Math.PI) / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            };
 
-    // Add distance to each category and sort by proximity
-    const categoriesWithDistance = categories.map(category => ({
-        ...category,
-        distance: category.latitude && category.longitude
-            ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
-            : Infinity // Default to a large value if no coordinates
-    }));
-
-    // Sort categories based on distance (nearest first)
-    categoriesWithDistance.sort((a, b) => a.distance - b.distance);
-
-    // Return sorted categories
-    res.json(categoriesWithDistance);
-} else {
-    // If no latitude and longitude, return categories without distance sorting
-    res.json(categories);
-}
+            // Add distance to each category and sort by proximity
+            const categoriesWithDistance = categories.map(category => ({
+                ...category,
+                distance: category.latitude && category.longitude
+                    ? calculateDistance(userLat, userLon, category.latitude, category.longitude)
+                    : Infinity // Default to a large value if no coordinates
+            }));
 
             // Sort by distance (nearest first)
-        // Sort categories based on user interests
-        const sortedCategories = categories.sort((a, b) => {
-            const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
-            const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
+            const sortedCategories = categoriesWithDistance.sort((a, b) => a.distance - b.distance);
 
-            if (aHasInterest && !bHasInterest) return -1;
-            if (!aHasInterest && bHasInterest) return 1;
-            return 0;
-        });
-
-        // Handle "For You" functionality if needed
-        if (type === "for-you") {
-            // Implement "For You" functionality if needed
-        } else {
-            // Default: Return sorted categories
-            res.json(sortedCategories);
+            return res.json(sortedCategories);
         }
-    });
-});
+
+        // Handle "For You" functionality
+        if (type === "for-you") {
             const relatedCategoriesQuery = `
                 SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
                 FROM Subjects s1
