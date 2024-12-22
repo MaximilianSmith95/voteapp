@@ -1081,6 +1081,22 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
+// Frontend (JavaScript)
+const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+
+fetch('/api/categories', {
+    method: 'GET',
+    headers: {
+        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+    }
+})
+.then(response => response.json())
+.then(data => {
+    // Handle the sorted categories
+    renderCategories(data);
+})
+.catch(error => console.log(error));
+
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
 
