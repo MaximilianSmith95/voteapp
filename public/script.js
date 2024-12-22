@@ -62,11 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileDropdown = document.getElementById("profileDropdown");
     const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
-
-    // Initialize selected interests from localStorage (if any)
-    let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-// Frontend (JavaScript)
-const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    
+    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
 fetch('/api/categories', {
     method: 'GET',
