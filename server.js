@@ -193,9 +193,9 @@ if (latitude && longitude) {
     // Return sorted categories
     res.json(categoriesWithDistance);
 } else {
+    // If no latitude and longitude, return categories without distance sorting
     res.json(categories);
 }
-
 
             // Sort by distance (nearest first)
         // Sort categories based on user interests
