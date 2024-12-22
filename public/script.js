@@ -206,7 +206,6 @@ function updateInterestButton(interestButton, interest) {
 }
 
 // Handle interest selection (add to the list)
-const interestButtons = document.querySelectorAll(".interestBtn");
 interestButtons.forEach(button => {
     const interest = button.textContent.trim();
     updateInterestButton(button, interest);
