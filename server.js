@@ -118,23 +118,17 @@ app.get('/api/search', (req, res) => {
 });
 
 app.get('/api/categories', (req, res) => {
-    const { latitude, longitude, type, interests } = req.query;  // Add 'interests' to query params
+    const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
-    
+
     // Base query for all categories and their subjects
-    let baseQuery = `
+    const baseQuery = `
         SELECT c.category_id, c.name AS category_name, c.latitude, c.longitude,
                s.subject_id, s.name AS subject_name, s.votes, s.link
         FROM Categories c
-        LEFT JOIN Subjects s ON c.category_id = s.category_id
+        LEFT JOIN Subjects s ON c.category_id = s.category_id;
     `;
-    
-    // Filter by interests if provided
-    if (interests) {
-        const interestArray = interests.split(",");  // Convert interests string to array
-        baseQuery += ` WHERE c.category_id IN (${interestArray.join(",")})`;  // Filter categories by ID
-    }
 
     db.query(baseQuery, (err, results) => {
         if (err) {
