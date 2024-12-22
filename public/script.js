@@ -305,24 +305,32 @@ function updateSelectedInterests() {
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
 
-        // Send Sign-Up data to backend
-        fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: name, email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert('Registration successful! Please log in.');
-                document.getElementById('signUpModal').classList.add('hidden');
-            } else if (data.error) {
-                alert('Registration failed: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+// Assuming this code is part of a larger function, such as a submit event listener
+document.getElementById("signUpForm").addEventListener("submit", (e) => {
+    e.preventDefault(); // Prevent form from submitting normally
+
+    const name = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Send Sign-Up data to backend
+    fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name, email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Registration successful! Please log in.');
+            document.getElementById('signUpModal').classList.add('hidden');
+        } else if (data.error) {
+            alert('Registration failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
 });
+
 
 
     // Login Form Submission
