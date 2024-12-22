@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
     
-    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
 fetch('/api/categories', {
     method: 'GET',
