@@ -162,71 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
             interestButtonsSection.style.display = "none";
         }
     });
-    // Function to fetch categories based on the selected interests
-function fetchCategoriesByInterests() {
-    const interests = JSON.parse(localStorage.getItem("selectedInterests"));
-    if (!interests || interests.length === 0) {
-        alert("Please select some interests first.");
-        return;
-    }
-
-    const interestQuery = interests.join(",");  // Convert into an array of interests
-    fetch(`/api/categories?interests=${interestQuery}`)
-        .then(response => response.json())
-        .then(data => {
-            renderCategories(data);  // Render categories based on selected interests
-        });
-}
-
-feedButton.addEventListener("click", () => {
-    const interests = JSON.parse(localStorage.getItem("selectedInterests"));
-    if (!interests || interests.length === 0) {
-        alert("Please select some interests first.");
-    } else {
-        fetchCategoriesByInterests();  // Fetch categories based on selected interests
-    }
-});
-
-// Function to update the "X" button and mark selected interests
-function updateInterestButton(interestButton, interest) {
-    if (selectedInterests.includes(interest)) {
-        interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
-    } else {
-        interestButton.innerHTML = `${interest}`;
-    }
-
-    const removeButton = interestButton.querySelector(".remove-btn");
-    if (removeButton) {
-        removeButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            removeInterest(interest);
-            updateInterestButton(interestButton, interest);
-        });
-    }
-}
-
-// Handle interest selection (add to the list)
-interestButtons.forEach(button => {
-    const interest = button.textContent.trim();
-    updateInterestButton(button, interest);
-
-    button.addEventListener("click", () => {
-        if (selectedInterests.includes(interest)) {
-            removeInterest(interest);
-            updateInterestButton(button, interest);
-        } else {
-            selectedInterests.push(interest);
-            localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests));
-            updateInterestButton(button, interest);
-        }
-    });
-});
-
-// Handle interest removal
-function removeInterest(interest) {
-    selectedInterests = selectedInterests.filter(item => item !== interest);
-    localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests));
-}
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
@@ -1146,22 +1081,6 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
-// Frontend (JavaScript)
-const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-    }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories
-    renderCategories(data);
-})
-.catch(error => console.log(error));
-
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
 
