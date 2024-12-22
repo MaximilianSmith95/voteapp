@@ -202,6 +202,14 @@ app.get('/api/categories', (req, res) => {
         });
         // Handle "For You" functionality
         if (type === "for-you") {
+            if (type === "for-you") {
+            // Implement "For You" functionality if needed
+        } else {
+            // Default: Return sorted categories
+            res.json(sortedCategories);
+        }
+    });
+});
             const relatedCategoriesQuery = `
                 SELECT s1.category_id AS category_id_1, s2.category_id AS category_id_2, COUNT(*) AS shared_subjects
                 FROM Subjects s1
