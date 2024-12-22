@@ -121,6 +121,7 @@ app.get('/api/categories', (req, res) => {
     const { latitude, longitude, type } = req.query;
     const preferences = req.cookies.preferences ? JSON.parse(req.cookies.preferences) : {};
     const deviceId = req.cookies.device_id; // Assuming device_id is stored in cookies
+    const selectedInterests = JSON.parse(req.headers['selected-interests'] || '[]'); // Get selected interests from the request
 
     // Base query for all categories and their subjects
     const baseQuery = `
@@ -191,7 +192,14 @@ app.get('/api/categories', (req, res) => {
 
             return res.json(sortedCategories);
         }
+            const sortedCategories = categories.sort((a, b) => {
+            const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
+            const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
 
+            if (aHasInterest && !bHasInterest) return -1;
+            if (!aHasInterest && bHasInterest) return 1;
+            return 0;
+        });
         // Handle "For You" functionality
         if (type === "for-you") {
             const relatedCategoriesQuery = `
