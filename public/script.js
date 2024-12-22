@@ -51,145 +51,65 @@ function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
 }
 
     
-// Declare selectedInterests only once
-let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-
-// Fetch categories based on selected interests
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-    }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories
-    renderCategories(data); // Assuming you have a renderCategories function
-})
-.catch(error => console.log(error));
-
-// Function to update the interest button (add/remove 'X' for removal)
-function updateInterestButton(interestButton, interest) {
-    if (selectedInterests.includes(interest)) {
-        interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
-    } else {
-        interestButton.innerHTML = `${interest}`;
-    }
-
-    const removeButton = interestButton.querySelector(".remove-btn");
-    if (removeButton) {
-        removeButton.removeEventListener("click", handleRemoveClick);
-        removeButton.addEventListener("click", handleRemoveClick);
-    }
-
-    function handleRemoveClick(e) {
-        e.stopPropagation(); // Prevent the main button click
-        removeInterest(interest); // Remove the interest when "X" is clicked
-        updateInterestButton(interestButton, interest); // Update the button state after removal
-    }
-}
-
-// Function to handle interest selection (add/remove from the list)
-const interestButtons = document.querySelectorAll(".interestBtn");
-interestButtons.forEach(button => {
-    const interest = button.textContent.trim();
-    updateInterestButton(button, interest);
-
-    button.addEventListener("click", () => {
-        if (selectedInterests.includes(interest)) {
-            removeInterest(interest); // Remove if already selected
-        } else {
-            selectedInterests.push(interest); // Add if not selected
-            localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-        }
-        updateInterestButton(button, interest); // Update the button state
-    });
-});
-
-// Function to remove the interest
-function removeInterest(interest) {
-    selectedInterests = selectedInterests.filter(item => item !== interest);
-    localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
-}
-
-// Function to render categories (as an example)
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear existing categories
-
-    categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.textContent = category.name;
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-// Function to render limited categories (with a limit)
-function renderLimitedCategories(categories, limit) {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = ""; // Clear existing categories
-
-    const limitedCategories = categories.slice(0, limit); // Limit the categories to 'limit'
-    limitedCategories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.textContent = category.name;
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-
-// Function to fetch and render categories with a given limit
-function fetchAndRenderCategories(url, limit = 15) {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            renderLimitedCategories(data, limit); // Render categories with the limit
-        })
-        .catch(error => console.error('Error fetching categories:', error));
-}
-
-// When the page is loaded
 document.addEventListener("DOMContentLoaded", () => {
-    // Fetch and render categories when the page loads, with a limit of 15
-    fetchAndRenderCategories('/api/categories', 15);
-});
-
-// Profile Section Handling (visible only when logged in)
-document.addEventListener("DOMContentLoaded", () => {
+    // Get the token and username from localStorage
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
+    // Profile Section Handling (visible only when logged in)
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
     const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
 
-    if (token && username) {
-        profileSection.classList.remove("hidden");
-        usernameDisplay.textContent = username;
+    // Initialize selected interests from localStorage (if any)
+    let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-        usernameDisplay.addEventListener("click", () => {
-            profileDropdown.classList.toggle("hidden");
-        });
+    // Function to update the "X" button and mark selected interests
+    function updateInterestButton(interestButton, interest) {
+        // Check if the interest is in the selected interests
+        if (selectedInterests.includes(interest)) {
+            // Add the "X" button to the interest button
+            interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
+        } else {
+            // Reset the interest button to its original state (no "X")
+            interestButton.innerHTML = `${interest}`;
+        }
 
-        document.getElementById("editInterestsLink").addEventListener("click", () => {
-            editInterestsSection.classList.toggle("hidden");
-            updateSelectedInterests(); // Update the list when Edit Interests is clicked
-        });
-    } else {
-        profileSection.classList.add("hidden");
+        // Add event listener to the "X" button for removal
+        const removeButton = interestButton.querySelector(".remove-btn");
+        if (removeButton) {
+            removeButton.addEventListener("click", (e) => {
+                // Prevent bubbling to avoid triggering the main button click
+                e.stopPropagation();
+                // Remove the interest when "X" is clicked
+                removeInterest(interest);
+                updateInterestButton(interestButton, interest); // Update the button state
+            });
+        }
     }
-});
 
-// Update the selected interests list in the profile section
-function updateSelectedInterests() {
-    selectedInterestsList.innerHTML = ""; // Clear existing list
-    selectedInterests.forEach(interest => {
-        const interestItem = document.createElement("li");
-        interestItem.textContent = interest;
-        selectedInterestsList.appendChild(interestItem);
+    // Handle interest selection (adds the interest to the list)
+    const interestButtons = document.querySelectorAll(".interestBtn");
+    interestButtons.forEach(button => {
+        const interest = button.textContent.trim();
+        // Initially update the button based on whether it's selected
+        updateInterestButton(button, interest);
+
+        button.addEventListener("click", () => {
+            if (selectedInterests.includes(interest)) {
+                // Remove the interest from the list if it's already selected
+                removeInterest(interest);
+                updateInterestButton(button, interest); // Update button state
+            } else {
+                // Add the interest to the list if it's not already selected
+                selectedInterests.push(interest);
+                localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist in localStorage
+                updateInterestButton(button, interest); // Update the button state
+            }
+        });
     });
-}
 
     // Handle interest removal
     function removeInterest(interest) {
@@ -233,6 +153,7 @@ function updateSelectedInterests() {
     // Get the feed button and the interest buttons section
     const feedButton = document.getElementById("feedButton");
     const interestButtonsSection = document.getElementById("interestButtons");
+
     // Toggle the visibility of the interest buttons when My Feed button is clicked
     feedButton.addEventListener("click", () => {
         if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
@@ -305,32 +226,24 @@ function updateSelectedInterests() {
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
 
-// Assuming this code is part of a larger function, such as a submit event listener
-document.getElementById("signUpForm").addEventListener("submit", (e) => {
-    e.preventDefault(); // Prevent form from submitting normally
-
-    const name = document.getElementById("username").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    // Send Sign-Up data to backend
-    fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: name, email, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert('Registration successful! Please log in.');
-            document.getElementById('signUpModal').classList.add('hidden');
-        } else if (data.error) {
-            alert('Registration failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        // Send Sign-Up data to backend
+        fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: name, email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Registration successful! Please log in.');
+                document.getElementById('signUpModal').classList.add('hidden');
+            } else if (data.error) {
+                alert('Registration failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 });
-
 
 
     // Login Form Submission
