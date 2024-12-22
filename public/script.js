@@ -153,23 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Get the feed button and the interest buttons section
     const feedButton = document.getElementById("feedButton");
     const interestButtonsSection = document.getElementById("interestButtons");
-    // Frontend (JavaScript)
-const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-    }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories
-    renderCategories(data);
-})
-.catch(error => console.log(error));
-
-
     // Toggle the visibility of the interest buttons when My Feed button is clicked
     feedButton.addEventListener("click", () => {
         if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
