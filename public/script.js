@@ -166,7 +166,6 @@ fetch('/api/categories', {
 
 // DOM Elements
 const feedButton = document.getElementById("feedButton");
-const interestButtons = document.querySelectorAll(".interestBtn");
 const interestButtonsSection = document.getElementById("interestButtons");
 const categoriesSection = document.getElementById("categoriesSection");
 
