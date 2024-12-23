@@ -162,73 +162,19 @@ fetch('/api/categories', {
         profileSection.classList.add("hidden");
     }
 
-// Live Update Implementation
+    // Get the feed button and the interest buttons section
+    const feedButton = document.getElementById("feedButton");
+    const interestButtonsSection = document.getElementById("interestButtons");
 
-// DOM Elements
-const feedButton = document.getElementById("feedButton");
-const categoriesSection = document.getElementById("categoriesSection");
-
-// Fetch and Render Categories
-function fetchAndRenderCategories() {
-    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    fetch('/api/categories', {
-        method: 'GET',
-        headers: {
-            'selected-interests': JSON.stringify(selectedInterests) // Send selected interests to backend
+    // Toggle the visibility of the interest buttons when My Feed button is clicked
+    feedButton.addEventListener("click", () => {
+        if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
+            interestButtonsSection.style.display = "block";
+        } else {
+            interestButtonsSection.style.display = "none";
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        renderCategories(data); // Render the categories dynamically
-    })
-    .catch(error => console.log('Error fetching categories:', error));
-}
-
-// Render Categories Dynamically
-function renderCategories(categories) {
-    categoriesSection.innerHTML = ''; // Clear existing categories
-    categories.forEach(category => {
-        const categoryElement = document.createElement('div');
-        categoryElement.className = 'category-item';
-        categoryElement.textContent = category.name; // Adjust based on your data structure
-        categoriesSection.appendChild(categoryElement);
     });
-}
 
-// Handle Interest Selection
-function handleInterestSelection(button, interest) {
-    let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    if (selectedInterests.includes(interest)) {
-        // Remove interest
-        selectedInterests = selectedInterests.filter(item => item !== interest);
-    } else {
-        // Add interest
-        selectedInterests.push(interest);
-    }
-    localStorage.setItem("selectedInterests", JSON.stringify(selectedInterests)); // Persist to localStorage
-    updateInterestButton(button, interest); // Update button appearance
-    fetchAndRenderCategories(); // Update categories live
-}
-
-// Update Button Appearance
-function updateInterestButton(button, interest) {
-    const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    if (selectedInterests.includes(interest)) {
-        button.classList.add('selected'); // Add a CSS class for selected buttons
-    } else {
-        button.classList.remove('selected');
-    }
-}
-
-// Attach Event Listeners to Interest Buttons
-interestButtons.forEach(button => {
-    const interest = button.textContent.trim();
-    updateInterestButton(button, interest); // Initialize button appearance
-    button.addEventListener('click', () => handleInterestSelection(button, interest));
-});
-
-// Initial Fetch and Render
-fetchAndRenderCategories();
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
 
