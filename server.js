@@ -194,15 +194,36 @@ app.get('/api/categories', (req, res) => {
         }
 
         // Sort categories based on user interests
-        const sortedCategories = categories.sort((a, b) => {
-            const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
-            const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
+// Utility function to shuffle an array
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 
-            if (aHasInterest && !bHasInterest) return -1;
-            if (!aHasInterest && bHasInterest) return 1;
-            return 0;
-        });
-        
+app.get('/api/categories', (req, res) => {
+    const selectedInterests = JSON.parse(req.headers['selected-interests'] || '[]');
+    const categories = getCategoriesFromDatabase(); // Fetch categories from your data source
+
+    // Shuffle all categories first to ensure randomness within priority levels
+    const shuffledCategories = shuffle(categories);
+
+    // Sort categories by user interest association and randomize within groups
+    const sortedCategories = shuffledCategories.sort((a, b) => {
+        const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
+        const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
+
+        if (aHasInterest && !bHasInterest) return -1; // Prioritize interest categories
+        if (!aHasInterest && bHasInterest) return 1; // Deprioritize non-interest categories
+        return 0; // Keep relative order (already shuffled)
+    });
+
+    // Return the sorted and shuffled categories to the frontend
+    return res.json(sortedCategories);
+});
+
         // Handle "For You" functionality
         if (type === "for-you") {
             const relatedCategoriesQuery = `
