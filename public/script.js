@@ -168,15 +168,13 @@ fetch('/api/categories', {
 
     // Toggle the visibility of the interest buttons when My Feed button is clicked
     feedButton.addEventListener("click", () => {
-        location.reload(); // Refresh the page
-});
         if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
             interestButtonsSection.style.display = "block";
         } else {
             interestButtonsSection.style.display = "none";
         }
-    });
-
+        location.reload(); // Refresh the page
+});
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
 
