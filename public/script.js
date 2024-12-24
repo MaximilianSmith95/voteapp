@@ -153,85 +153,27 @@ fetch('/api/categories', {
         });
 
         // Show the Edit Interests section when "Edit Interests" is clicked
-        document.getElementById('editInterestsLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    const editInterestsSection = document.getElementById('editInterestsSection');
-
-    // Toggle visibility
-    if (editInterestsSection.classList.contains('hidden')) {
-        editInterestsSection.classList.remove('hidden');
-    } else {
-        editInterestsSection.classList.add('hidden');
-    }
-});
+        document.getElementById("editInterestsLink").addEventListener("click", () => {
+            editInterestsSection.classList.toggle("hidden");
+            updateSelectedInterests(); // Update the list when Edit Interests is clicked
+        });
     } else {
         // If the user is not logged in, ensure the profile section is hidden
         profileSection.classList.add("hidden");
     }
 
-// Get the feed button and the interest buttons section
-const feedButton = document.getElementById("feedButton");
-const interestButtonsSection = document.getElementById("interestButtons");
+    // Get the feed button and the interest buttons section
+    const feedButton = document.getElementById("feedButton");
+    const interestButtonsSection = document.getElementById("interestButtons");
 
-// Get selected interests
-function getSelectedInterests() {
-    const selectedButtons = document.querySelectorAll(".interestBtn.selected");
-    return Array.from(selectedButtons).map(button => button.textContent);
-}
-
-// Toggle the visibility of the interest buttons when My Feed button is clicked
-feedButton.addEventListener("click", () => {
-    // Get the selected interests
-    const selectedInterests = getSelectedInterests();
-
-    // Hide the interest buttons section
-    interestButtonsSection.style.display = "none";
-
-    // Call a function to refresh the feed based on the selected interests
-    refreshFeed(selectedInterests);
-});
-
-// Function to refresh feed with selected interests
-function refreshFeed(interests) {
-    // Debugging: Check selected interests
-    console.log("Refreshing feed with interests:", interests);
-
-    // Ensure interests are not empty before making the call
-    if (interests.length === 0) {
-        console.error("No interests selected.");
-        return;
-    }
-
-    // Example API call
-    fetch('https://www.nerdgoo.com/api/categories', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ interests }), // Ensure interests are properly formatted
-    })
-    .then(response => {
-        // Debug: Log the raw response text
-        return response.text().then(text => {
-            try {
-                return JSON.parse(text);
-            } catch (error) {
-                console.error("Invalid JSON response:", text);
-                throw error;
-            }
-        });
-    })
-    .then(data => {
-        // Update the feed with the categories
-        console.log("Updated categories:", data);
-        // Add logic to update the DOM with the categories
-    })
-    .catch(error => {
-        console.error("Error refreshing feed:", error);
+    // Toggle the visibility of the interest buttons when My Feed button is clicked
+    feedButton.addEventListener("click", () => {
+        if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
+            interestButtonsSection.style.display = "block";
+        } else {
+            interestButtonsSection.style.display = "none";
+        }
     });
-}
-
-
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
