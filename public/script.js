@@ -193,27 +193,44 @@ feedButton.addEventListener("click", () => {
 
 // Function to refresh feed with selected interests
 function refreshFeed(interests) {
-    // Simulate an API call or logic to fetch categories based on interests
+    // Debugging: Check selected interests
     console.log("Refreshing feed with interests:", interests);
 
-    // Example: Sending interests to the server (pseudo-code)
-    fetch('/api/categories', {
+    // Ensure interests are not empty before making the call
+    if (interests.length === 0) {
+        console.error("No interests selected.");
+        return;
+    }
+
+    // Example API call
+    fetch('https://www.nerdgoo.com/api/categories', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ interests }),
+        body: JSON.stringify({ interests }), // Ensure interests are properly formatted
     })
-    .then(response => response.json())
+    .then(response => {
+        // Debug: Log the raw response text
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                console.error("Invalid JSON response:", text);
+                throw error;
+            }
+        });
+    })
     .then(data => {
-        // Update the feed with the response categories
+        // Update the feed with the categories
         console.log("Updated categories:", data);
-        // Here, you can update the DOM to display the refreshed categories
+        // Add logic to update the DOM with the categories
     })
     .catch(error => {
         console.error("Error refreshing feed:", error);
     });
 }
+
 
 
     // Handle Login/Logout button functionality
