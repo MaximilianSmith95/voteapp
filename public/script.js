@@ -153,10 +153,17 @@ fetch('/api/categories', {
         });
 
         // Show the Edit Interests section when "Edit Interests" is clicked
-        document.getElementById("editInterestsLink").addEventListener("click", () => {
-            editInterestsSection.classList.toggle("hidden");
-            updateSelectedInterests(); // Update the list when Edit Interests is clicked
-        });
+        document.getElementById('editInterestsLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    const editInterestsSection = document.getElementById('editInterestsSection');
+
+    // Toggle visibility
+    if (editInterestsSection.classList.contains('hidden')) {
+        editInterestsSection.classList.remove('hidden');
+    } else {
+        editInterestsSection.classList.add('hidden');
+    }
+});
     } else {
         // If the user is not logged in, ensure the profile section is hidden
         profileSection.classList.add("hidden");
