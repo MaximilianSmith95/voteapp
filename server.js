@@ -194,14 +194,16 @@ app.get('/api/categories', (req, res) => {
         }
 
         // Sort categories based on user interests
-        const sortedCategories = categories.sort((a, b) => {
-            const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
-            const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
+const sortedCategories = categories.sort((a, b) => {
+    const aHasInterest = selectedInterests.some(interest => a.name.includes(interest));
+    const bHasInterest = selectedInterests.some(interest => b.name.includes(interest));
 
-            if (aHasInterest && !bHasInterest) return -1;
-            if (!aHasInterest && bHasInterest) return 1;
-            return 0;
-        });
+    if (aHasInterest && !bHasInterest) return -1;
+    if (!aHasInterest && bHasInterest) return 1;
+
+    // If both have interest (or both don't), sort by category_id descending
+    return b.category_id - a.category_id;
+});
         
         // Handle "For You" functionality
         if (type === "for-you") {
