@@ -169,18 +169,52 @@ fetch('/api/categories', {
         profileSection.classList.add("hidden");
     }
 
-    // Get the feed button and the interest buttons section
-    const feedButton = document.getElementById("feedButton");
-    const interestButtonsSection = document.getElementById("interestButtons");
+// Get the feed button and the interest buttons section
+const feedButton = document.getElementById("feedButton");
+const interestButtonsSection = document.getElementById("interestButtons");
 
-    // Toggle the visibility of the interest buttons when My Feed button is clicked
-    feedButton.addEventListener("click", () => {
-        if (interestButtonsSection.style.display === "none" || interestButtonsSection.style.display === "") {
-            interestButtonsSection.style.display = "block";
-        } else {
-            interestButtonsSection.style.display = "none";
-        }
+// Get selected interests
+function getSelectedInterests() {
+    const selectedButtons = document.querySelectorAll(".interestBtn.selected");
+    return Array.from(selectedButtons).map(button => button.textContent);
+}
+
+// Toggle the visibility of the interest buttons when My Feed button is clicked
+feedButton.addEventListener("click", () => {
+    // Get the selected interests
+    const selectedInterests = getSelectedInterests();
+
+    // Hide the interest buttons section
+    interestButtonsSection.style.display = "none";
+
+    // Call a function to refresh the feed based on the selected interests
+    refreshFeed(selectedInterests);
+});
+
+// Function to refresh feed with selected interests
+function refreshFeed(interests) {
+    // Simulate an API call or logic to fetch categories based on interests
+    console.log("Refreshing feed with interests:", interests);
+
+    // Example: Sending interests to the server (pseudo-code)
+    fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ interests }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update the feed with the response categories
+        console.log("Updated categories:", data);
+        // Here, you can update the DOM to display the refreshed categories
+    })
+    .catch(error => {
+        console.error("Error refreshing feed:", error);
     });
+}
+
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
