@@ -141,7 +141,6 @@ function renderSelectedInterests() {
                 updateInterestButton(interestButton, interest); // Update the button state
             });
         }
-    }
 
     // Handle interest selection (adds the interest to the list)
     const interestButtons = document.querySelectorAll(".interestBtn");
