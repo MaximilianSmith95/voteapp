@@ -80,56 +80,15 @@ fetch('/api/categories', {
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
-    // Existing logic to update the button
-    if (selectedInterests.includes(interest)) {
-        interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
-    } else {
-        interestButton.innerHTML = `${interest}`;
-    }
-
-    // Fetch updated categories immediately after any change in interests
-    fetchCategoriesBasedOnInterests();
-}
-let fetchTimeout;
-function fetchCategoriesBasedOnInterests() {
-    const categoriesContainer = document.getElementById("categories");
-    categoriesContainer.innerHTML = "<p>Updating your feed...</p>"; // Show a message
-    // Proceed with fetch logic
-    clearTimeout(fetchTimeout); // Clear any pending fetch
-    fetchTimeout = setTimeout(() => {
-        const interests = JSON.stringify(selectedInterests);
-        fetch('/api/categories', {
-            method: 'GET',
-            headers: { 'selected-interests': interests }
-        })
-            .then(response => response.json())
-            .then(data => renderCategories(data))
-            .catch(error => console.error('Error fetching categories:', error));
-    }, 300); // Debounce delay
-}
-function renderCategories(categories) {
-    const categoriesContainer = document.getElementById('categories');
-    categoriesContainer.innerHTML = ''; // Clear existing content
-
-    categories.forEach(category => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.classList.add('category');
-        if (selectedInterests.includes(category.name)) {
-            categoryDiv.innerHTML = `<h2>${category.name} <span class="recommended">Recommended</span></h2>`;
+        // Check if the interest is in the selected interests
+        if (selectedInterests.includes(interest)) {
+            // Add the "X" button to the interest button
+            interestButton.innerHTML = `${interest} <span class="remove-btn">×</span>`;
         } else {
-            categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
+            // Reset the interest button to its original state (no "X")
+            interestButton.innerHTML = `${interest}`;
         }
-        categoriesContainer.appendChild(categoryDiv);
-    });
-}
-    if (!localStorage.getItem("interestsHelpShown")) {
-    alert("Your feed will be personalized based on the interests you select. Start by picking a few interests!");
-    localStorage.setItem("interestsHelpShown", true);
-}
-function renderSelectedInterests() {
-    const selectedInterestsContainer = document.getElementById("selectedInterests");
-    selectedInterestsContainer.innerHTML = selectedInterests.map(interest => `<span>${interest}</span>`).join('');
-}
+
         // Add event listener to the "X" button for removal
         const removeButton = interestButton.querySelector(".remove-btn");
         if (removeButton) {
@@ -141,6 +100,7 @@ function renderSelectedInterests() {
                 updateInterestButton(interestButton, interest); // Update the button state
             });
         }
+    }
 
     // Handle interest selection (adds the interest to the list)
     const interestButtons = document.querySelectorAll(".interestBtn");
