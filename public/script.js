@@ -1011,6 +1011,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+
 // Utility function to set a cookie with an expiration date
 function setCookie(name, value, days) {
     const date = new Date();
