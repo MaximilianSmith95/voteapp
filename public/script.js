@@ -60,10 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
+    const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
-    const editInterestsLink = document.getElementById("editInterestsLink"); // "Edit Interests" button
-    const editInterestsSection = document.getElementById("editInterestsSection"); // Section for interests
-    const interestButtons = document.getElementById("interestButtons"); // Buttons for selecting interests
     
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
@@ -79,15 +77,6 @@ fetch('/api/categories', {
     renderCategories(data);
 })
 .catch(error => console.log(error));
-  
-    editInterestsLink.addEventListener("click", () => {
-        if (interestButtons.style.display === "none") {
-            interestButtons.style.display = "block"; // Show the interest buttons
-        } else {
-            interestButtons.style.display = "none"; // Hide the interest buttons
-        }
-    });
-});
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
