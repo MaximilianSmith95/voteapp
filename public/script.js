@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
     const editInterestsSection = document.getElementById("editInterestsSection");
-    const selectedInterestsList = document.getElementById("selectedInterestsList");
+    
     
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
