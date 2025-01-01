@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedInterestsList = document.getElementById("selectedInterestsList");
     const editInterestsLink = document.getElementById("editInterestsLink");
     const editInterestsSection = document.getElementById("editInterestsSection");
-    const interestButtons = document.getElementById("interestButtons");
+   
     
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
