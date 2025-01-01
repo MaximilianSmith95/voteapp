@@ -60,23 +60,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSection = document.getElementById("profileSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
     const profileDropdown = document.getElementById("profileDropdown");
-    const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
+    const editInterestsLink = document.getElementById("editInterestsLink");
+    const editInterestsSection = document.getElementById("editInterestsSection");
+    const interestButtons = document.getElementById("interestButtons");
     
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-    }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories
-    renderCategories(data);
-})
-.catch(error => console.log(error));
+    // Fetch categories and render them
+    fetch('/api/categories', {
+        method: 'GET',
+        headers: {
+            'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the sorted categories
+        renderCategories(data);
+    })
+    .catch(error => console.error(error));
+
+    // Add functionality to "Edit Interests" button
+    editInterestsLink.addEventListener("click", () => {
+        // Toggle the visibility of the edit interests section
+        editInterestsSection.classList.toggle("hidden");
+
+        // Show or hide the interest buttons based on the section's visibility
+        if (!editInterestsSection.classList.contains("hidden")) {
+            interestButtons.style.display = "block"; // Show interest buttons
+        } else {
+            interestButtons.style.display = "none"; // Hide interest buttons
+        }
+    });
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
