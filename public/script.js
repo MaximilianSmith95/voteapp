@@ -167,7 +167,7 @@ const interestButtonsSection = document.getElementById("interestButtons"); // Se
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    let currentFeedLimit = 15; // Start with 15 categories
+    let currentFeedLimit = 50; // Start with 15 categories
 
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
@@ -197,7 +197,7 @@ feedButton.addEventListener("click", () => {
     const exploreMoreButton = document.getElementById("exploreMoreButton");
     exploreMoreButton.style.display = "inline-block";
     exploreMoreButton.addEventListener("click", () => {
-        currentFeedLimit += 15; // Increment the limit by 15
+        currentFeedLimit += 50; // Increment the limit by 15
         fetchFeedCategories(currentFeedLimit); // Fetch and render additional categories
     });
 });
