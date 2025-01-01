@@ -162,21 +162,19 @@ fetch('/api/categories', {
         profileSection.classList.add("hidden");
     }
 
-    // Get the feed button and the interest buttons section
-   feedButton.addEventListener("click", () => {
-    // Get selected interests from localStorage
+   const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
+const interestButtonsSection = document.getElementById("interestButtons"); // Select the interestButtonsSection
+
+feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-    // Check if any interests are selected
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
         return;
     }
 
-    // Hide the interest buttons section
-    interestButtonsSection.style.display = "none";
-
-    // Fetch and update the feed dynamically
+    interestButtonsSection.style.display = "none"; // This now works as expected
+    
     fetch('/api/categories', {
         method: 'GET',
         headers: {
@@ -185,11 +183,11 @@ fetch('/api/categories', {
     })
         .then(response => response.json())
         .then(data => {
-            // Dynamically update the feed with the fetched categories
             renderCategories(data);
         })
         .catch(error => console.error('Error refreshing the feed:', error));
 });
+
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
