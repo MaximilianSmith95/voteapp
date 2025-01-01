@@ -62,21 +62,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileDropdown = document.getElementById("profileDropdown");
     const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
-    
+    const editInterestsLink = document.getElementById("editInterestsLink");
+    const interestButtons = document.getElementById("interestButtons");
+
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-fetch('/api/categories', {
-    method: 'GET',
-    headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-    }
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the sorted categories
-    renderCategories(data);
-})
-.catch(error => console.log(error));
+    // Fetch categories and render them
+    fetch('/api/categories', {
+        method: 'GET',
+        headers: {
+            'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the sorted categories
+        renderCategories(data);
+    })
+    .catch(error => console.error('Error fetching categories:', error));
+
+    // Toggle visibility of interest buttons
+    editInterestsLink.addEventListener("click", () => {
+        interestButtons.classList.toggle("hidden");
+    });
+});
+
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
