@@ -154,14 +154,13 @@ fetch('/api/categories', {
 
         // Show the Edit Interests section when "Edit Interests" is clicked
         document.getElementById("editInterestsLink").addEventListener("click", () => {
-    document.getElementById("editInterestsSection").classList.toggle("hidden");
-    const interestButtons = document.getElementById("interestButtons");
-    if (interestButtons.style.display === "none" || !interestButtons.style.display) {
-        interestButtons.style.display = "block";
+            editInterestsSection.classList.toggle("hidden");
+            updateSelectedInterests(); // Update the list when Edit Interests is clicked
+        });
     } else {
-        interestButtons.style.display = "none";
+        // If the user is not logged in, ensure the profile section is hidden
+        profileSection.classList.add("hidden");
     }
-});
 
     // Get the feed button and the interest buttons section
    feedButton.addEventListener("click", () => {
