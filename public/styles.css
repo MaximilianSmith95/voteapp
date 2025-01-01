@@ -1,3 +1,30 @@
+#interestButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px; /* Add spacing between buttons */
+}
+
+.interestBtn {
+    padding: 10px 15px;
+    background-color: #7b22e7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.interestBtn:hover {
+    transform: scale(1.1);
+    background-color: #5a18b3; /* Darker purple */
+}
+
+.hidden {
+    display: none;
+}
+
 #historyContainer {
     background-color: #fff;
     padding: 20px;
