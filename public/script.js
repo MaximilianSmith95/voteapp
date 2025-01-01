@@ -62,31 +62,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileDropdown = document.getElementById("profileDropdown");
     const editInterestsSection = document.getElementById("editInterestsSection");
     const selectedInterestsList = document.getElementById("selectedInterestsList");
-    const editInterestsLink = document.getElementById("editInterestsLink");
-    const interestButtons = document.getElementById("interestButtons");
-
+    
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-    // Fetch categories and render them
-    fetch('/api/categories', {
-        method: 'GET',
-        headers: {
-            'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the sorted categories
-        renderCategories(data);
-    })
-    .catch(error => console.error('Error fetching categories:', error));
-
-    // Toggle visibility of interest buttons
-    editInterestsLink.addEventListener("click", () => {
-        interestButtons.classList.toggle("hidden");
-    });
-});
-
+fetch('/api/categories', {
+    method: 'GET',
+    headers: {
+        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+    }
+})
+.then(response => response.json())
+.then(data => {
+    // Handle the sorted categories
+    renderCategories(data);
+})
+.catch(error => console.log(error));
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
@@ -172,19 +162,21 @@ document.addEventListener("DOMContentLoaded", () => {
         profileSection.classList.add("hidden");
     }
 
-  const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
-const interestButtonsSection = document.getElementById("interestButtons"); // Select the interestButtonsSection
-
-feedButton.addEventListener("click", () => {
+    // Get the feed button and the interest buttons section
+   feedButton.addEventListener("click", () => {
+    // Get selected interests from localStorage
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
+    // Check if any interests are selected
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
         return;
     }
 
-    interestButtonsSection.style.display = "none"; // This now works as expected
-    
+    // Hide the interest buttons section
+    interestButtonsSection.style.display = "none";
+
+    // Fetch and update the feed dynamically
     fetch('/api/categories', {
         method: 'GET',
         headers: {
@@ -193,6 +185,7 @@ feedButton.addEventListener("click", () => {
     })
         .then(response => response.json())
         .then(data => {
+            // Dynamically update the feed with the fetched categories
             renderCategories(data);
         })
         .catch(error => console.error('Error refreshing the feed:', error));
@@ -1010,7 +1003,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Cookie consent accepted and banner hidden.");
     });
 });
-
 
 // Utility function to set a cookie with an expiration date
 function setCookie(name, value, days) {
