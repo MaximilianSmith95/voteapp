@@ -164,12 +164,6 @@ fetch('/api/categories', {
 
    const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
 const interestButtonsSection = document.getElementById("interestButtons"); // Select the interestButtonsSection
-        document.getElementById("feedButton").addEventListener("click", () => {
-        infiniteScrollEnabled = true;
-        activeFilterFunction = fetchFeedButtonCategories;
-        currentCategoriesLimit = 15;
-        fetchFeedButtonCategories(currentCategoriesLimit);
-    });
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
