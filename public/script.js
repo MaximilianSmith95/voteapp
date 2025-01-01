@@ -167,25 +167,39 @@ const interestButtonsSection = document.getElementById("interestButtons"); // Se
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
+    let currentFeedLimit = 15; // Start with 15 categories
 
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
         return;
     }
 
-    interestButtonsSection.style.display = "none"; // This now works as expected
-    
-    fetch('/api/categories', {
-        method: 'GET',
-        headers: {
-            'selected-interests': JSON.stringify(selectedInterests)
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            renderCategories(data);
+    interestButtonsSection.style.display = "none";
+
+    function fetchFeedCategories(limit) {
+        fetch('/api/categories', {
+            method: 'GET',
+            headers: {
+                'selected-interests': JSON.stringify(selectedInterests)
+            }
         })
-        .catch(error => console.error('Error refreshing the feed:', error));
+            .then(response => response.json())
+            .then(data => {
+                renderLimitedCategories(data, limit); // Render only `limit` categories
+            })
+            .catch(error => console.error('Error refreshing the feed:', error));
+    }
+
+    // Initial fetch for the first 15 categories
+    fetchFeedCategories(currentFeedLimit);
+
+    // "Explore More" button to load more categories
+    const exploreMoreButton = document.getElementById("exploreMoreButton");
+    exploreMoreButton.style.display = "inline-block";
+    exploreMoreButton.addEventListener("click", () => {
+        currentFeedLimit += 15; // Increment the limit by 15
+        fetchFeedCategories(currentFeedLimit); // Fetch and render additional categories
+    });
 });
 
 
