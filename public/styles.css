@@ -7,14 +7,14 @@
     margin: 50px auto; /* Add margin to create space from other elements */
     max-width: 90%; /* Prevent overflow on smaller screens */
     align-items: center; /* Center buttons vertically */
-    background-color: #f3f3f3; /* Light background to distinguish from main section */
+    background-color: rgba(123, 34, 231, 0.2); /* A subtle purple tint */
     border-radius: 15px; /* Rounded corners for a clean look */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 .interestBtn {
     padding: 15px 25px; /* Larger padding for spacious buttons */
-    background-color: #6a1b9a; /* Refined purple color */
+    background-color: #7b22e7; /* A refined purple color for buttons */
     color: white;
     font-size: 1.2rem; /* Increase font size for readability */
     border: none;
@@ -23,13 +23,23 @@
     transition: transform 0.2s, background-color 0.2s;
     text-align: center;
     white-space: nowrap; /* Prevent text wrapping */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for button */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for buttons */
 }
 
 .interestBtn:hover {
     transform: scale(1.1);
-    background-color: #4a148c; /* Darker purple on hover */
+    background-color: #5a18b3; /* Darker purple on hover */
 }
+
+#interestSection {
+    margin-top: 80px; /* Space between this section and elements above */
+    padding: 40px 20px; /* Add vertical padding for spaciousness */
+    text-align: center; /* Center any headings or content */
+    background-color: #4e0a84; /* Darker purple for better blending */
+    border-radius: 20px; /* Rounded corners for smooth edges */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); /* Enhance depth with shadow */
+}
+
 
 
 .hidden {
