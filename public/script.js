@@ -724,7 +724,8 @@ function getUsernameFromCookie() {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = getUsernameFromCookie();
+    const username = getUsernameFromCookie() || localStorage.getItem("username");
+
 
     if (!username) {
         alert("You need to sign in to leave a comment.");
