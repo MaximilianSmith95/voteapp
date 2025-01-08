@@ -167,7 +167,7 @@ const interestButtonsSection = document.getElementById("interestButtons"); // Se
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    let currentFeedLimit = 50; // Start with 15 categories
+    let currentFeedLimit = 125; // Start with 15 categories
 
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
