@@ -2,29 +2,39 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center; /* Center the buttons horizontally */
-    gap: 20px; /* Increase spacing between buttons */
-    padding: 20px; /* Add padding around the button container */
-    margin: 100px auto 0 auto; /* Move below top elements with margin */
+    gap: 20px; /* Space between buttons */
+    padding: 30px; /* Add padding around the container */
+    margin: 50px auto; /* Add margin to create space from other elements */
     max-width: 90%; /* Prevent overflow on smaller screens */
     align-items: center; /* Center buttons vertically */
+    background-color: #f3f3f3; /* Light background to distinguish from main section */
+    border-radius: 15px; /* Rounded corners for a clean look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 .interestBtn {
-    padding: 15px 25px; /* Add more padding for larger buttons */
-    background-color: #7b22e7;
+    padding: 15px 25px; /* Larger padding for spacious buttons */
+    background-color: #6a1b9a; /* Refined purple color */
     color: white;
-    font-size: 1.1rem; /* Slightly increase font size */
+    font-size: 1.2rem; /* Increase font size for readability */
     border: none;
-    border-radius: 8px; /* Increase rounding for a more defined look */
+    border-radius: 12px; /* More rounded corners for style */
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
     text-align: center;
     white-space: nowrap; /* Prevent text wrapping */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for button */
 }
 
 .interestBtn:hover {
     transform: scale(1.1);
-    background-color: #5a18b3;
+    background-color: #4a148c; /* Darker purple on hover */
+}
+
+#interestSection {
+    margin-top: 100px; /* Space between this section and elements above */
+    padding: 50px 0; /* Add vertical padding for spaciousness */
+    text-align: center; /* Center any headings or content */
 }
 
 .hidden {
