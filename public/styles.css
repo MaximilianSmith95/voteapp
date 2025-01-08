@@ -31,11 +31,6 @@
     background-color: #4a148c; /* Darker purple on hover */
 }
 
-#interestSection {
-    margin-top: 100px; /* Space between this section and elements above */
-    padding: 50px 0; /* Add vertical padding for spaciousness */
-    text-align: center; /* Center any headings or content */
-}
 
 .hidden {
     display: none;
