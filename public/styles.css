@@ -39,6 +39,21 @@
     border-radius: 20px; /* Rounded corners for smooth edges */
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); /* Enhance depth with shadow */
 }
+.section-title {
+    font-size: 2rem; /* Large, readable title size */
+    color: #fff; /* White text to stand out */
+    margin-bottom: 10px; /* Space between title and subtitle */
+    text-align: center;
+    font-weight: bold;
+}
+
+.section-subtitle {
+    font-size: 1.2rem; /* Smaller subtitle */
+    color: #e0e0e0; /* Lighter text for a subtle effect */
+    margin-bottom: 30px; /* Space between subtitle and buttons */
+    text-align: center;
+    font-style: italic; /* Optional: italicize for emphasis */
+}
 
 
 
