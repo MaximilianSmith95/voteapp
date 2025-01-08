@@ -726,11 +726,6 @@ function addComment(subjectId) {
     const commentText = commentInput.value.trim();
     const username = getUsernameFromCookie();
 
-    if (!username) {
-        alert("You need to sign in to leave a comment.");
-        return;
-    }
-
     if (commentText) {
         fetch(`/api/subjects/${subjectId}/comment`, {
             method: 'POST',
