@@ -555,7 +555,27 @@ function escapeHTML(input) {
 // Validate and Add Comment
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
-    let commentText = commentInput.value.trim();
+    const commentText = commentInput.value.trim();
+
+    if (commentText) {
+        fetch(`/api/subjects/${subjectId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ comment_text: commentText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commentContainer = document.getElementById(`comment-section-${subjectId}`);
+                const newCommentElement = createCommentElement(data.comment);
+                commentContainer.prepend(newCommentElement);
+                commentInput.value = ""; // Clear input field
+            }
+        })
+        .catch(error => console.error('Error posting comment:', error));
+    }
+}
+
 
     // Sanitize and validate input
     commentText = sanitizeInput(commentText);
