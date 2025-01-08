@@ -2,32 +2,31 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center; /* Center the buttons horizontally */
-    gap: 15px; /* Add spacing between buttons */
-    padding: 20px; /* Add some padding to prevent edge collisions */
-    margin-top: 20px; /* Space from the logo/title */
+    gap: 20px; /* Increase spacing between buttons */
+    padding: 20px; /* Add padding around the button container */
+    margin: 100px auto 0 auto; /* Move below top elements with margin */
     max-width: 90%; /* Prevent overflow on smaller screens */
-    margin-left: auto; /* Center the container horizontally */
-    margin-right: auto;
     align-items: center; /* Center buttons vertically */
 }
 
 .interestBtn {
-    padding: 10px 20px; /* Ensure enough space within the button */
+    padding: 15px 25px; /* Add more padding for larger buttons */
     background-color: #7b22e7;
     color: white;
-    font-size: 1rem;
+    font-size: 1.1rem; /* Slightly increase font size */
     border: none;
-    border-radius: 5px;
+    border-radius: 8px; /* Increase rounding for a more defined look */
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
-    text-align: center; /* Center text inside the button */
-    white-space: nowrap; /* Prevent text wrapping within buttons */
+    text-align: center;
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .interestBtn:hover {
     transform: scale(1.1);
-    background-color: #5a18b3; /* Darker purple on hover */
+    background-color: #5a18b3;
 }
+
 
 #interestButtons {
     display: flex;
