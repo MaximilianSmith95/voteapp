@@ -304,6 +304,8 @@ feedButton.addEventListener("click", () => {
             if (data.token) {
                 localStorage.setItem("token", data.token);  // Store token
                 localStorage.setItem("username", data.username);  // Store username
+                // Ensure username is stored in a cookie for compatibility
+        setCookie('username', data.username, 365);
                 alert('Login successful!');
                 document.getElementById('loginModal').classList.add('hidden');
                 location.reload();  // Reload page to update state
