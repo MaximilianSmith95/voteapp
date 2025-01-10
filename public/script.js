@@ -132,9 +132,12 @@ fetch('/api/categories', {
     }
 
     // Handle the profile section visibility and dropdown toggle
-    if (token && username) {
-        profileSection.classList.remove("hidden");
-        usernameDisplay.textContent = username;
+const userId = localStorage.getItem('userId');
+if (token && username && userId) {
+    profileSection.classList.remove("hidden");
+    usernameDisplay.textContent = username;
+}
+
 
         // Add a click event to toggle the dropdown menu
         usernameDisplay.addEventListener("click", () => {
