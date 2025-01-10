@@ -141,11 +141,75 @@ fetch('/api/categories', {
             profileDropdown.classList.toggle("hidden");
         });
 
-        // Handling dropdown options
-        document.getElementById("historyLink").addEventListener("click", () => {
-            // Handle History action (You can redirect or open a modal)
-            alert("History clicked");
-        });
+document.getElementById('historyLink').addEventListener('click', () => {
+    const userId = localStorage.getItem('userId'); // User ID is stored during login
+
+    if (!userId) {
+        alert('You need to log in to view your history.');
+        return;
+    }
+
+    // Fetch history data
+    fetch(`/api/user/history?userId=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            const { votes, comments } = data;
+
+            // Clear previous content
+            const voteHistory = document.getElementById('voteHistory');
+            const commentHistory = document.getElementById('commentHistory');
+            voteHistory.innerHTML = '<h4>Voting History</h4>';
+            commentHistory.innerHTML = '<h4>Comment History</h4>';
+
+            // Render voting history
+            votes.forEach(vote => {
+                voteHistory.innerHTML += `
+                    <p>Voted on <strong>${vote.subject_name}</strong> (${vote.votes_count} votes)</p>
+                    <small>${new Date(vote.created_at).toLocaleString()}</small>
+                `;
+            });
+
+            // Render comment history
+            comments.forEach(comment => {
+                commentHistory.innerHTML += `
+                    <p>Commented on <strong>${comment.subject_name}</strong>: "${comment.comment_text}"</p>
+                    <small>${new Date(comment.created_at).toLocaleString()}</small>
+                `;
+            });
+
+            // Show the history section
+            document.getElementById('historySection').classList.remove('hidden');
+        })
+        .catch(err => console.error('Error fetching history:', err));
+});
+document.getElementById('deleteHistory').addEventListener('click', () => {
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+        alert('You need to log in to delete your history.');
+        return;
+    }
+
+    // Confirm deletion
+    if (!confirm('Are you sure you want to delete your entire history? This action cannot be undone.')) {
+        return;
+    }
+
+    // Send DELETE request to server
+    fetch(`/api/user/history?userId=${userId}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Your history has been deleted.');
+                document.getElementById('voteHistory').innerHTML = '';
+                document.getElementById('commentHistory').innerHTML = '';
+            } else {
+                alert('Failed to delete your history. Please try again later.');
+            }
+        })
+        .catch(err => console.error('Error deleting history:', err));
+});
+
 
         document.getElementById("editProfileLink").addEventListener("click", () => {
             // Handle Edit Profile action (You can open a modal to change the profile picture)
