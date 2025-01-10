@@ -136,7 +136,10 @@ const userId = localStorage.getItem('userId');
 if (token && username && userId) {
     profileSection.classList.remove("hidden");
     usernameDisplay.textContent = username;
+} else {
+    profileSection.classList.add("hidden");
 }
+
 
 
         // Add a click event to toggle the dropdown menu
@@ -145,26 +148,24 @@ if (token && username && userId) {
         });
 
 document.getElementById('historyLink').addEventListener('click', () => {
-    const userId = localStorage.getItem('userId'); // User ID is stored during login
+    const userId = localStorage.getItem('userId');
 
     if (!userId) {
         alert('You need to log in to view your history.');
         return;
     }
 
-    // Fetch history data
     fetch(`/api/user/history?userId=${userId}`)
         .then(response => response.json())
         .then(data => {
             const { votes, comments } = data;
 
-            // Clear previous content
+            // Render history
             const voteHistory = document.getElementById('voteHistory');
             const commentHistory = document.getElementById('commentHistory');
             voteHistory.innerHTML = '<h4>Voting History</h4>';
             commentHistory.innerHTML = '<h4>Comment History</h4>';
 
-            // Render voting history
             votes.forEach(vote => {
                 voteHistory.innerHTML += `
                     <p>Voted on <strong>${vote.subject_name}</strong> (${vote.votes_count} votes)</p>
@@ -172,7 +173,6 @@ document.getElementById('historyLink').addEventListener('click', () => {
                 `;
             });
 
-            // Render comment history
             comments.forEach(comment => {
                 commentHistory.innerHTML += `
                     <p>Commented on <strong>${comment.subject_name}</strong>: "${comment.comment_text}"</p>
@@ -180,11 +180,11 @@ document.getElementById('historyLink').addEventListener('click', () => {
                 `;
             });
 
-            // Show the history section
             document.getElementById('historySection').classList.remove('hidden');
         })
         .catch(err => console.error('Error fetching history:', err));
 });
+
 document.getElementById('deleteHistory').addEventListener('click', () => {
     const userId = localStorage.getItem('userId');
 
@@ -361,27 +361,24 @@ feedButton.addEventListener("click", () => {
         const password = document.getElementById('loginPassword').value;
 
         // Send Log-In data to backend
-       fetch('/api/login', {
+  fetch('/api/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
 })
-.then(response => response.json())
-.then(data => {
-    if (data.token) {
-        localStorage.setItem("token", data.token);  // Store token
-        localStorage.setItem("username", data.username);  // Store username
-        localStorage.setItem("userId", data.userId);  // Store userId
-        setCookie('username', data.username, 365);  // Store username in a cookie for compatibility
-        alert('Login successful!');
-        document.getElementById('loginModal').classList.add('hidden');
-        location.reload();  // Reload page to update state
-    } else {
-        alert('Login failed: ' + data.error);
-    }
-})
-.catch(error => console.error('Error:', error));
-});
+    .then(response => response.json())
+    .then(data => {
+        if (data.token) {
+            localStorage.setItem("token", data.token);  // Store token
+            localStorage.setItem("username", data.username);  // Store username
+            localStorage.setItem("userId", data.userId);  // Store userId
+            alert('Login successful!');
+            location.reload();  // Reload page to update state
+        } else {
+            alert('Login failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
