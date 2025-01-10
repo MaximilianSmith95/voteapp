@@ -420,13 +420,12 @@ app.post('/api/subjects/:id/comment', (req, res) => {
 });
 // Fetch user history
 app.get('/api/user/history', (req, res) => {
-    const { userId } = req.query; // Retrieve the userId from query parameters
+    const { userId } = req.query;
 
     if (!userId) {
         return res.status(400).json({ error: 'User ID is required' });
     }
 
-    // SQL query to fetch votes by the user
     const voteQuery = `
         SELECT uv.subject_id, s.name AS subject_name, uv.votes_count, uv.created_at
         FROM user_votes uv
@@ -434,7 +433,6 @@ app.get('/api/user/history', (req, res) => {
         WHERE uv.user_id = ?
     `;
 
-    // SQL query to fetch comments by the user
     const commentQuery = `
         SELECT c.comment_text, c.created_at, s.name AS subject_name
         FROM comments c
@@ -442,24 +440,21 @@ app.get('/api/user/history', (req, res) => {
         WHERE c.username = (SELECT username FROM users WHERE user_id = ?)
     `;
 
-    // Execute queries
     db.query(voteQuery, [userId], (voteErr, votes) => {
         if (voteErr) {
-            console.error('Error fetching votes:', voteErr);
             return res.status(500).json({ error: 'Failed to fetch votes' });
         }
 
         db.query(commentQuery, [userId], (commentErr, comments) => {
             if (commentErr) {
-                console.error('Error fetching comments:', commentErr);
                 return res.status(500).json({ error: 'Failed to fetch comments' });
             }
 
-            // Send the combined response
             res.json({ votes, comments });
         });
     });
 });
+
 // Delete user history
 app.delete('/api/user/history', (req, res) => {
     const { userId } = req.query;
