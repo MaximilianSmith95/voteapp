@@ -358,27 +358,27 @@ feedButton.addEventListener("click", () => {
         const password = document.getElementById('loginPassword').value;
 
         // Send Log-In data to backend
-        fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.token) {
-                localStorage.setItem("token", data.token);  // Store token
-                localStorage.setItem("username", data.username);  // Store username
-                // Ensure username is stored in a cookie for compatibility
-        setCookie('username', data.username, 365);
-                alert('Login successful!');
-                document.getElementById('loginModal').classList.add('hidden');
-                location.reload();  // Reload page to update state
-            } else {
-                alert('Login failed: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+       fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.token) {
+        localStorage.setItem("token", data.token);  // Store token
+        localStorage.setItem("username", data.username);  // Store username
+        localStorage.setItem("userId", data.userId);  // Store userId
+        setCookie('username', data.username, 365);  // Store username in a cookie for compatibility
+        alert('Login successful!');
+        document.getElementById('loginModal').classList.add('hidden');
+        location.reload();  // Reload page to update state
+    } else {
+        alert('Login failed: ' + data.error);
+    }
+})
+.catch(error => console.error('Error:', error));
+
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
