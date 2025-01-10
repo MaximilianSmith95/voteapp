@@ -381,7 +381,7 @@ feedButton.addEventListener("click", () => {
     }
 })
 .catch(error => console.error('Error:', error));
-
+});
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
