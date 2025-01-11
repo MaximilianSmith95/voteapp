@@ -1168,9 +1168,9 @@ function fetchAndDisplayTotalVotes() {
         .catch(error => console.error('Error fetching total votes:', error));
     }
     
-    // Fetch total votes every 10 seconds to keep it updated
-    setInterval(fetchAndDisplayTotalVotes, 10000);
-    document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
+// Fetch total votes every 10 seconds to keep it updated
+setInterval(fetchAndDisplayTotalVotes, 10000);
+document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
 
 function submitVoiceReview(subjectId) {
     const submitButton = document.getElementById(`submit-voice-${subjectId}`);
@@ -1195,6 +1195,7 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
+
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
 
@@ -1213,4 +1214,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-});
+}); // This closes the DOMContentLoaded listener
