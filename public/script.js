@@ -132,115 +132,42 @@ fetch('/api/categories', {
     }
 
     // Handle the profile section visibility and dropdown toggle
-const userId = localStorage.getItem('userId');
-if (token && username && userId) {
-    profileSection.classList.remove("hidden");
-    usernameDisplay.textContent = username;
-} else {
-    profileSection.classList.add("hidden");
-}
-
-
+    if (token && username) {
+        profileSection.classList.remove("hidden");
+        usernameDisplay.textContent = username;
 
         // Add a click event to toggle the dropdown menu
         usernameDisplay.addEventListener("click", () => {
             profileDropdown.classList.toggle("hidden");
         });
 
-document.getElementById('historyLink').addEventListener('click', () => {
-    const userId = localStorage.getItem('userId');
+        // Handling dropdown options
+        document.getElementById("historyLink").addEventListener("click", () => {
+            // Handle History action (You can redirect or open a modal)
+            alert("History clicked");
+        });
 
-    if (!userId) {
-        alert('You need to log in to view your history.');
-        return;
-    }
+        document.getElementById("editProfileLink").addEventListener("click", () => {
+            // Handle Edit Profile action (You can open a modal to change the profile picture)
+            alert("Edit Profile Picture clicked");
+        });
 
-    fetch(`/api/user/history?userId=${userId}`)
-        .then(response => response.json())
-        .then(data => {
-            const { votes, comments } = data;
-
-            // Render history
-            const voteHistory = document.getElementById('voteHistory');
-            const commentHistory = document.getElementById('commentHistory');
-            voteHistory.innerHTML = '<h4>Voting History</h4>';
-            commentHistory.innerHTML = '<h4>Comment History</h4>';
-
-            votes.forEach(vote => {
-                voteHistory.innerHTML += `
-                    <p>Voted on <strong>${vote.subject_name}</strong> (${vote.votes_count} votes)</p>
-                    <small>${new Date(vote.created_at).toLocaleString()}</small>
-                `;
-            });
-
-            comments.forEach(comment => {
-                commentHistory.innerHTML += `
-                    <p>Commented on <strong>${comment.subject_name}</strong>: "${comment.comment_text}"</p>
-                    <small>${new Date(comment.created_at).toLocaleString()}</small>
-                `;
-            });
-
-            document.getElementById('historySection').classList.remove('hidden');
-        })
-        .catch(err => console.error('Error fetching history:', err));
-});
-
-document.getElementById('deleteHistory').addEventListener('click', () => {
-    const userId = localStorage.getItem('userId');
-
-    if (!userId) {
-        alert('You need to log in to delete your history.');
-        return;
-    }
-
-    // Confirm deletion
-    if (!confirm('Are you sure you want to delete your entire history? This action cannot be undone.')) {
-        return;
-    }
-
-    // Send DELETE request to server
-    fetch(`/api/user/history?userId=${userId}`, { method: 'DELETE' })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Your history has been deleted.');
-                document.getElementById('voteHistory').innerHTML = '';
-                document.getElementById('commentHistory').innerHTML = '';
-            } else {
-                alert('Failed to delete your history. Please try again later.');
-            }
-        })
-        .catch(err => console.error('Error deleting history:', err));
-});
-
-
-       document.getElementById("editProfileLink").addEventListener("click", () => {
-    // Handle Edit Profile action (You can open a modal to change the profile picture)
-    alert("Edit Profile Picture clicked");
-});
-
-// Show the Edit Interests section when "Edit Interests" is clicked
-document.getElementById("editInterestsLink").addEventListener("click", function () {
+        // Show the Edit Interests section when "Edit Interests" is clicked
+       document.getElementById("editInterestsLink").addEventListener("click", function () {
     const interestButtons = document.getElementById("interestButtons");
     interestButtons.classList.toggle("hidden");
 });
+    } else {
+        // If the user is not logged in, ensure the profile section is hidden
+        profileSection.classList.add("hidden");
+    }
 
-if (token && username) { // Assuming token and username are defined earlier in the script
-    // If the user is logged in, show the profile section
-    profileSection.classList.remove("hidden");
-    usernameDisplay.textContent = username;
-} else {
-    // If the user is not logged in, ensure the profile section is hidden
-    profileSection.classList.add("hidden");
-}
-
-// Feed button logic
-const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
+   const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
 const interestButtonsSection = document.getElementById("interestButtons"); // Select the interestButtonsSection
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    let currentFeedLimit = 50; // Start with 50 categories
+    let currentFeedLimit = 50; // Start with 15 categories
 
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
@@ -248,8 +175,6 @@ feedButton.addEventListener("click", () => {
     }
 
     interestButtonsSection.style.display = "none";
-});
-
 
     function fetchFeedCategories(limit) {
         fetch('/api/categories', {
@@ -358,6 +283,7 @@ feedButton.addEventListener("click", () => {
         })
         .catch(error => console.error('Error:', error));
     });
+});
 
 
     // Login Form Submission
@@ -368,24 +294,25 @@ feedButton.addEventListener("click", () => {
         const password = document.getElementById('loginPassword').value;
 
         // Send Log-In data to backend
-  fetch('/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-})
-    .then(response => response.json())
-    .then(data => {
-        if (data.token) {
-            localStorage.setItem("token", data.token);  // Store token
-            localStorage.setItem("username", data.username);  // Store username
-            localStorage.setItem("userId", data.userId);  // Store userId
-            alert('Login successful!');
-            location.reload();  // Reload page to update state
-        } else {
-            alert('Login failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.token) {
+                localStorage.setItem("token", data.token);  // Store token
+                localStorage.setItem("username", data.username);  // Store username
+                alert('Login successful!');
+                document.getElementById('loginModal').classList.add('hidden');
+                location.reload();  // Reload page to update state
+            } else {
+                alert('Login failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
     // Set up filters and event listeners (e.g., for "For You" and "All" categories)
     document.getElementById("forYouButton").addEventListener("click", () => {
@@ -797,8 +724,7 @@ function getUsernameFromCookie() {
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = getUsernameFromCookie() || localStorage.getItem("username");
-
+    const username = getUsernameFromCookie();
 
     if (!username) {
         alert("You need to sign in to leave a comment.");
@@ -1168,9 +1094,9 @@ function fetchAndDisplayTotalVotes() {
         .catch(error => console.error('Error fetching total votes:', error));
     }
     
-// Fetch total votes every 10 seconds to keep it updated
-setInterval(fetchAndDisplayTotalVotes, 10000);
-document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
+    // Fetch total votes every 10 seconds to keep it updated
+    setInterval(fetchAndDisplayTotalVotes, 10000);
+    document.addEventListener('DOMContentLoaded', fetchAndDisplayTotalVotes);
 
 function submitVoiceReview(subjectId) {
     const submitButton = document.getElementById(`submit-voice-${subjectId}`);
@@ -1195,7 +1121,6 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
-
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
 
@@ -1214,4 +1139,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-}); // Ensure the closure matches this structure
+});
