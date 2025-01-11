@@ -214,27 +214,33 @@ document.getElementById('deleteHistory').addEventListener('click', () => {
 });
 
 
-        document.getElementById("editProfileLink").addEventListener("click", () => {
-            // Handle Edit Profile action (You can open a modal to change the profile picture)
-            alert("Edit Profile Picture clicked");
-        });
+       document.getElementById("editProfileLink").addEventListener("click", () => {
+    // Handle Edit Profile action (You can open a modal to change the profile picture)
+    alert("Edit Profile Picture clicked");
+});
 
-        // Show the Edit Interests section when "Edit Interests" is clicked
-       document.getElementById("editInterestsLink").addEventListener("click", function () {
+// Show the Edit Interests section when "Edit Interests" is clicked
+document.getElementById("editInterestsLink").addEventListener("click", function () {
     const interestButtons = document.getElementById("interestButtons");
     interestButtons.classList.toggle("hidden");
 });
-    } else {
-        // If the user is not logged in, ensure the profile section is hidden
-        profileSection.classList.add("hidden");
-    }
 
-   const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
+if (token && username) { // Assuming token and username are defined earlier in the script
+    // If the user is logged in, show the profile section
+    profileSection.classList.remove("hidden");
+    usernameDisplay.textContent = username;
+} else {
+    // If the user is not logged in, ensure the profile section is hidden
+    profileSection.classList.add("hidden");
+}
+
+// Feed button logic
+const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
 const interestButtonsSection = document.getElementById("interestButtons"); // Select the interestButtonsSection
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
-    let currentFeedLimit = 50; // Start with 15 categories
+    let currentFeedLimit = 50; // Start with 50 categories
 
     if (selectedInterests.length === 0) {
         alert("Please select at least one interest to view your personalized feed.");
@@ -242,6 +248,8 @@ feedButton.addEventListener("click", () => {
     }
 
     interestButtonsSection.style.display = "none";
+});
+
 
     function fetchFeedCategories(limit) {
         fetch('/api/categories', {
