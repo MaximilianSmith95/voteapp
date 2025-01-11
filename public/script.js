@@ -358,7 +358,6 @@ feedButton.addEventListener("click", () => {
         })
         .catch(error => console.error('Error:', error));
     });
-});
 
 
     // Login Form Submission
