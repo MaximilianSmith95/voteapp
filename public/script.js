@@ -1214,4 +1214,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update button text
         darkModeToggle.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
     });
-}); // This closes the DOMContentLoaded listener
+}); // Ensure the closure matches this structure
