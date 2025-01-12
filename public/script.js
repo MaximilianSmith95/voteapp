@@ -717,14 +717,16 @@ function createCommentElement(commentData) {
     return commentElement;
 }
 
-// function getUsernameFromCookie() {
-//     return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
-// }
+function getUsernameFromCookie() {
+    return getCookie('username'); // Assume 'username' is set as a cookie when the user logs in.
+}
 
 function addComment(subjectId) {
     const commentInput = document.getElementById(`comment-input-${subjectId}`);
     const commentText = commentInput.value.trim();
-    const username = getUsernameFromCookie() || localStorage.getItem("username");
+    const username = localStorage.getItem("username");
+
+    // getUsernameFromCookie() ||
 
 
     if (!username) {
