@@ -1218,7 +1218,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const dateLink = document.createElement("a");
             dateLink.textContent = group.date;
             dateLink.href = "#";
-            dateLink.addEventListener("click", () => renderQuizzes(group.date));
+            dateLink.addEventListener("click", () => {
+                renderQuizzes(group.date);
+                gameContainer.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the game container
+            });
             dateItem.appendChild(dateLink);
             dateList.appendChild(dateItem);
         });
@@ -1241,7 +1244,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const quizLink = document.createElement("a");
             quizLink.textContent = quiz.category;
             quizLink.href = "#";
-            quizLink.addEventListener("click", () => renderGame(selectedGroup.date, index));
+            quizLink.addEventListener("click", () => {
+                renderGame(selectedGroup.date, index);
+                gameContainer.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the game container
+            });
             quizItem.appendChild(quizLink);
             quizList.appendChild(quizItem);
         });
@@ -1307,6 +1313,9 @@ document.addEventListener("DOMContentLoaded", () => {
         gameContainer.appendChild(hintButton);
         gameContainer.appendChild(nextButton);
         gameContainer.appendChild(feedback);
+
+        // Smooth scroll to the game container
+        gameContainer.scrollIntoView({ behavior: "smooth" });
     }
 
     // Render a random quiz
@@ -1316,6 +1325,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderGame(randomGroup.date, randomQuizIndex);
     }
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
