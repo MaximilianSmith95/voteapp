@@ -36,19 +36,16 @@ function enableInfiniteScrolling() {
 }
 
 // Function to fetch and render categories with a given limit
-function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
-    fetch(url)
+function fetchAndRenderCategories(url, limit = 15, offset = 0, transformFn = null) {
+    fetch(`${url}?limit=${limit}&offset=${offset}`)
         .then(response => response.json())
         .then(data => {
-            allCategoriesData = data; // Store the data globally
-            let filteredData = allCategoriesData;
-            if (transformFn) {
-                filteredData = transformFn(allCategoriesData); // Apply transformation function if provided
-            }
-            renderLimitedCategories(filteredData, limit); // Render limited categories
+            const filteredData = transformFn ? transformFn(data) : data;
+            renderLimitedCategories(filteredData, limit);
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
+
 
     
 document.addEventListener("DOMContentLoaded", () => {
