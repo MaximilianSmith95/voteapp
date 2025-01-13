@@ -1126,13 +1126,51 @@ function submitVoiceReview(subjectId) {
 }
 document.addEventListener("DOMContentLoaded", () => {
     const nerdgoButton = document.getElementById("Nerdgo_");
+    const navButtons = document.querySelectorAll("nav button");
     const gameContainer = document.createElement("div");
     gameContainer.id = "game-container";
     document.body.appendChild(gameContainer); // Append the container to the body
 
-    nerdgoButton.addEventListener("click", () => {
-        // Clear the container to ensure no previous content is displayed
+    let activeFeature = null; // Track the active feature
+
+    // Function to deactivate all features
+    function deactivateAllFeatures() {
+        // Stop infinite scrolling
+        infiniteScrollEnabled = false;
+
+        // Hide or disable all sections (if applicable)
+        document.querySelectorAll(".main-section").forEach(section => {
+            section.style.display = "none"; // Hide all main sections
+        });
+
+        // Clear the game container
         gameContainer.innerHTML = "";
+    }
+
+    // Attach click event listeners to navigation buttons
+    navButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            // Reset all features when any nav button is pressed
+            deactivateAllFeatures();
+
+            // Reset activeFeature state unless it’s Nerdgo_
+            if (button.id !== "Nerdgo_") {
+                activeFeature = null;
+            }
+        });
+    });
+
+    // Nerdgo_ button logic
+    nerdgoButton.addEventListener("click", () => {
+        if (activeFeature === "Nerdgo_") {
+            return; // Avoid reactivating if already active
+        }
+
+        // Deactivate other features
+        deactivateAllFeatures();
+
+        // Activate Nerdgo_ feature
+        activeFeature = "Nerdgo_";
         renderGame(); // Call the game rendering function
         gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
     });
