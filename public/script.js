@@ -1138,6 +1138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Nerdgo_ button logic
     nerdgoButton.addEventListener("click", () => {
+        gameContainer.classList.remove("hidden");
         renderDates(); // Render the date-based quiz groups
         gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
     });
