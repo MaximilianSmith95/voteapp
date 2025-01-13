@@ -1172,85 +1172,127 @@ document.addEventListener("DOMContentLoaded", () => {
         // Activate Nerdgo_ feature
         activeFeature = "Nerdgo_";
 
-        renderGame(); // Render the quiz game in the game container
+        renderDates(); // Render the date-based quiz groups
         gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
     });
-    
-    // Include the renderGame function and gameData from the game code
-    const gameData = [
-    {
-        category: "Top 10 Grossing Films",
-        items: [
-            "Avatar - $2.923B",
-            "Avengers: Endgame - $2.798B",
-            "Titanic - $2.247B",
-            "Star Wars: The Force Awakens - $2.068B",
-            "??? - $1.518B", // Missing item
-            "Avengers: Infinity War - $2.048B",
-            "Spider-Man: No Way Home - $1.921B",
-            "Jurassic World - $1.671B",
-            "The Lion King - $1.662B",
-            "The Avengers - $1.519B",
-        ],
-        answer: "Super Mario Bros. Movie",
-        hint: "S", // First meaningful letter of the answer
-    },
-    {
-        category: "Top 10 Most Populous Countries",
-        items: [
-            "China - 1.4B",
-            "India - 1.4B",
-            "United States - 332M",
-            "Indonesia - 276M",
-            "??? - 211M", // Missing item
-            "Pakistan - 233M",
-            "Brazil - 214M",
-            "Nigeria - 211M",
-            "Bangladesh - 172M",
-            "Russia - 146M",
-        ],
-        answer: "Nigeria",
-        hint: "N",
-    },
-    {
-        category: "Top 10 Highest Mountains",
-        items: [
-            "Mount Everest - 8,848m",
-            "K2 - 8,611m",
-            "Kangchenjunga - 8,586m",
-            "Lhotse - 8,516m",
-            "??? - 8,485m", // Missing item
-            "Makalu - 8,485m",
-            "Cho Oyu - 8,188m",
-            "Dhaulagiri - 8,167m",
-            "Manaslu - 8,163m",
-            "Nanga Parbat - 8,126m",
-        ],
-        answer: "Makalu",
-        hint: "M",
-    },
-    {
-        category: "Top 10 Longest Rivers",
-        items: [
-            "Nile - 6,650km",
-            "Amazon - 6,575km",
-            "Yangtze - 6,300km",
-            "Mississippi-Missouri - 6,275km",
-            "??? - 5,464km", // Missing item
-            "Yenisei-Angara - 5,539km",
-            "Yellow - 5,464km",
-            "Ob-Irtysh - 5,410km",
-            "Parana - 4,880km",
-            "Congo - 4,700km",
-        ],
-        answer: "Yellow",
-        hint: "Y",
-    }
-];
-    let currentGameIndex = 0;
 
-    function renderGame() {
-        const game = gameData[currentGameIndex];
+    // Quizzes grouped by date
+    const quizzes = [
+        {
+            date: "2025-01-10",
+            quizzes: [
+                {
+                    category: "Top 10 Grossing Films",
+                    items: [
+                        "Avatar - $2.923B",
+                        "Avengers: Endgame - $2.798B",
+                        "Titanic - $2.247B",
+                        "Star Wars: The Force Awakens - $2.068B",
+                        "??? - $1.518B", // Missing item
+                        "Avengers: Infinity War - $2.048B",
+                        "Spider-Man: No Way Home - $1.921B",
+                        "Jurassic World - $1.671B",
+                        "The Lion King - $1.662B",
+                        "The Avengers - $1.519B",
+                    ],
+                    answer: "Super Mario Bros. Movie",
+                    hint: "S",
+                },
+                {
+                    category: "Top 10 Most Populous Countries",
+                    items: [
+                        "China - 1.4B",
+                        "India - 1.4B",
+                        "United States - 332M",
+                        "Indonesia - 276M",
+                        "??? - 211M", // Missing item
+                        "Pakistan - 233M",
+                        "Brazil - 214M",
+                        "Nigeria - 211M",
+                        "Bangladesh - 172M",
+                        "Russia - 146M",
+                    ],
+                    answer: "Nigeria",
+                    hint: "N",
+                },
+            ],
+        },
+        {
+            date: "2025-01-11",
+            quizzes: [
+                {
+                    category: "Top 10 Highest Mountains",
+                    items: [
+                        "Mount Everest - 8,848m",
+                        "K2 - 8,611m",
+                        "Kangchenjunga - 8,586m",
+                        "Lhotse - 8,516m",
+                        "??? - 8,485m", // Missing item
+                        "Makalu - 8,485m",
+                        "Cho Oyu - 8,188m",
+                        "Dhaulagiri - 8,167m",
+                        "Manaslu - 8,163m",
+                        "Nanga Parbat - 8,126m",
+                    ],
+                    answer: "Makalu",
+                    hint: "M",
+                },
+            ],
+        },
+    ];
+
+    // Render date-based groups
+    function renderDates() {
+        gameContainer.innerHTML = ""; // Clear previous content
+
+        const dateList = document.createElement("ul");
+        dateList.id = "dateList";
+
+        quizzes.forEach(group => {
+            const dateItem = document.createElement("li");
+            const dateLink = document.createElement("a");
+            dateLink.textContent = group.date;
+            dateLink.href = "#";
+            dateLink.addEventListener("click", () => renderQuizzes(group.date));
+            dateItem.appendChild(dateLink);
+            dateList.appendChild(dateItem);
+        });
+
+        gameContainer.appendChild(dateList);
+    }
+
+    // Render quizzes for a selected date
+    function renderQuizzes(date) {
+        gameContainer.innerHTML = ""; // Clear previous content
+
+        const selectedGroup = quizzes.find(group => group.date === date);
+        if (!selectedGroup) return;
+
+        const quizList = document.createElement("ul");
+        quizList.id = "quizList";
+
+        selectedGroup.quizzes.forEach((quiz, index) => {
+            const quizItem = document.createElement("li");
+            const quizLink = document.createElement("a");
+            quizLink.textContent = quiz.category;
+            quizLink.href = "#";
+            quizLink.addEventListener("click", () => renderGame(selectedGroup.date, index));
+            quizItem.appendChild(quizLink);
+            quizList.appendChild(quizItem);
+        });
+
+        gameContainer.appendChild(quizList);
+    }
+
+    // Render a specific quiz
+    function renderGame(date, quizIndex) {
+        gameContainer.innerHTML = ""; // Clear previous content
+
+        const selectedGroup = quizzes.find(group => group.date === date);
+        if (!selectedGroup) return;
+
+        const game = selectedGroup.quizzes[quizIndex];
+
         const header = document.createElement("h1");
         header.textContent = `Category: ${game.category}`;
 
@@ -1268,9 +1310,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const guessButton = document.createElement("button");
         guessButton.textContent = "Submit Guess";
         guessButton.addEventListener("click", () => {
-            const userGuess = input.value.trim();
             const feedback = document.getElementById("feedback");
-            if (userGuess.toLowerCase() === game.answer.toLowerCase()) {
+            if (input.value.trim().toLowerCase() === game.answer.toLowerCase()) {
                 feedback.textContent = "Correct!";
                 feedback.style.color = "green";
             } else {
@@ -1279,21 +1320,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        const hintButton = document.createElement("button");
-        hintButton.textContent = "Hint";
-        hintButton.addEventListener("click", () => {
-            const feedback = document.getElementById("feedback");
-            feedback.textContent = `Hint: The answer starts with '${game.hint}'`;
-            feedback.style.color = "blue";
-        });
-
-        const revealButton = document.createElement("button");
-        revealButton.textContent = "Reveal Answer";
-        revealButton.addEventListener("click", () => {
-            const feedback = document.getElementById("feedback");
-            feedback.textContent = `The correct answer is: ${game.answer}`;
-            feedback.style.color = "black";
-        });
+        const nextButton = document.createElement("button");
+        nextButton.textContent = "Next Quiz";
+        nextButton.addEventListener("click", () => renderRandomQuiz());
 
         const feedback = document.createElement("div");
         feedback.id = "feedback";
@@ -1302,11 +1331,18 @@ document.addEventListener("DOMContentLoaded", () => {
         gameContainer.appendChild(list);
         gameContainer.appendChild(input);
         gameContainer.appendChild(guessButton);
-        gameContainer.appendChild(hintButton);
-        gameContainer.appendChild(revealButton);
+        gameContainer.appendChild(nextButton);
         gameContainer.appendChild(feedback);
     }
+
+    // Render a random quiz
+    function renderRandomQuiz() {
+        const randomGroup = quizzes[Math.floor(Math.random() * quizzes.length)];
+        const randomQuizIndex = Math.floor(Math.random() * randomGroup.quizzes.length);
+        renderGame(randomGroup.date, randomQuizIndex);
+    }
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
