@@ -352,36 +352,35 @@ app.post('/api/register', async (req, res) => {
 
 // POST: Login route
 app.post('/api/login', (req, res) => {
-  const { email, password } = req.body;
-  
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
+    const { email, password } = req.body;
 
-  db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error logging in' });
-    }
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Error logging in' });
+        }
 
-    if (results.length === 0) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
+        if (results.length === 0) {
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
 
-    const user = results[0];
-    
-    // Compare password with stored hash
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
+        const user = results[0];
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
 
-    // Create JWT token
-    const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ message: 'Login successful', token, username: user.username, userId: user.user_id });
-  });
+        res.json({ 
+            message: 'Login successful', 
+            token, 
+            username: user.username, 
+            userId: user.user_id // Include userId in the response 
+        });
+    });
 });
+
 
 // POST: Logout route
 app.post('/api/logout', (req, res) => {
