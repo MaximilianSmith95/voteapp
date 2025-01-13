@@ -1135,43 +1135,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Insert the gameContainer below the navigation buttons but above the category cards
     navContainer.insertAdjacentElement("afterend", gameContainer);
 
-    let activeFeature = null; // Track the active feature
-
-    // Function to deactivate all features
-    function deactivateAllFeatures() {
-        // Hide or deactivate other sections (e.g., category cards, history, etc.)
-        if (categoryCards) categoryCards.style.display = "none";
-
-        // Clear the game container content
-        gameContainer.innerHTML = "";
-    }
-
-    // Attach event listeners to navigation buttons
-    document.querySelectorAll("nav button").forEach(button => {
-        button.addEventListener("click", () => {
-            // Reset all features when any nav button is pressed
-            deactivateAllFeatures();
-
-            // Reset activeFeature state unless it’s Nerdgo_
-            if (button.id !== "Nerdgo_") {
-                activeFeature = null;
-                if (categoryCards) categoryCards.style.display = "grid"; // Show category cards back
-            }
-        });
-    });
-
     // Nerdgo_ button logic
     nerdgoButton.addEventListener("click", () => {
-        if (activeFeature === "Nerdgo_") {
-            return; // Avoid reactivating if already active
-        }
-
-        // Deactivate other features
-        deactivateAllFeatures();
-
-        // Activate Nerdgo_ feature
-        activeFeature = "Nerdgo_";
-
         renderDates(); // Render the date-based quiz groups
         gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
     });
@@ -1319,7 +1284,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 feedback.style.color = "red";
             }
         });
-        
+
         const hintButton = document.createElement("button");
         hintButton.textContent = "Hint";
         hintButton.addEventListener("click", () => {
@@ -1327,6 +1292,7 @@ document.addEventListener("DOMContentLoaded", () => {
             feedback.textContent = `Hint: The answer starts with '${game.hint}'`;
             feedback.style.color = "blue";
         });
+
         const nextButton = document.createElement("button");
         nextButton.textContent = "Next Quiz";
         nextButton.addEventListener("click", () => renderRandomQuiz());
@@ -1338,6 +1304,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gameContainer.appendChild(list);
         gameContainer.appendChild(input);
         gameContainer.appendChild(guessButton);
+        gameContainer.appendChild(hintButton);
         gameContainer.appendChild(nextButton);
         gameContainer.appendChild(feedback);
     }
@@ -1349,7 +1316,6 @@ document.addEventListener("DOMContentLoaded", () => {
         renderGame(randomGroup.date, randomQuizIndex);
     }
 });
-
 
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
