@@ -253,20 +253,6 @@ forYouButton.addEventListener("click", () => {
 });
 
 
-    // Handle Login/Logout button functionality
-    const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
-
-    // Show/hide buttons based on login state
-    if (token) {
-        loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
-        feedButton.style.display = "inline-block"; // Show Feed button
-        forYouButton.style.display = "inline-block";
-    } else {
-        loginLogoutButton.textContent = "Login";  // Show Login button
-        feedButton.style.display = "none";        // Hide Feed button
-        forYouButton.style.display = "none";
-    }
-
     // Handle Login/Logout button click
     loginLogoutButton.addEventListener("click", () => {
         if (token) {
