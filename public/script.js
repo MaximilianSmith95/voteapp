@@ -398,14 +398,25 @@ function fetchAllCategories(limit) {
         .catch(error => console.error('Error fetching categories:', error));
 }
 
-function fetchForYouCategories(limit) {
-    fetchAndRenderCategories(`/api/categories?type=for-you`, limit, (data) => {
-        // Prioritize "For You" logic, ensuring randomized fallback categories are also displayed
-        if (data.length === 0) {
-            return shuffleArray(data);
-        }
-        return data;
-    });
+function fetchVotedCategories(limit = 15) {
+    const userId = localStorage.getItem("userId"); // Get the logged-in user's ID
+
+    if (!userId) {
+        alert("Please log in to view your voting history.");
+        return;
+    }
+
+    fetch(`/api/user/voted-categories?userId=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                alert("No voting history found.");
+                return;
+            }
+
+            renderLimitedCategories(data, limit); // Reuse the rendering logic
+        })
+        .catch(error => console.error("Error fetching voted categories:", error));
 }
 
 // Infinite scrolling integration
@@ -602,12 +613,13 @@ function addComment(subjectId) {
 }
 
 // Updated: Navigation Event Listener for "For You" Button
-document.getElementById('forYouButton').addEventListener('click', () => {
-    infiniteScrollEnabled = true; // Enable infinite scroll
-    activeFilterFunction = fetchForYouCategories;
-    currentCategoriesLimit = 15; // Reset limit
-    fetchForYouCategories(currentCategoriesLimit);
+document.getElementById("forYouButton").addEventListener("click", () => {
+    infiniteScrollEnabled = true;
+    activeFilterFunction = fetchVotedCategories;
+    currentCategoriesLimit = 15; // Reset the limit
+    fetchVotedCategories(currentCategoriesLimit);
 });
+
 
 // Updated: Utility Functions for Cookies
 function setCookie(name, value, days) {
