@@ -65,16 +65,15 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
 
-fetch('/api/categories', {
+fetch(`/api/categories?limit=15`, {
     method: 'GET',
     headers: {
-        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
+        'selected-interests': JSON.stringify(selectedInterests)
     }
 })
 .then(response => response.json())
 .then(data => {
-    // Handle the sorted categories
-    renderCategories(data);
+    renderLimitedCategories(data, 15); // Ensure only the first 15 are rendered
 })
 .catch(error => console.log(error));
 
