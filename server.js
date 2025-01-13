@@ -418,6 +418,31 @@ app.post('/api/subjects/:id/comment', (req, res) => {
         });
     });
 });
+// Fetch voted categories for logged-in user
+app.get('/api/user/voted-categories', (req, res) => {
+    const userId = req.query.userId; // Pass user ID as a query parameter
+
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    const query = `
+        SELECT DISTINCT c.category_id, c.name AS category_name
+        FROM user_votes uv
+        JOIN categories c ON uv.category_id = c.category_id
+        WHERE uv.user_id = ?
+    `;
+
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching voted categories:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        res.json(results);
+    });
+});
+
 // Fetch user history
 app.get('/api/user/history', (req, res) => {
     const { userId } = req.query;
