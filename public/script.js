@@ -1126,29 +1126,28 @@ function submitVoiceReview(subjectId) {
 }
 document.addEventListener("DOMContentLoaded", () => {
     const nerdgoButton = document.getElementById("Nerdgo_");
-    const navButtons = document.querySelectorAll("nav button");
+    const navContainer = document.querySelector("nav"); // Navigation container
+    const categoryCards = document.querySelector(".category-cards"); // Purple category cards container
     const gameContainer = document.createElement("div");
-    gameContainer.id = "game-container";
-    document.body.appendChild(gameContainer); // Append the container to the body
+
+    gameContainer.id = "gameContainer"; // Use the styled `#gameContainer` from your CSS
+
+    // Insert the gameContainer below the navigation buttons but above the category cards
+    navContainer.insertAdjacentElement("afterend", gameContainer);
 
     let activeFeature = null; // Track the active feature
 
     // Function to deactivate all features
     function deactivateAllFeatures() {
-        // Stop infinite scrolling
-        infiniteScrollEnabled = false;
+        // Hide or deactivate other sections (e.g., category cards, history, etc.)
+        if (categoryCards) categoryCards.style.display = "none";
 
-        // Hide or disable all sections (if applicable)
-        document.querySelectorAll(".main-section").forEach(section => {
-            section.style.display = "none"; // Hide all main sections
-        });
-
-        // Clear the game container
+        // Clear the game container content
         gameContainer.innerHTML = "";
     }
 
-    // Attach click event listeners to navigation buttons
-    navButtons.forEach(button => {
+    // Attach event listeners to navigation buttons
+    document.querySelectorAll("nav button").forEach(button => {
         button.addEventListener("click", () => {
             // Reset all features when any nav button is pressed
             deactivateAllFeatures();
@@ -1156,6 +1155,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Reset activeFeature state unless it’s Nerdgo_
             if (button.id !== "Nerdgo_") {
                 activeFeature = null;
+                if (categoryCards) categoryCards.style.display = "grid"; // Show category cards back
             }
         });
     });
@@ -1171,10 +1171,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Activate Nerdgo_ feature
         activeFeature = "Nerdgo_";
-        renderGame(); // Call the game rendering function
+
+        renderGame(); // Render the quiz game in the game container
         gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
     });
-
+    
     // Include the renderGame function and gameData from the game code
     const gameData = [
     {
