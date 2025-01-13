@@ -1138,7 +1138,76 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Include the renderGame function and gameData from the game code
-    const gameData = [/* Use the gameData array from your quiz game */];
+    const gameData = [
+    {
+        category: "Top 10 Grossing Films",
+        items: [
+            "Avatar - $2.923B",
+            "Avengers: Endgame - $2.798B",
+            "Titanic - $2.247B",
+            "Star Wars: The Force Awakens - $2.068B",
+            "??? - $1.518B", // Missing item
+            "Avengers: Infinity War - $2.048B",
+            "Spider-Man: No Way Home - $1.921B",
+            "Jurassic World - $1.671B",
+            "The Lion King - $1.662B",
+            "The Avengers - $1.519B",
+        ],
+        answer: "Super Mario Bros. Movie",
+        hint: "S", // First meaningful letter of the answer
+    },
+    {
+        category: "Top 10 Most Populous Countries",
+        items: [
+            "China - 1.4B",
+            "India - 1.4B",
+            "United States - 332M",
+            "Indonesia - 276M",
+            "??? - 211M", // Missing item
+            "Pakistan - 233M",
+            "Brazil - 214M",
+            "Nigeria - 211M",
+            "Bangladesh - 172M",
+            "Russia - 146M",
+        ],
+        answer: "Nigeria",
+        hint: "N",
+    },
+    {
+        category: "Top 10 Highest Mountains",
+        items: [
+            "Mount Everest - 8,848m",
+            "K2 - 8,611m",
+            "Kangchenjunga - 8,586m",
+            "Lhotse - 8,516m",
+            "??? - 8,485m", // Missing item
+            "Makalu - 8,485m",
+            "Cho Oyu - 8,188m",
+            "Dhaulagiri - 8,167m",
+            "Manaslu - 8,163m",
+            "Nanga Parbat - 8,126m",
+        ],
+        answer: "Makalu",
+        hint: "M",
+    },
+    {
+        category: "Top 10 Longest Rivers",
+        items: [
+            "Nile - 6,650km",
+            "Amazon - 6,575km",
+            "Yangtze - 6,300km",
+            "Mississippi-Missouri - 6,275km",
+            "??? - 5,464km", // Missing item
+            "Yenisei-Angara - 5,539km",
+            "Yellow - 5,464km",
+            "Ob-Irtysh - 5,410km",
+            "Parana - 4,880km",
+            "Congo - 4,700km",
+        ],
+        answer: "Yellow",
+        hint: "Y",
+    }
+];
     let currentGameIndex = 0;
 
     function renderGame() {
