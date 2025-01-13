@@ -160,9 +160,10 @@ fetch(`/api/categories?limit=15`, {
         // If the user is not logged in, ensure the profile section is hidden
         profileSection.classList.add("hidden");
     }
-
-   const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
+    
+  const feedButton = document.getElementById("feedButton"); // Ensure feedButton is correctly selected
 const interestButtonsSection = document.getElementById("interestButtons"); // Select the interestButtonsSection
+const forYouButton = document.getElementById("forYouButton"); // Ensure forYouButton is correctly selected
 
 feedButton.addEventListener("click", () => {
     const selectedInterests = JSON.parse(localStorage.getItem("selectedInterests")) || [];
@@ -201,6 +202,56 @@ feedButton.addEventListener("click", () => {
     });
 });
 
+// Handle Login/Logout button functionality
+const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
+
+if (token) {
+    loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
+    feedButton.style.display = "inline-block"; // Show Feed button
+    forYouButton.style.display = "inline-block"; // Show "For You" button
+} else {
+    loginLogoutButton.textContent = "Login";  // Show Login button
+    feedButton.style.display = "none";        // Hide Feed button
+    forYouButton.style.display = "none";      // Hide "For You" button
+}
+
+// Add event listener for "For You" button
+forYouButton.addEventListener("click", () => {
+    const userId = localStorage.getItem("userId"); // Get the logged-in user's ID
+    let currentForYouLimit = 50; // Start with 15 categories
+
+    if (!userId) {
+        alert("Please log in to view your personalized recommendations.");
+        return;
+    }
+
+    interestButtonsSection.style.display = "none"; // Hide interest buttons section
+
+    function fetchForYouCategories(limit) {
+        fetch(`/api/user/voted-categories?userId=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    alert("No voting history found.");
+                    return;
+                }
+                renderLimitedCategories(data, limit); // Render only `limit` categories
+            })
+            .catch(error => console.error("Error refreshing the For You feed:", error));
+    }
+
+    // Initial fetch for the first 15 categories
+    fetchForYouCategories(currentForYouLimit);
+
+    // "Explore More" button to load more categories
+    const exploreMoreButton = document.getElementById("exploreMoreButton");
+    exploreMoreButton.style.display = "inline-block";
+    exploreMoreButton.addEventListener("click", () => {
+        currentForYouLimit += 50; // Increment the limit by 15
+        fetchForYouCategories(currentForYouLimit); // Fetch and render additional categories
+    });
+});
+
 
     // Handle Login/Logout button functionality
     const loginLogoutButton = document.getElementById("loginButtonTop"); // Login/Logout button
@@ -209,9 +260,11 @@ feedButton.addEventListener("click", () => {
     if (token) {
         loginLogoutButton.textContent = "Logout";  // Change Login button to Logout
         feedButton.style.display = "inline-block"; // Show Feed button
+        forYouButton.style.display = "inline-block";
     } else {
         loginLogoutButton.textContent = "Login";  // Show Login button
         feedButton.style.display = "none";        // Hide Feed button
+        forYouButton.style.display = "none";
     }
 
     // Handle Login/Logout button click
