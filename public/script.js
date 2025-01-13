@@ -1319,7 +1319,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 feedback.style.color = "red";
             }
         });
-
+        
+        const hintButton = document.createElement("button");
+        hintButton.textContent = "Hint";
+        hintButton.addEventListener("click", () => {
+            const feedback = document.getElementById("feedback");
+            feedback.textContent = `Hint: The answer starts with '${game.hint}'`;
+            feedback.style.color = "blue";
+        });
         const nextButton = document.createElement("button");
         nextButton.textContent = "Next Quiz";
         nextButton.addEventListener("click", () => renderRandomQuiz());
