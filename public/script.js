@@ -36,16 +36,19 @@ function enableInfiniteScrolling() {
 }
 
 // Function to fetch and render categories with a given limit
-function fetchAndRenderCategories(url, limit = 15, offset = 0, transformFn = null) {
-    fetch(`${url}?limit=${limit}&offset=${offset}`)
+function fetchAndRenderCategories(url, limit = 15, transformFn = null) {
+    fetch(url)
         .then(response => response.json())
         .then(data => {
-            const filteredData = transformFn ? transformFn(data) : data;
-            renderLimitedCategories(filteredData, limit);
+            allCategoriesData = data; // Store the data globally
+            let filteredData = allCategoriesData;
+            if (transformFn) {
+                filteredData = transformFn(allCategoriesData); // Apply transformation function if provided
+            }
+            renderLimitedCategories(filteredData, limit); // Render limited categories
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
-
 
     
 document.addEventListener("DOMContentLoaded", () => {
@@ -65,16 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
 fetch('/api/categories', {
     method: 'GET',
     headers: {
-        'selected-interests': JSON.stringify(selectedInterests)
+        'selected-interests': JSON.stringify(selectedInterests) // Send selected interests
     }
 })
 .then(response => response.json())
 .then(data => {
     // Handle the sorted categories
-    renderCategories(data); // This renders all categories without limiting.
+    renderCategories(data);
 })
 .catch(error => console.log(error));
-
 
     // Function to update the "X" button and mark selected interests
     function updateInterestButton(interestButton, interest) {
