@@ -1131,6 +1131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const gameContainer = document.createElement("div");
 
     gameContainer.id = "gameContainer"; // Use the styled `#gameContainer` from your CSS
+    gameContainer.classList.add("hidden"); // Initially hide the container
 
     // Insert the gameContainer below the navigation buttons but above the category cards
     navContainer.insertAdjacentElement("afterend", gameContainer);
