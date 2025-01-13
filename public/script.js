@@ -1205,8 +1205,153 @@ document.addEventListener("DOMContentLoaded", () => {
                     hint: "M",
                 },
             ],
+       {
+    date: "2025-01-12",
+    quizzes: [
+        {
+            category: "Top 10 Most Streamed Songs on Spotify",
+            items: [
+                "Blinding Lights - The Weeknd",
+                "Shape of You - Ed Sheeran",
+                "Dance Monkey - Tones and I",
+                "Someone You Loved - Lewis Capaldi",
+                "??? - Glass Animals", // Missing item
+                "Sunflower - Post Malone and Swae Lee",
+                "Señorita - Shawn Mendes and Camila Cabello",
+                "Stay - The Kid LAROI and Justin Bieber",
+                "Rockstar - Post Malone and 21 Savage",
+                "Closer - The Chainsmokers and Halsey",
+            ],
+            answer: "Heat Waves",
+            hint: "H",
         },
-    ];
+        {
+            category: "Top 10 Richest People in the World (2025)",
+            items: [
+                "Elon Musk",
+                "Jeff Bezos",
+                "Bernard Arnault",
+                "Bill Gates",
+                "???", // Missing item
+                "Larry Ellison",
+                "Warren Buffett",
+                "Mark Zuckerberg",
+                "Sergey Brin",
+                "Larry Page",
+            ],
+            answer: "Mukesh Ambani",
+            hint: "M",
+        },
+        {
+            category: "Top 10 NBA Players by Points Scored",
+            items: [
+                "Kareem Abdul-Jabbar",
+                "LeBron James",
+                "Karl Malone",
+                "Kobe Bryant",
+                "???", // Missing item
+                "Wilt Chamberlain",
+                "Dirk Nowitzki",
+                "Shaquille O'Neal",
+                "Moses Malone",
+                "Elvin Hayes",
+            ],
+            answer: "Michael Jordan",
+            hint: "M",
+        },
+        {
+            category: "Top 10 Highest-Grossing Video Game Franchises",
+            items: [
+                "Pokémon",
+                "Mario",
+                "Call of Duty",
+                "Wii Series",
+                "???", // Missing item
+                "Pac-Man",
+                "Space Invaders",
+                "Final Fantasy",
+                "Dungeon Fighter Online",
+                "Street Fighter",
+            ],
+            answer: "Grand Theft Auto",
+            hint: "G",
+        },
+    ],
+},
+{
+    date: "2025-01-13",
+    quizzes: [
+        {
+            category: "Top 10 Most Populous Cities in the World",
+            items: [
+                "Tokyo - 37M",
+                "Delhi - 31M",
+                "Shanghai - 27M",
+                "São Paulo - 22M",
+                "??? - 21M", // Missing item
+                "Mexico City - 21M",
+                "Cairo - 20M",
+                "Mumbai - 20M",
+                "Beijing - 20M",
+                "Dhaka - 20M",
+            ],
+            answer: "Lagos",
+            hint: "L",
+        },
+        {
+            category: "Top 10 Fastest Cars in the World (2025)",
+            items: [
+                "Bugatti Chiron Super Sport 300+",
+                "Hennessey Venom F5",
+                "SSC Tuatara",
+                "Koenigsegg Jesko Absolut",
+                "???", // Missing item
+                "McLaren Speedtail",
+                "Rimac Nevera",
+                "Bugatti Veyron Super Sport",
+                "Koenigsegg Regera",
+                "Porsche 918 Spyder",
+            ],
+            answer: "Aston Martin Valkyrie",
+            hint: "A",
+        },
+        {
+            category: "Top 10 Countries by Land Area",
+            items: [
+                "Russia",
+                "Canada",
+                "China",
+                "United States",
+                "???", // Missing item
+                "Australia",
+                "India",
+                "Argentina",
+                "Kazakhstan",
+                "Algeria",
+            ],
+            answer: "Brazil",
+            hint: "B",
+        },
+        {
+            category: "Top 10 Best-Selling Books of All Time",
+            items: [
+                "Don Quixote",
+                "A Tale of Two Cities",
+                "The Lord of the Rings",
+                "The Little Prince",
+                "???", // Missing item
+                "Harry Potter and the Philosopher's Stone",
+                "And Then There Were None",
+                "The Dream of the Red Chamber",
+                "The Hobbit",
+                "She: A History of Adventure",
+            ],
+            answer: "The Bible",
+            hint: "T",
+        },
+    ],
+}
+
 
     // Render date-based groups
     function renderDates() {
