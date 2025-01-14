@@ -392,7 +392,6 @@ app.post('/api/login', (req, res) => {
         }
 
         const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('userId', user.user_id, { httpOnly: true, secure: true });
         res.json({ 
             message: 'Login successful', 
             token, 
