@@ -1330,6 +1330,153 @@ const quizzes = [
         ],
     },
     {
+    date: "2025-01-14",
+    quizzes: [
+        {
+            category: "Top 10 Most Followed Instagram Accounts",
+            items: [
+                "Cristiano Ronaldo",
+                "Lionel Messi",
+                "Kylie Jenner",
+                "Selena Gomez",
+                "???", // Missing item
+                "Dwayne Johnson (The Rock)",
+                "Kim Kardashian",
+                "Ariana Grande",
+                "Beyoncé",
+                "Khloe Kardashian",
+            ],
+            answer: "Justin Bieber",
+            hint: "J",
+        },
+        {
+            category: "Top 10 Largest Animals in the World",
+            items: [
+                "Blue Whale",
+                "Colossal Squid",
+                "African Elephant",
+                "Giraffe",
+                "???", // Missing item
+                "Polar Bear",
+                "Saltwater Crocodile",
+                "Brown Bear",
+                "Indian Python",
+                "Komodo Dragon",
+            ],
+            answer: "Whale Shark",
+            hint: "W",
+        },
+        {
+            category: "Top 10 Longest Running TV Shows",
+            items: [
+                "The Simpsons",
+                "Gunsmoke",
+                "Law & Order: SVU",
+                "South Park",
+                "???", // Missing item
+                "Doctor Who",
+                "Grey's Anatomy",
+                "NCIS",
+                "The X-Files",
+                "Family Guy",
+            ],
+            answer: "Saturday Night Live",
+            hint: "S",
+        },
+        {
+            category: "Top 10 Fastest Land Animals",
+            items: [
+                "Cheetah",
+                "Pronghorn Antelope",
+                "Springbok",
+                "Wildebeest",
+                "???", // Missing item
+                "Lion",
+                "Blackbuck",
+                "Hare",
+                "Greyhound",
+                "Kangaroo",
+            ],
+            answer: "Quarter Horse",
+            hint: "Q",
+        },
+    ],
+},
+{
+    date: "2025-01-15",
+    quizzes: [
+        {
+            category: "Top 10 Most Visited Countries in the World",
+            items: [
+                "France",
+                "Spain",
+                "United States",
+                "China",
+                "???", // Missing item
+                "Italy",
+                "Turkey",
+                "Mexico",
+                "Thailand",
+                "Germany",
+            ],
+            answer: "United Kingdom",
+            hint: "U",
+        },
+        {
+            category: "Top 10 Most Expensive Paintings Ever Sold",
+            items: [
+                "Salvator Mundi by Leonardo da Vinci",
+                "Interchange by Willem de Kooning",
+                "The Card Players by Paul Cézanne",
+                "Nafea Faa Ipoipo by Paul Gauguin",
+                "???", // Missing item
+                "Number 17A by Jackson Pollock",
+                "Portrait of Adele Bloch-Bauer I by Gustav Klimt",
+                "Le Rêve by Pablo Picasso",
+                "Nu couché by Amedeo Modigliani",
+                "Masterpiece by Roy Lichtenstein",
+            ],
+            answer: "Les Femmes d'Alger by Pablo Picasso",
+            hint: "L",
+        },
+        {
+            category: "Top 10 Tallest Buildings in the World (2025)",
+            items: [
+                "Burj Khalifa - 828m",
+                "Shanghai Tower - 632m",
+                "Abraj Al-Bait Clock Tower - 601m",
+                "Ping An Finance Centre - 599m",
+                "???", // Missing item
+                "Lotte World Tower - 555m",
+                "One World Trade Center - 541m",
+                "Tianjin CTF Finance Centre - 530m",
+                "Guangzhou CTF Finance Centre - 530m",
+                "Taipei 101 - 508m",
+            ],
+            answer: "Goldin Finance 117",
+            hint: "G",
+        },
+        {
+            category: "Top 10 Most Expensive Sports Teams",
+            items: [
+                "Dallas Cowboys",
+                "New York Yankees",
+                "Golden State Warriors",
+                "Los Angeles Lakers",
+                "???", // Missing item
+                "New York Knicks",
+                "Manchester United",
+                "Paris Saint-Germain",
+                "Real Madrid",
+                "FC Barcelona",
+            ],
+            answer: "New England Patriots",
+            hint: "N",
+        },
+    ],
+}
+
+    {
         date: "2025-01-13",
         quizzes: [
             {
