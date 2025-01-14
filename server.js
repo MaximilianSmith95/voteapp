@@ -256,6 +256,7 @@ const sortedCategories = categories.sort((a, b) => {
 app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
     const subjectId = parseInt(req.params.id, 10);
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const userId = req.cookies.userId || null; // Retrieve the userId from cookies if available
 
     const checkQuery = `
         SELECT votes_count FROM IpVotes WHERE ip_address = ? AND subject_id = ?
@@ -309,12 +310,32 @@ app.post('/api/subjects/:id/vote', voteLimiter, (req, res) => {
                         res.cookie("preferences", JSON.stringify(preferences), { httpOnly: true, secure: true });
                     }
 
-                    res.json({ success: true });
+                    // NEW: Store user votes if userId is available
+                    if (userId) {
+                        const userVotesQuery = `
+                            INSERT INTO user_votes (user_id, subject_id, category_id, votes_count)
+                            VALUES (?, ?, ?, 1)
+                            ON DUPLICATE KEY UPDATE votes_count = votes_count + 1
+                        `;
+
+                        db.query(userVotesQuery, [userId, subjectId, categoryId], (err) => {
+                            if (err) {
+                                console.error('Error recording user vote:', err);
+                                return res.status(500).json({ error: 'Failed to record user vote' });
+                            }
+
+                            res.json({ success: true });
+                        });
+                    } else {
+                        // If no userId, just respond as usual
+                        res.json({ success: true });
+                    }
                 });
             });
         });
     });
 });
+
 // POST: Sign up route
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
