@@ -419,7 +419,7 @@ app.post('/api/subjects/:id/comment', (req, res) => {
 });
 // Fetch voted categories for logged-in user
 app.get('/api/user/voted-categories', (req, res) => {
-    const userId = req.query.userId; // Pass user ID as a query parameter
+    const userId = req.query.userId;
 
     if (!userId) {
         return res.status(400).json({ error: 'User ID is required' });
@@ -438,9 +438,11 @@ app.get('/api/user/voted-categories', (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
+        console.log('Query Results:', results); // Debugging output
         res.json(results);
     });
 });
+
 
 // Fetch user history
 app.get('/api/user/history', (req, res) => {
