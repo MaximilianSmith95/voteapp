@@ -1174,6 +1174,26 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const nerdgoButton = document.getElementById("Nerdgo_");
+    const navContainer = document.querySelector("nav"); // Navigation container
+    const categoryCards = document.querySelector(".category-cards"); // Purple category cards container
+    const gameContainer = document.createElement("div");
+
+    gameContainer.id = "gameContainer"; // Use the styled `#gameContainer` from your CSS
+    gameContainer.classList.add("hidden"); // Initially hide the container
+
+    // Insert the gameContainer below the navigation buttons but above the category cards
+    navContainer.insertAdjacentElement("afterend", gameContainer);
+
+    // Nerdgo_ button logic
+    nerdgoButton.addEventListener("click", () => {
+        gameContainer.classList.remove("hidden");
+        renderDates(); // Render the date-based quiz groups
+        gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
+    });
+});
+
 // Render a specific quiz
 function renderGame(date, quizIndex) {
     gameContainer.innerHTML = ""; // Clear previous content
@@ -1218,7 +1238,6 @@ function renderGame(date, quizIndex) {
         feedback.style.color = "blue";
     });
 
-    // Add Reveal Answer Button
     const revealButton = document.createElement("button");
     revealButton.textContent = "Reveal Answer";
     revealButton.addEventListener("click", () => {
@@ -1246,7 +1265,6 @@ function renderGame(date, quizIndex) {
     // Smooth scroll to the game container
     gameContainer.scrollIntoView({ behavior: "smooth" });
 }
-
 const quizzes = [
     {
         date: "2025-01-10",
@@ -1287,10 +1305,323 @@ const quizzes = [
             },
         ],
     },
-    // Other quiz data remains unchanged
+    {
+        date: "2025-01-11",
+        quizzes: [
+            {
+                category: "Top 10 Highest Mountains",
+                items: [
+                    "Mount Everest - 8,848m",
+                    "K2 - 8,611m",
+                    "Kangchenjunga - 8,586m",
+                    "Lhotse - 8,516m",
+                    "??? - 8,485m", // Missing item
+                    "Makalu - 8,485m",
+                    "Cho Oyu - 8,188m",
+                    "Dhaulagiri - 8,167m",
+                    "Manaslu - 8,163m",
+                    "Nanga Parbat - 8,126m",
+                ],
+                answer: "Makalu",
+                hint: "M",
+            },
+        ],
+    },
+    {
+        date: "2025-01-12",
+        quizzes: [
+            {
+                category: "Top 10 Most Streamed Songs on Spotify",
+                items: [
+                    "Blinding Lights - The Weeknd",
+                    "Shape of You - Ed Sheeran",
+                    "Dance Monkey - Tones and I",
+                    "Someone You Loved - Lewis Capaldi",
+                    "??? - Glass Animals", // Missing item
+                    "Sunflower - Post Malone and Swae Lee",
+                    "Señorita - Shawn Mendes and Camila Cabello",
+                    "Stay - The Kid LAROI and Justin Bieber",
+                    "Rockstar - Post Malone and 21 Savage",
+                    "Closer - The Chainsmokers and Halsey",
+                ],
+                answer: "Heat Waves",
+                hint: "H",
+            },
+            {
+                category: "Top 10 Richest People in the World (2025)",
+                items: [
+                    "Elon Musk",
+                    "Jeff Bezos",
+                    "Bernard Arnault",
+                    "Bill Gates",
+                    "???", // Missing item
+                    "Larry Ellison",
+                    "Warren Buffett",
+                    "Mark Zuckerberg",
+                    "Sergey Brin",
+                    "Larry Page",
+                ],
+                answer: "Mukesh Ambani",
+                hint: "M",
+            },
+            {
+                category: "Top 10 NBA Players by Points Scored",
+                items: [
+                    "Kareem Abdul-Jabbar",
+                    "LeBron James",
+                    "Karl Malone",
+                    "Kobe Bryant",
+                    "???", // Missing item
+                    "Wilt Chamberlain",
+                    "Dirk Nowitzki",
+                    "Shaquille O'Neal",
+                    "Moses Malone",
+                    "Elvin Hayes",
+                ],
+                answer: "Michael Jordan",
+                hint: "M",
+            },
+            {
+                category: "Top 10 Highest-Grossing Video Game Franchises",
+                items: [
+                    "Pokémon",
+                    "Mario",
+                    "Call of Duty",
+                    "Wii Series",
+                    "???", // Missing item
+                    "Pac-Man",
+                    "Space Invaders",
+                    "Final Fantasy",
+                    "Dungeon Fighter Online",
+                    "Street Fighter",
+                ],
+                answer: "Grand Theft Auto",
+                hint: "G",
+            },
+        ],
+    },
+    {
+        date: "2025-01-13",
+        quizzes: [
+            {
+                category: "Top 10 Most Populous Cities in the World",
+                items: [
+                    "Tokyo - 37M",
+                    "Delhi - 31M",
+                    "Shanghai - 27M",
+                    "São Paulo - 22M",
+                    "??? - 21M", // Missing item
+                    "Mexico City - 21M",
+                    "Cairo - 20M",
+                    "Mumbai - 20M",
+                    "Beijing - 20M",
+                    "Dhaka - 20M",
+                ],
+                answer: "Lagos",
+                hint: "L",
+            },
+            {
+                category: "Top 10 Fastest Cars in the World (2025)",
+                items: [
+                    "Bugatti Chiron Super Sport 300+",
+                    "Hennessey Venom F5",
+                    "SSC Tuatara",
+                    "Koenigsegg Jesko Absolut",
+                    "???", // Missing item
+                    "McLaren Speedtail",
+                    "Rimac Nevera",
+                    "Bugatti Veyron Super Sport",
+                    "Koenigsegg Regera",
+                    "Porsche 918 Spyder",
+                ],
+                answer: "Aston Martin Valkyrie",
+                hint: "A",
+            },
+            {
+                category: "Top 10 Countries by Land Area",
+                items: [
+                    "Russia",
+                    "Canada",
+                    "China",
+                    "United States",
+                    "???", // Missing item
+                    "Australia",
+                    "India",
+                    "Argentina",
+                    "Kazakhstan",
+                    "Algeria",
+                ],
+                answer: "Brazil",
+                hint: "B",
+            },
+            {
+                category: "Top 10 Best-Selling Books of All Time",
+                items: [
+                    "Don Quixote",
+                    "A Tale of Two Cities",
+                    "The Lord of the Rings",
+                    "The Little Prince",
+                    "???", // Missing item
+                    "Harry Potter and the Philosopher's Stone",
+                    "And Then There Were None",
+                    "The Dream of the Red Chamber",
+                    "The Hobbit",
+                    "She: A History of Adventure",
+                ],
+                answer: "The Bible",
+                hint: "T",
+            },
+        ],
+    },
+    {
+        date: "2025-01-14",
+        quizzes: [
+            {
+                category: "Top 10 Most Followed Instagram Accounts",
+                items: [
+                    "Cristiano Ronaldo",
+                    "Lionel Messi",
+                    "Kylie Jenner",
+                    "Selena Gomez",
+                    "???", // Missing item
+                    "Dwayne Johnson (The Rock)",
+                    "Kim Kardashian",
+                    "Ariana Grande",
+                    "Beyoncé",
+                    "Khloe Kardashian",
+                ],
+                answer: "Justin Bieber",
+                hint: "J",
+            },
+            {
+                category: "Top 10 Largest Animals in the World",
+                items: [
+                    "Blue Whale",
+                    "Colossal Squid",
+                    "African Elephant",
+                    "Giraffe",
+                    "???", // Missing item
+                    "Polar Bear",
+                    "Saltwater Crocodile",
+                    "Brown Bear",
+                    "Indian Python",
+                    "Komodo Dragon",
+                ],
+                answer: "Whale Shark",
+                hint: "W",
+            },
+            {
+                category: "Top 10 Longest Running TV Shows",
+                items: [
+                    "The Simpsons",
+                    "Gunsmoke",
+                    "Law & Order: SVU",
+                    "South Park",
+                    "???", // Missing item
+                    "Doctor Who",
+                    "Grey's Anatomy",
+                    "NCIS",
+                    "The X-Files",
+                    "Family Guy",
+                ],
+                answer: "Saturday Night Live",
+                hint: "S",
+            },
+            {
+                category: "Top 10 Fastest Land Animals",
+                items: [
+                    "Cheetah",
+                    "Pronghorn Antelope",
+                    "Springbok",
+                    "Wildebeest",
+                    "???", // Missing item
+                    "Lion",
+                    "Blackbuck",
+                    "Hare",
+                    "Greyhound",
+                    "Kangaroo",
+                ],
+                answer: "Quarter Horse",
+                hint: "Q",
+            },
+        ],
+    },
+    {
+        date: "2025-01-15",
+        quizzes: [
+            {
+                category: "Top 10 Most Visited Countries in the World",
+                items: [
+                    "France",
+                    "Spain",
+                    "United States",
+                    "China",
+                    "???", // Missing item
+                    "Italy",
+                    "Turkey",
+                    "Mexico",
+                    "Thailand",
+                    "Germany",
+                ],
+                answer: "United Kingdom",
+                hint: "U",
+            },
+            {
+                category: "Top 10 Most Expensive Paintings Ever Sold",
+                items: [
+                    "Salvator Mundi by Leonardo da Vinci",
+                    "Interchange by Willem de Kooning",
+                    "The Card Players by Paul Cézanne",
+                    "Nafea Faa Ipoipo by Paul Gauguin",
+                    "???", // Missing item
+                    "Number 17A by Jackson Pollock",
+                    "Portrait of Adele Bloch-Bauer I by Gustav Klimt",
+                    "Le Rêve by Pablo Picasso",
+                    "Nu couché by Amedeo Modigliani",
+                    "Masterpiece by Roy Lichtenstein",
+                ],
+                answer: "Les Femmes d'Alger by Pablo Picasso",
+                hint: "L",
+            },
+            {
+                category: "Top 10 Tallest Buildings in the World (2025)",
+                items: [
+                    "Burj Khalifa - 828m",
+                    "Shanghai Tower - 632m",
+                    "Abraj Al-Bait Clock Tower - 601m",
+                    "Ping An Finance Centre - 599m",
+                    "???", // Missing item
+                    "Lotte World Tower - 555m",
+                    "One World Trade Center - 541m",
+                    "Tianjin CTF Finance Centre - 530m",
+                    "Guangzhou CTF Finance Centre - 530m",
+                    "Taipei 101 - 508m",
+                ],
+                answer: "Goldin Finance 117",
+                hint: "G",
+            },
+            {
+                category: "Top 10 Most Expensive Sports Teams",
+                items: [
+                    "Dallas Cowboys",
+                    "New York Yankees",
+                    "Golden State Warriors",
+                    "Los Angeles Lakers",
+                    "???", // Missing item
+                    "New York Knicks",
+                    "Manchester United",
+                    "Paris Saint-Germain",
+                    "Real Madrid",
+                    "FC Barcelona",
+                ],
+                answer: "New England Patriots",
+                hint: "N",
+            },
+        ],
+    },
 ];
 
-
+// The rest of the game logic remains unchanged
 
 // Other render functions remain unchanged
 
