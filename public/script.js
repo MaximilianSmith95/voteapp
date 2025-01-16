@@ -1290,29 +1290,7 @@ const quizzes = [
     // Other quiz data remains unchanged
 ];
 
-// Render date-based groups
-function renderDates() {
-    const gameContainer = document.getElementById("gameContainer"); // Ensure this ID exists in the DOM
-    gameContainer.innerHTML = ""; // Clear previous content
 
-    const dateList = document.createElement("ul");
-    dateList.id = "dateList";
-
-    quizzes.forEach(group => {
-        const dateItem = document.createElement("li");
-        const dateLink = document.createElement("a");
-        dateLink.textContent = group.date;
-        dateLink.href = "#";
-        dateLink.addEventListener("click", () => {
-            renderQuizzes(group.date);
-            gameContainer.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the game container
-        });
-        dateItem.appendChild(dateLink);
-        dateList.appendChild(dateItem);
-    });
-
-    gameContainer.appendChild(dateList);
-}
 
 // Other render functions remain unchanged
 
