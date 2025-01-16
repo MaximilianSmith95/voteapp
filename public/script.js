@@ -1174,97 +1174,7 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
-document.addEventListener("DOMContentLoaded", () => {
-    const nerdgoButton = document.getElementById("Nerdgo_");
-    const navContainer = document.querySelector("nav"); // Navigation container
-    const categoryCards = document.querySelector(".category-cards"); // Purple category cards container
-    const gameContainer = document.createElement("div");
 
-    gameContainer.id = "gameContainer"; // Use the styled `#gameContainer` from your CSS
-    gameContainer.classList.add("hidden"); // Initially hide the container
-
-    // Insert the gameContainer below the navigation buttons but above the category cards
-    navContainer.insertAdjacentElement("afterend", gameContainer);
-
-    // Nerdgo_ button logic
-    nerdgoButton.addEventListener("click", () => {
-        gameContainer.classList.remove("hidden");
-        renderDates(); // Render the date-based quiz groups
-        gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
-    });
-});
-
-// Render a specific quiz
-function renderGame(date, quizIndex) {
-    gameContainer.innerHTML = ""; // Clear previous content
-
-    const selectedGroup = quizzes.find(group => group.date === date);
-    if (!selectedGroup) return;
-
-    const game = selectedGroup.quizzes[quizIndex];
-
-    const header = document.createElement("h1");
-    header.textContent = `Category: ${game.category}`;
-
-    const list = document.createElement("ul");
-    game.items.forEach((item, index) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = item ? item : "???";
-        list.appendChild(listItem);
-    });
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "Your guess...";
-
-    const guessButton = document.createElement("button");
-    guessButton.textContent = "Submit Guess";
-    guessButton.addEventListener("click", () => {
-        const feedback = document.getElementById("feedback");
-        if (input.value.trim().toLowerCase() === game.answer.toLowerCase()) {
-            feedback.textContent = "Correct!";
-            feedback.style.color = "green";
-        } else {
-            feedback.textContent = "Wrong answer. Try again.";
-            feedback.style.color = "red";
-        }
-    });
-
-    const hintButton = document.createElement("button");
-    hintButton.textContent = "Hint";
-    hintButton.addEventListener("click", () => {
-        const feedback = document.getElementById("feedback");
-        feedback.textContent = `Hint: The answer starts with '${game.hint}'`;
-        feedback.style.color = "blue";
-    });
-
-    const revealButton = document.createElement("button");
-    revealButton.textContent = "Reveal Answer";
-    revealButton.addEventListener("click", () => {
-        const feedback = document.getElementById("feedback");
-        feedback.textContent = `The correct answer is: ${game.answer}`;
-        feedback.style.color = "purple";
-    });
-
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Next Quiz";
-    nextButton.addEventListener("click", () => renderRandomQuiz());
-
-    const feedback = document.createElement("div");
-    feedback.id = "feedback";
-
-    gameContainer.appendChild(header);
-    gameContainer.appendChild(list);
-    gameContainer.appendChild(input);
-    gameContainer.appendChild(guessButton);
-    gameContainer.appendChild(hintButton);
-    gameContainer.appendChild(revealButton); // Append the new Reveal Answer button
-    gameContainer.appendChild(nextButton);
-    gameContainer.appendChild(feedback);
-
-    // Smooth scroll to the game container
-    gameContainer.scrollIntoView({ behavior: "smooth" });
-}
 const quizzes = [
     {
         date: "2025-01-10",
@@ -1620,7 +1530,153 @@ const quizzes = [
         ],
     },
 ];
+document.addEventListener("DOMContentLoaded", () => {
+    const nerdgoButton = document.getElementById("Nerdgo_");
+    const navContainer = document.querySelector("nav"); // Navigation container
+    const gameContainer = document.createElement("div");
 
+    gameContainer.id = "gameContainer"; // Use the styled `#gameContainer` from your CSS
+    gameContainer.classList.add("hidden"); // Initially hide the container
+
+    // Insert the gameContainer below the navigation buttons
+    navContainer.insertAdjacentElement("afterend", gameContainer);
+
+    // Nerdgo_ button logic
+    nerdgoButton.addEventListener("click", () => {
+        gameContainer.classList.remove("hidden");
+        renderDates(); // Render the date-based quiz groups
+        gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
+    });
+});
+
+// Render date-based groups
+function renderDates() {
+    gameContainer.innerHTML = ""; // Clear previous content
+
+    const dateList = document.createElement("ul");
+    dateList.id = "dateList";
+
+    quizzes.forEach(group => {
+        const dateItem = document.createElement("li");
+        const dateLink = document.createElement("a");
+        dateLink.textContent = group.date;
+        dateLink.href = "#";
+        dateLink.addEventListener("click", () => {
+            renderQuizzes(group.date);
+            gameContainer.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the game container
+        });
+        dateItem.appendChild(dateLink);
+        dateList.appendChild(dateItem);
+    });
+
+    gameContainer.appendChild(dateList);
+}
+
+// Render quizzes for a selected date
+function renderQuizzes(date) {
+    gameContainer.innerHTML = ""; // Clear previous content
+
+    const selectedGroup = quizzes.find(group => group.date === date);
+    if (!selectedGroup) return;
+
+    const quizList = document.createElement("ul");
+    quizList.id = "quizList";
+
+    selectedGroup.quizzes.forEach((quiz, index) => {
+        const quizItem = document.createElement("li");
+        const quizLink = document.createElement("a");
+        quizLink.textContent = quiz.category;
+        quizLink.href = "#";
+        quizLink.addEventListener("click", () => {
+            renderGame(selectedGroup.date, index);
+            gameContainer.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the game container
+        });
+        quizItem.appendChild(quizLink);
+        quizList.appendChild(quizItem);
+    });
+
+    gameContainer.appendChild(quizList);
+}
+
+// Render a specific quiz
+function renderGame(date, quizIndex) {
+    gameContainer.innerHTML = ""; // Clear previous content
+
+    const selectedGroup = quizzes.find(group => group.date === date);
+    if (!selectedGroup) return;
+
+    const game = selectedGroup.quizzes[quizIndex];
+
+    const header = document.createElement("h1");
+    header.textContent = `Category: ${game.category}`;
+
+    const list = document.createElement("ul");
+    game.items.forEach((item, index) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = item ? item : "???";
+        list.appendChild(listItem);
+    });
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Your guess...";
+
+    const guessButton = document.createElement("button");
+    guessButton.textContent = "Submit Guess";
+    guessButton.addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        if (input.value.trim().toLowerCase() === game.answer.toLowerCase()) {
+            feedback.textContent = "Correct!";
+            feedback.style.color = "green";
+        } else {
+            feedback.textContent = "Wrong answer. Try again.";
+            feedback.style.color = "red";
+        }
+    });
+
+    const hintButton = document.createElement("button");
+    hintButton.textContent = "Hint";
+    hintButton.addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        feedback.textContent = `Hint: The answer starts with '${game.hint}'`;
+        feedback.style.color = "blue";
+    });
+
+    // Add Reveal Answer Button
+    const revealButton = document.createElement("button");
+    revealButton.textContent = "Reveal Answer";
+    revealButton.addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        feedback.textContent = `The correct answer is: ${game.answer}`;
+        feedback.style.color = "purple";
+    });
+
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next Quiz";
+    nextButton.addEventListener("click", () => renderRandomQuiz());
+
+    const feedback = document.createElement("div");
+    feedback.id = "feedback";
+
+    gameContainer.appendChild(header);
+    gameContainer.appendChild(list);
+    gameContainer.appendChild(input);
+    gameContainer.appendChild(guessButton);
+    gameContainer.appendChild(hintButton);
+    gameContainer.appendChild(revealButton); // Append the new Reveal Answer button
+    gameContainer.appendChild(nextButton);
+    gameContainer.appendChild(feedback);
+
+    // Smooth scroll to the game container
+    gameContainer.scrollIntoView({ behavior: "smooth" });
+}
+
+// Render a random quiz
+function renderRandomQuiz() {
+    const randomGroup = quizzes[Math.floor(Math.random() * quizzes.length)];
+    const randomQuizIndex = Math.floor(Math.random() * randomGroup.quizzes.length);
+    renderGame(randomGroup.date, randomQuizIndex);
+}
 // The rest of the game logic remains unchanged
 
 // Other render functions remain unchanged
