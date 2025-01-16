@@ -1192,6 +1192,79 @@ document.addEventListener("DOMContentLoaded", () => {
         renderDates(); // Render the date-based quiz groups
         gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
     });
+});
+
+// Render a specific quiz
+function renderGame(date, quizIndex) {
+    gameContainer.innerHTML = ""; // Clear previous content
+
+    const selectedGroup = quizzes.find(group => group.date === date);
+    if (!selectedGroup) return;
+
+    const game = selectedGroup.quizzes[quizIndex];
+
+    const header = document.createElement("h1");
+    header.textContent = `Category: ${game.category}`;
+
+    const list = document.createElement("ul");
+    game.items.forEach((item, index) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = item ? item : "???";
+        list.appendChild(listItem);
+    });
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Your guess...";
+
+    const guessButton = document.createElement("button");
+    guessButton.textContent = "Submit Guess";
+    guessButton.addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        if (input.value.trim().toLowerCase() === game.answer.toLowerCase()) {
+            feedback.textContent = "Correct!";
+            feedback.style.color = "green";
+        } else {
+            feedback.textContent = "Wrong answer. Try again.";
+            feedback.style.color = "red";
+        }
+    });
+
+    const hintButton = document.createElement("button");
+    hintButton.textContent = "Hint";
+    hintButton.addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        feedback.textContent = `Hint: The answer starts with '${game.hint}'`;
+        feedback.style.color = "blue";
+    });
+
+    const revealButton = document.createElement("button");
+    revealButton.textContent = "Reveal Answer";
+    revealButton.addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        feedback.textContent = `The correct answer is: ${game.answer}`;
+        feedback.style.color = "purple";
+    });
+
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next Quiz";
+    nextButton.addEventListener("click", () => renderRandomQuiz());
+
+    const feedback = document.createElement("div");
+    feedback.id = "feedback";
+
+    gameContainer.appendChild(header);
+    gameContainer.appendChild(list);
+    gameContainer.appendChild(input);
+    gameContainer.appendChild(guessButton);
+    gameContainer.appendChild(hintButton);
+    gameContainer.appendChild(revealButton); // Append the new Reveal Answer button
+    gameContainer.appendChild(nextButton);
+    gameContainer.appendChild(feedback);
+
+    // Smooth scroll to the game container
+    gameContainer.scrollIntoView({ behavior: "smooth" });
+}
 
     // Quizzes grouped by date
 const quizzes = [
