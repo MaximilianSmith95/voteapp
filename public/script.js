@@ -1174,26 +1174,6 @@ function submitVoiceReview(subjectId) {
     })
     .catch(error => console.error('Error submitting voice review:', error));
 }
-document.addEventListener("DOMContentLoaded", () => {
-    const nerdgoButton = document.getElementById("Nerdgo_");
-    const navContainer = document.querySelector("nav"); // Navigation container
-    const categoryCards = document.querySelector(".category-cards"); // Purple category cards container
-    const gameContainer = document.createElement("div");
-
-    gameContainer.id = "gameContainer"; // Use the styled `#gameContainer` from your CSS
-    gameContainer.classList.add("hidden"); // Initially hide the container
-
-    // Insert the gameContainer below the navigation buttons but above the category cards
-    navContainer.insertAdjacentElement("afterend", gameContainer);
-
-    // Nerdgo_ button logic
-    nerdgoButton.addEventListener("click", () => {
-        gameContainer.classList.remove("hidden");
-        renderDates(); // Render the date-based quiz groups
-        gameContainer.scrollIntoView({ behavior: "smooth" }); // Scroll to the game container
-    });
-});
-
 // Render a specific quiz
 function renderGame(date, quizIndex) {
     gameContainer.innerHTML = ""; // Clear previous content
@@ -1238,6 +1218,7 @@ function renderGame(date, quizIndex) {
         feedback.style.color = "blue";
     });
 
+    // Add Reveal Answer Button
     const revealButton = document.createElement("button");
     revealButton.textContent = "Reveal Answer";
     revealButton.addEventListener("click", () => {
@@ -1266,7 +1247,6 @@ function renderGame(date, quizIndex) {
     gameContainer.scrollIntoView({ behavior: "smooth" });
 }
 
-    // Quizzes grouped by date
 const quizzes = [
     {
         date: "2025-01-10",
