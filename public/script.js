@@ -1527,8 +1527,225 @@ const quizzes = [
                 answer: "New England Patriots",
                 hint: "N",
             },
-        ],
-    },
+{
+    date: "2025-01-16",
+    quizzes: [
+        {
+            category: "Top 10 Largest Oceans and Seas",
+            items: [
+                "Pacific Ocean",
+                "Atlantic Ocean",
+                "Indian Ocean",
+                "Southern Ocean",
+                "???", // Missing item
+                "Arctic Ocean",
+                "South China Sea",
+                "Caribbean Sea",
+                "Mediterranean Sea",
+                "Bering Sea",
+            ],
+            answer: "Arabian Sea",
+            hint: "A",
+        },
+        {
+            category: "Top 10 Best-Selling Video Games of All Time",
+            items: [
+                "Minecraft",
+                "Grand Theft Auto V",
+                "Tetris",
+                "Wii Sports",
+                "???", // Missing item
+                "PlayerUnknown's Battlegrounds",
+                "Super Mario Bros.",
+                "Mario Kart 8",
+                "Red Dead Redemption 2",
+                "Pokemon Red/Blue/Green/Yellow",
+            ],
+            answer: "Overwatch",
+            hint: "O",
+        },
+        {
+            category: "Top 10 Most Watched Movies on Netflix",
+            items: [
+                "Red Notice",
+                "Bird Box",
+                "Glass Onion: A Knives Out Mystery",
+                "The Gray Man",
+                "???", // Missing item
+                "Extraction",
+                "The Irishman",
+                "Enola Holmes 2",
+                "Don't Look Up",
+                "The Adam Project",
+            ],
+            answer: "Spencer Confidential",
+            hint: "S",
+        },
+        {
+            category: "Top 10 Longest Rivers in the World",
+            items: [
+                "Nile",
+                "Amazon",
+                "Yangtze",
+                "Mississippi-Missouri",
+                "???", // Missing item
+                "Yenisei",
+                "Yellow",
+                "Ob-Irtysh",
+                "Congo",
+                "Amur",
+            ],
+            answer: "Paraná",
+            hint: "P",
+        },
+    ],
+},
+{
+    date: "2025-01-17",
+    quizzes: [
+        {
+            category: "Top 10 Most Expensive Cities to Live In",
+            items: [
+                "New York",
+                "Singapore",
+                "Hong Kong",
+                "Tel Aviv",
+                "???", // Missing item
+                "Zurich",
+                "Geneva",
+                "London",
+                "Oslo",
+                "Tokyo",
+            ],
+            answer: "San Francisco",
+            hint: "S",
+        },
+        {
+            category: "Top 10 Most Popular Programming Languages",
+            items: [
+                "JavaScript",
+                "Python",
+                "Java",
+                "C#",
+                "???", // Missing item
+                "C++",
+                "TypeScript",
+                "Swift",
+                "Go",
+                "Ruby",
+            ],
+            answer: "PHP",
+            hint: "P",
+        },
+        {
+            category: "Top 10 Most Subscribed YouTube Channels",
+            items: [
+                "T-Series",
+                "MrBeast",
+                "Cocomelon",
+                "SET India",
+                "???", // Missing item
+                "PewDiePie",
+                "Kids Diana Show",
+                "Vlad and Niki",
+                "WWE",
+                "Zee Music Company",
+            ],
+            answer: "5-Minute Crafts",
+            hint: "5",
+        },
+        {
+            category: "Top 10 Most Popular Sports in the World",
+            items: [
+                "Soccer",
+                "Cricket",
+                "Basketball",
+                "Field Hockey",
+                "???", // Missing item
+                "Tennis",
+                "Volleyball",
+                "Table Tennis",
+                "Baseball",
+                "American Football",
+            ],
+            answer: "Rugby",
+            hint: "R",
+        },
+    ],
+},
+{
+    date: "2025-01-18",
+    quizzes: [
+        {
+            category: "Top 10 Most Popular TV Shows (All-Time)",
+            items: [
+                "Game of Thrones",
+                "Breaking Bad",
+                "The Sopranos",
+                "Friends",
+                "???", // Missing item
+                "The Office",
+                "Stranger Things",
+                "Sherlock",
+                "The Simpsons",
+                "Seinfeld",
+            ],
+            answer: "The Wire",
+            hint: "T",
+        },
+        {
+            category: "Top 10 Largest Deserts in the World",
+            items: [
+                "Antarctic Desert",
+                "Arctic Desert",
+                "Sahara Desert",
+                "Australian Desert",
+                "???", // Missing item
+                "Gobi Desert",
+                "Kalahari Desert",
+                "Patagonian Desert",
+                "Syrian Desert",
+                "Great Basin Desert",
+            ],
+            answer: "Arabian Desert",
+            hint: "A",
+        },
+        {
+            category: "Top 10 Most Visited Websites",
+            items: [
+                "Google",
+                "YouTube",
+                "Facebook",
+                "Twitter",
+                "???", // Missing item
+                "Wikipedia",
+                "Instagram",
+                "Amazon",
+                "Reddit",
+                "Yahoo",
+            ],
+            answer: "Baidu",
+            hint: "B",
+        },
+        {
+            category: "Top 10 Oldest Universities in the World",
+            items: [
+                "University of al-Qarawiyyin",
+                "University of Bologna",
+                "University of Oxford",
+                "University of Salamanca",
+                "???", // Missing item
+                "University of Cambridge",
+                "University of Padua",
+                "University of Naples Federico II",
+                "University of Siena",
+                "University of Paris",
+            ],
+            answer: "University of Paris",
+            hint: "P",
+        },
+    ],
+}
 ];
 document.addEventListener("DOMContentLoaded", () => {
     const nerdgoButton = document.getElementById("Nerdgo_");
