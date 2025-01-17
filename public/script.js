@@ -1527,7 +1527,9 @@ const quizzes = [
                 answer: "New England Patriots",
                 hint: "N",
             },
-{
+        ],
+    },
+    {
     date: "2025-01-16",
     quizzes: [
         {
