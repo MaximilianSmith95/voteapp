@@ -3,22 +3,11 @@ let currentCategoriesLimit = 15; // Start with 15 categories
 let activeFilterFunction = null; // Track the currently active filter function
 let infiniteScrollEnabled = true; // Control infinite scroll behavior
 
-// Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
-    const categoriesContainer = document.getElementById("categories");
-
-    // Append only the new categories to the existing ones
-    const existingCategoryCount = categoriesContainer.children.length;
-    const newCategories = categories.slice(existingCategoryCount, limit);
-
-    newCategories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.classList.add("category");
-        categoryDiv.setAttribute("data-category-id", category.category_id);
-        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
-        categoriesContainer.appendChild(categoryDiv);
-    });
+    const limitedCategories = categories.slice(0, limit);
+    renderCategories(limitedCategories); // Reuse existing render logic
 }
+
 
 let isFetching = false; // Prevent multiple fetches
 
