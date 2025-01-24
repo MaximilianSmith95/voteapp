@@ -5,20 +5,38 @@ let infiniteScrollEnabled = true; // Control infinite scroll behavior
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
-    const limitedCategories = categories.slice(0, limit);
-    renderCategories(limitedCategories); // Reuse existing render logic
+    const categoriesContainer = document.getElementById("categories");
+
+    // Append only the new categories to the existing ones
+    const existingCategoryCount = categoriesContainer.children.length;
+    const newCategories = categories.slice(existingCategoryCount, limit);
+
+    newCategories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+        categoryDiv.setAttribute("data-category-id", category.category_id);
+        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
+        categoriesContainer.appendChild(categoryDiv);
+    });
 }
 
-// Function to set up "Explore More" button
+let isFetching = false; // Prevent multiple fetches
+
 function setupExploreMoreButton() {
     const exploreMoreButton = document.getElementById("exploreMoreButton");
     exploreMoreButton.addEventListener("click", () => {
-        currentCategoriesLimit += 15; // Increase limit
+        if (isFetching) return; // Skip if already fetching
+        isFetching = true;
+
+        currentCategoriesLimit += 15; // Increment limit by 15
         if (activeFilterFunction) {
-            activeFilterFunction(currentCategoriesLimit); // Fetch and render more categories based on the current filter
+            activeFilterFunction(currentCategoriesLimit).finally(() => {
+                isFetching = false; // Reset fetch flag
+            });
         }
     });
 }
+
 
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
