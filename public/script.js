@@ -5,40 +5,20 @@ let infiniteScrollEnabled = true; // Control infinite scroll behavior
 
 // Function to render a limited number of categories
 function renderLimitedCategories(categories, limit = 15) {
-    const categoriesContainer = document.getElementById("categories");
-
-    // Append only the new categories to the existing ones
-    const existingCategoryCount = categoriesContainer.children.length;
-    const newCategories = categories.slice(existingCategoryCount, limit);
-
-    newCategories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.classList.add("category");
-        categoryDiv.setAttribute("data-category-id", category.category_id);
-        categoryDiv.innerHTML = `<h2>${category.name}</h2>`;
-        categoriesContainer.appendChild(categoryDiv);
-    });
+    const limitedCategories = categories.slice(0, limit);
+    renderCategories(limitedCategories); // Reuse existing render logic
 }
 
-
 // Function to set up "Explore More" button
-let isFetching = false; // Prevent multiple fetches
-
 function setupExploreMoreButton() {
     const exploreMoreButton = document.getElementById("exploreMoreButton");
     exploreMoreButton.addEventListener("click", () => {
-        if (isFetching) return; // Skip if already fetching
-        isFetching = true;
-
-        currentCategoriesLimit += 15; // Increment limit by 15
+        currentCategoriesLimit += 15; // Increase limit
         if (activeFilterFunction) {
-            activeFilterFunction(currentCategoriesLimit).finally(() => {
-                isFetching = false; // Reset fetch flag
-            });
+            activeFilterFunction(currentCategoriesLimit); // Fetch and render more categories based on the current filter
         }
     });
 }
-
 
 // Function to enable infinite scrolling
 function enableInfiniteScrolling() {
@@ -437,21 +417,24 @@ window.filterContent = function () {
 };
 
 
-let shuffledCategories = []; // Store shuffled categories globally
-
+// Fetch functions for each filter
 function fetchAllCategories(limit) {
-    // Shuffle only once
-    if (shuffledCategories.length === 0) {
-        const prioritizedCategory = allCategoriesData.find(category => category.category_id === 918);
-        const remainingCategories = allCategoriesData.filter(category => category.category_id !== 918);
+    fetch(`/api/categories`)
+        .then(response => response.json())
+        .then(data => {
+            // Find the prioritized category
+            const prioritizedCategory = data.find(category => category.category_id === 918);
+            const remainingCategories = data.filter(category => category.category_id !== 918);
 
-        shuffledCategories = prioritizedCategory
-            ? [prioritizedCategory, ...shuffleArray(remainingCategories)]
-            : shuffleArray(remainingCategories);
-    }
+            // Shuffle remaining categories and prepend the prioritized one
+            const shuffledCategories = prioritizedCategory
+                ? [prioritizedCategory, ...shuffleArray(remainingCategories)]
+                : shuffleArray(remainingCategories);
 
-    // Render up to the current limit
-    renderLimitedCategories(shuffledCategories, limit);
+            // Render the categories
+            renderLimitedCategories(shuffledCategories, limit);
+        })
+        .catch(error => console.error('Error fetching categories:', error));
 }
 
 function fetchVotedCategories(limit = 15) {
